@@ -1,12 +1,21 @@
-import express, { Express, Request, Response } from 'express';
+import express from 'express';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
 
 dotenv.config();
 
-const app: Express = express();
-const port = process.env.PORT;
+const app = express();
+const port = process.env.PORT || 4000;
 
-app.get('/', (req: Request, res: Response) => {
+// Database connection
+mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/seitz')
+const mongo = mongoose.connection;
+mongo.on("error", console.error.bind(console, "Connection error:"));
+mongo.once("open", () => {
+  console.log("Database connected!");
+});
+
+app.get('/', (req, res) => {
   res.send('Express + TypeScript Server');
 });
 
