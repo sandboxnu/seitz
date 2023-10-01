@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 
 import exampleRoutes from './routes/example'
+import studiesRoutes from './routes/studies'
 import errorHandler from './middleware/error';
 
 dotenv.config();
@@ -24,6 +25,7 @@ app.use(bodyParser.json())
 
 // Routes
 app.use("/example/", exampleRoutes);
+app.use("/studies/", studiesRoutes)
 
 app.use(errorHandler);
 
