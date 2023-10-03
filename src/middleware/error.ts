@@ -1,7 +1,7 @@
 import { ErrorRequestHandler } from "express";
 import { MongooseError } from "mongoose";
 
-const errorHandler : ErrorRequestHandler = (err, req, res, next) => {
+const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   let errStatus = err.statusCode || 500;
   let errMessage = null;
   if (err instanceof MongooseError) {
@@ -17,11 +17,9 @@ const errorHandler : ErrorRequestHandler = (err, req, res, next) => {
     }
   }
   res.status(errStatus).json({
-    success: false,
-    status: errStatus,
     message: errMessage,
-    stack: process.env.NODE_ENV === "development" ? err.stack : {}
+    stack: process.env.NODE_ENV === "development" ? err.stack : {},
   });
-}
+};
 
 export default errorHandler;
