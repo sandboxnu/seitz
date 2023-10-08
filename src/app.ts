@@ -4,7 +4,10 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 
 import exampleRoutes from './routes/example'
+import authRoutes from './routes/auth'
 import errorHandler from './middleware/error';
+import {Strategy} from 'passport-local';
+import passport from 'passport';
 
 dotenv.config();
 
@@ -19,11 +22,16 @@ mongo.once("open", () => {
 const app = express();
 const port = process.env.PORT || 4000;
 
+// const strategy = new Strategy(function verify(username, password, cb) {
+//   //implement getting username and password from db
+// }
+
 // Middleware
 app.use(bodyParser.json())
 
 // Routes
 app.use("/example/", exampleRoutes);
+app.use("/auth/", authRoutes);
 
 app.use(errorHandler);
 
