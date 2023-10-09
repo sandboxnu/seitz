@@ -25,8 +25,8 @@ router.get("/:id", (req, res, next) => {
 
 router.post("/", (req, res, next) => {
   Study.create(req.body)
-    .then(_ => {
-      successStatus(res, 201);
+    .then(data => {
+      success(res, data);
     })
     .catch(next);
 });
