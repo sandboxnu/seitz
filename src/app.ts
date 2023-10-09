@@ -1,7 +1,9 @@
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+
 
 import exampleRoutes from './routes/example'
 import studiesRoutes from './routes/studies'
@@ -22,6 +24,7 @@ const port = process.env.PORT || 4000;
 
 // Middleware
 app.use(bodyParser.json())
+app.use(cors());
 
 // Routes
 app.use("/example/", exampleRoutes);
