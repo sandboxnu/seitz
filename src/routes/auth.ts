@@ -8,7 +8,9 @@ import { Strategy as LocalStrategy } from "passport-local";
 
 const router = Router();
 
-console.log("hi");
+passport.use(new LocalStrategy({ usernameField: "email"}, User.authenticate()));
+passport.serializeUser(User.serializeUser() as (user: Express.User, cb: (err: any, id?: any) => void) => void);
+passport.deserializeUser(User.deserializeUser());
 
 router.post("/signup", (req, res, next) => {
     const { email, password } = req.body;
@@ -16,18 +18,21 @@ router.post("/signup", (req, res, next) => {
         res.status(400).send({ message: "Must have fields email and password" });
     } else {
         //store email and password in db
-        res.send("Sign up completed");
+        const newUser = new User({ email, password });
+        User.register(newUser, password, (err) => {
+            if (err) {
+                res.status(400).send(err.message)
+            } else {
+                res.send("Sign up completed");
+            }
+        });
     }
 });
 
 // https://www.npmjs.com/package/passport-local-mongoose
-router.post("/login", (req, res, next) => {
-    passport.use(new LocalStrategy(User.authenticate()));
-    passport.serializeUser(
-        User.serializeUser() as (user: Express.User, cb: (err: any, id?: any) => void) => void
-    );
-    passport.deserializeUser(User.deserializeUser());
-    const hi = User.serializeUser();
+router.post("/login", passport.authenticate("local"), (req, res, next) => {
+    res.send("Login successful");
+
 });
 
 router.post("/logout", (req, res, next) => {
