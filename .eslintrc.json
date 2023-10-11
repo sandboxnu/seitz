@@ -16,6 +16,8 @@
     "parser": "@typescript-eslint/parser",
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint", "vue"],
-  "rules": {}
+  "plugins": ["@typescript-eslint", "vue", "prettier"],
+  "rules": {
+    "prettier/prettier": "error"
+  }
 }
