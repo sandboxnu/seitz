@@ -1,10 +1,11 @@
 import { Response } from "express";
 
-const success = (res: Response, data: any, statusCode: number = 200) => {
+function success<T>(res: Response, data: T, statusCode = 200) {
   res.status(statusCode).json(data);
-};
-const successStatus = (res: Response, statusCode: number = 200) => {
+}
+
+function successStatus(res: Response, statusCode = 200) {
   success(res, null, statusCode);
-};
+}
 
 export { success, successStatus };

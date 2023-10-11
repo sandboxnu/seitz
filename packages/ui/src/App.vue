@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AppNavbar from './components/AppNavbar.vue';
+import AppNavbar from "./components/AppNavbar.vue";
 </script>
 
 <template>
@@ -7,5 +7,4 @@ import AppNavbar from './components/AppNavbar.vue';
   <RouterView />
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
