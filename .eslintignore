@@ -1,8 +1,6 @@
+.vscode/*
+.DS_Store
 node_modules
 dist
-
-# IDE - VSCode
-.vscode/*
-
-# System Files
-.DS_Store
+pnpm-lock.yaml
+pnpm-workspace.yaml
