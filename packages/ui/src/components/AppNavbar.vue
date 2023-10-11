@@ -9,5 +9,6 @@ const route = useRoute();
   <ElMenu :default-active="route.path" mode="horizontal" :router="true">
     <ElMenuItem index="/">Hello</ElMenuItem>
     <ElMenuItem index="/test">Test</ElMenuItem>
+    <ElMenuItem index="/example">Example</ElMenuItem>
   </ElMenu>
 </template>
