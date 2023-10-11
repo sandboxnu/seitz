@@ -1,7 +1,7 @@
 import { ErrorRequestHandler } from "express";
 import { MongooseError } from "mongoose";
 
-const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+const errorHandler: ErrorRequestHandler = (err, _req, res) => {
   let errStatus = err.statusCode || 500;
   let errMessage = null;
   if (err instanceof MongooseError) {

@@ -1,0 +1,8 @@
+node_modules
+dist
+
+# IDE - VSCode
+.vscode/*
+
+# System Files
+.DS_Store

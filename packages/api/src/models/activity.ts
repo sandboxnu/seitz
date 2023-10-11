@@ -5,7 +5,7 @@ export interface IActivity {
 }
 
 const activitySchema = new Schema<IActivity>({
-  name: { type: String, required: true}
+  name: { type: String, required: true },
 });
 
-const Activity = model<IActivity>('Activity', activitySchema);
+export const Activity = model<IActivity>("Activity", activitySchema);

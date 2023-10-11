@@ -1,27 +1,25 @@
 <script setup lang="ts">
-import { useMutation, useQueryClient } from '@tanstack/vue-query'
-import carAPI, { GetCarResponse } from '@/api/example'
-import { ref } from 'vue';
+import { useMutation, useQueryClient } from "@tanstack/vue-query";
+import carAPI, { GetCarResponse } from "@/api/example";
+import { ref } from "vue";
 
-const queryClient = useQueryClient()
+const queryClient = useQueryClient();
 
 const { isLoading, isError, error, isSuccess, mutate } = useMutation({
   mutationFn: carAPI.createCar,
   onSuccess: (createdCar) => {
-    queryClient.setQueryData(['cars'], (oldCars: GetCarResponse[] | undefined) => {
-      return oldCars ? oldCars.concat([createdCar])
-                     : [createdCar];
-    })
-  }
-})
+    queryClient.setQueryData(["cars"], (oldCars: GetCarResponse[] | undefined) => {
+      return oldCars ? oldCars.concat([createdCar]) : [createdCar];
+    });
+  },
+});
 
 const carData = ref({
   make: "",
   model: "",
   miles: 0,
-  year: 0
+  year: 0,
 });
-
 </script>
 
 <template>
@@ -42,9 +40,7 @@ const carData = ref({
       <el-input-number v-model="carData.year" />
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="mutate(carData)">
-        Submit
-      </el-button>
+      <el-button type="primary" @click="mutate(carData)"> Submit </el-button>
     </el-form-item>
   </el-form>
 </template>

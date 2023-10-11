@@ -1,5 +1,4 @@
 import { Schema, Types, model } from "mongoose";
-import { IActivity, IStudy } from "./study"
 
 export interface IUser {
   activitiesCreated: Types.ObjectId[];
@@ -7,10 +6,10 @@ export interface IUser {
 }
 
 const userSchema = new Schema<IUser>({
-  activitiesCreated: [{ type: Schema.Types.ObjectId, ref: 'Activity'}],
-  studies: [{type: Schema.Types.ObjectId, ref: 'Study'}]
+  activitiesCreated: [{ type: Schema.Types.ObjectId, ref: "Activity" }],
+  studies: [{ type: Schema.Types.ObjectId, ref: "Study" }],
 });
 
-const User = model<IUser>('User', userSchema);
+const User = model<IUser>("User", userSchema);
 
 export default User;

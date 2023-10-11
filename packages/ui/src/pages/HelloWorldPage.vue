@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from "vue";
 
-const count = ref(0)
+const count = ref(0);
 </script>
 
 <template>
@@ -10,14 +10,8 @@ const count = ref(0)
   <RouterLink to="test">Test</RouterLink>
 
   <div>
-    <ElButton
-      type="primary"
-      @click="count++"
-    >
-      count is {{ count }}
-    </ElButton>
+    <ElButton type="primary" @click="count++"> count is {{ count }} </ElButton>
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

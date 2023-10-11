@@ -2,13 +2,13 @@ import { Router } from "express";
 import Car from "../models/example";
 import HttpError from "../types/errors";
 
-import { success, successStatus } from "../util/api";
+import { success } from "../util/api";
 
 const router = Router();
 
 router.get("/", (req, res, next) => {
   Car.find()
-    .then(cars => {
+    .then((cars) => {
       success(res, cars);
     })
     .catch(next);
@@ -16,7 +16,7 @@ router.get("/", (req, res, next) => {
 
 router.get("/:id", (req, res, next) => {
   Car.findById(req.params["id"])
-    .then(car => {
+    .then((car) => {
       if (!car) throw new HttpError(404);
       success(res, car);
     })
@@ -25,7 +25,7 @@ router.get("/:id", (req, res, next) => {
 
 router.post("/", (req, res, next) => {
   Car.create(req.body)
-    .then(data => {
+    .then((data) => {
       success(res, data);
     })
     .catch(next);
