@@ -16,17 +16,24 @@ interface CreateCarDto {
 }
 
 async function getCars() {
-  const response = await axios.get<GetCarResponse[]>(`${import.meta.env.VITE_API_URL}/example`);
+  const response = await axios.get<GetCarResponse[]>(
+    `${import.meta.env.VITE_API_URL}/example`
+  );
   return response.data;
 }
 
 async function getCarByID(id: string) {
-  const response = await axios.get<GetCarResponse>(`${import.meta.env.VITE_API_URL}/example/${id}`);
+  const response = await axios.get<GetCarResponse>(
+    `${import.meta.env.VITE_API_URL}/example/${id}`
+  );
   return response.data;
 }
 
 async function createCar(car: CreateCarDto) {
-  const response = await axios.post<GetCarResponse>(`${import.meta.env.VITE_API_URL}/example`, car);
+  const response = await axios.post<GetCarResponse>(
+    `${import.meta.env.VITE_API_URL}/example`,
+    car
+  );
   return response.data;
 }
 

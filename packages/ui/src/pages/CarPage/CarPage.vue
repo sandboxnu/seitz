@@ -12,7 +12,9 @@ const { isLoading, isError, data, error } = useQuery({
   <div v-if="isLoading">Loading...</div>
   <div v-else-if="isError">Error : {{ error }}</div>
   <div v-else>
-    <p v-for="car in data" :key="car._id">{{ car.make }} {{ car.model }} {{ car.year }} - {{ car.miles }} miles</p>
+    <p v-for="car in data" :key="car._id">
+      {{ car.make }} {{ car.model }} {{ car.year }} - {{ car.miles }} miles
+    </p>
     <CreateCarForm />
   </div>
 </template>

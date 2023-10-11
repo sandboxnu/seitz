@@ -8,9 +8,12 @@ const queryClient = useQueryClient();
 const { isLoading, isError, error, isSuccess, mutate } = useMutation({
   mutationFn: carAPI.createCar,
   onSuccess: (createdCar) => {
-    queryClient.setQueryData(["cars"], (oldCars: GetCarResponse[] | undefined) => {
-      return oldCars ? oldCars.concat([createdCar]) : [createdCar];
-    });
+    queryClient.setQueryData(
+      ["cars"],
+      (oldCars: GetCarResponse[] | undefined) => {
+        return oldCars ? oldCars.concat([createdCar]) : [createdCar];
+      }
+    );
   },
 });
 
