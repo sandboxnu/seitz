@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    name: Run linters
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout git repo
+        uses: actions/checkout@v3
+      - name: install node v20.6.1
+        uses: actions/setup-node@v1
+        with:
+          node-version: 20.6.1
+      - name: pnpm install
+        uses: pnpm/action-setup@v2
+        with:
+          run_install: true
+      - name: lint
+        uses: wearerequired/lint-action@v2
+        with:
+          eslint: true
+          prettier: true
