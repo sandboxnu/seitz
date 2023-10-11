@@ -2,14 +2,11 @@
   "name": "@seitz/api",
   "private": true,
   "version": "1.0.0",
-  "main": "build/app.js",
+  "main": "dist/app.js",
   "scripts": {
     "dev": "nodemon ./src/app.ts",
     "start": "tsc && node dist/app.js"
   },
-  "repository": "https://github.com/sandboxnu/seitz-api",
-  "author": "Ross Newman <rzn3102@gmail.com>",
-  "license": "MIT",
   "dependencies": {
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
