@@ -9,7 +9,7 @@ import { Strategy as LocalStrategy } from "passport-local";
 const router = Router();
 
 passport.use(new LocalStrategy({ usernameField: "email"}, User.authenticate()));
-passport.serializeUser(User.serializeUser() as (user: Express.User, cb: (err: any, id?: any) => void) => void);
+passport.serializeUser(User.serializeUser())// as (user: Express.User, cb: (err: any, id?: any) => void) => void);
 passport.deserializeUser(User.deserializeUser());
 
 router.post("/signup", (req, res, next) => {
@@ -19,18 +19,32 @@ router.post("/signup", (req, res, next) => {
     } else {
         //store email and password in db
         const newUser = new User({ email, password });
+        //newUser.save
+        
         User.register(newUser, password, (err) => {
             if (err) {
                 res.status(400).send(err.message)
             } else {
                 res.send("Sign up completed");
             }
+            
+            // passport.serializeUser(function(user, done) {
+            //     // the values returned here will be used to deserializeUser
+            //     // this can be use for further logins
+            //     done(null, { newUser });
+            // });
+            
+            // passport.deserializeUser(function(user, done) {
+            //     done(null, newUser);
+            // });
+
         });
     }
 });
 
 // https://www.npmjs.com/package/passport-local-mongoose
 router.post("/login", passport.authenticate("local"), (req, res, next) => {
+    
     res.send("Login successful");
 
 });
