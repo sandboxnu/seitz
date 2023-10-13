@@ -8,10 +8,9 @@ import { Strategy as LocalStrategy } from "passport-local";
 
 const router = Router();
 
-passport.use(new LocalStrategy({ usernameField: "email"}, User.authenticate()));
-passport.serializeUser(User.serializeUser())// as (user: Express.User, cb: (err: any, id?: any) => void) => void);
-passport.deserializeUser(User.deserializeUser());
+//passport.use(new LocalStrategy)
 
+// https://stackoverflow.com/questions/32398120/passport-allow-sign-up-with-name-and-email-address-local-strategy
 router.post("/signup", (req, res, next) => {
     const { email, password } = req.body;
     if (typeof email !== "string" || typeof password !== "string") {
@@ -28,15 +27,7 @@ router.post("/signup", (req, res, next) => {
                 res.send("Sign up completed");
             }
             
-            // passport.serializeUser(function(user, done) {
-            //     // the values returned here will be used to deserializeUser
-            //     // this can be use for further logins
-            //     done(null, { newUser });
-            // });
-            
-            // passport.deserializeUser(function(user, done) {
-            //     done(null, newUser);
-            // });
+          
 
         });
     }
