@@ -26,17 +26,20 @@ passport.use(
 
 // https://stackoverflow.com/questions/32398120/passport-allow-sign-up-with-name-and-email-address-local-strategy
 router.post("/signup", (req, res, next) => {
-    const { email, password } = req.body;
-    if (typeof email !== "string" || typeof password !== "string") {
-        res.status(400).send({ message: "Must have fields email and password" });
-    } else {
-        //store email and password in db
-        const newUser = new User({ email, password });
-        newUser
-            .save()
-            .then(({ email }) => res.send(`Sign up for ${email} has been successful.`))
-            .catch((error: Error) => res.status(400).send(error.message));
-    }
+    User.create(req.body)
+        .then(({ email }) => res.send(`Sign up for ${email} has been successful.`))
+        .catch((error: Error) => res.status(400).send(error.message));
+    // const { email, password } = req.body;
+    // if (typeof email !== "string" || typeof password !== "string") {
+    //     res.status(400).send({ message: "Must have fields email and password" });
+    // } else {
+    //     //store email and password in db
+    //     const newUser = new User({ email, password });
+    //     newUser
+    //         .save()
+    //         .then(({ email }) => res.send(`Sign up for ${email} has been successful.`))
+    //         .catch((error: Error) => res.status(400).send(error.message));
+    // }
 });
 
 // https://www.npmjs.com/package/passport-local-mongoose
