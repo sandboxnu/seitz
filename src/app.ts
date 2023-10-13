@@ -6,8 +6,8 @@ import mongoose from 'mongoose';
 import exampleRoutes from './routes/example'
 import authRoutes from './routes/auth'
 import errorHandler from './middleware/error';
-import {Strategy} from 'passport-local';
 import passport from 'passport';
+import session from 'express-session';
 
 dotenv.config();
 
@@ -22,12 +22,19 @@ mongo.once("open", () => {
 const app = express();
 const port = process.env.PORT || 4000;
 
-// const strategy = new Strategy(function verify(username, password, cb) {
-//   //implement getting username and password from db
-// }
-
 // Middleware
 app.use(bodyParser.json())
+
+app.use(
+  session({
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Routes
 app.use("/example/", exampleRoutes);
