@@ -1,5 +1,3 @@
-// User
-
 import { Schema, model } from "mongoose";
 
 export interface IUser extends Document {

@@ -6,22 +6,27 @@ import { Strategy as LocalStrategy } from "passport-local";
 const router = Router();
 
 passport.use(
-    new LocalStrategy({usernameField: "email"},(email, password, done) => {
-        User.findOne({ email }).then((user) => {
-            if (!user) {
-                done(null, false, { message: "No user exists for the given email" })
-            } else if (user?.verifyPassword(password)) {
-                done(null, user);
-            } else {
-                done(null, false, { message: "The given password is incorrect"})
-            }
-        }).catch(done)
-    }
-    )
+    new LocalStrategy({ usernameField: "email" }, (email, password, done) => {
+        User.findOne({ email })
+            .then((user) => {
+                if (!user) {
+                    done(null, false, { message: "No user exists for the given email" });
+                } else if (user?.verifyPassword(password)) {
+                    done(null, user);
+                } else {
+                    done(null, false, { message: "The given password is incorrect" });
+                }
+            })
+            .catch(done);
+    })
 );
 // TODO: Implement these
-passport.serializeUser((user, done) => done(null, user))
-passport.deserializeUser((id, done) => User.findById(id).then(user => done(null, user)).catch(done))
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((id, done) =>
+    User.findById(id)
+        .then((user) => done(null, user))
+        .catch(done)
+);
 
 router.post("/signup", (req, res, next) => {
     const { email, password } = req.body;
