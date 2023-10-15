@@ -5,6 +5,9 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 
 import exampleRoutes from "./routes/example";
+import passport from "passport";
+import session from "express-session";
+import authRoutes from "./routes/auth";
 import studiesRoutes from "./routes/studies";
 import errorHandler from "./middleware/error";
 
@@ -25,9 +28,21 @@ const port = process.env.PORT || 4000;
 app.use(bodyParser.json());
 app.use(cors());
 
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET ?? "secret",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 // Routes
 app.use("/example/", exampleRoutes);
 app.use("/studies/", studiesRoutes);
+app.use("/auth/", authRoutes);
 
 app.use(errorHandler);
 
