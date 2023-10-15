@@ -43,12 +43,6 @@ router.post("/signup", (req, res, next) => {
   }
 });
 
-router.post("/test", (req, res) => {
-  console.log(req.user)
-  req.isAuthenticated()
-  res.send("done")
-})
-
 router.post("/login", passport.authenticate("local"), (req, res) => {
   res.send("Login successful");
 });
