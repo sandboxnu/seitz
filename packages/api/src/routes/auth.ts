@@ -1,6 +1,6 @@
 import { Router } from "express";
 import passport from "passport";
-import User from "../models/auth";
+import User from "../models/user";
 import { Strategy as LocalStrategy } from "passport-local";
 
 const router = Router();
@@ -42,6 +42,12 @@ router.post("/signup", (req, res, next) => {
       .catch(next);
   }
 });
+
+router.post("/test", (req, res) => {
+  console.log(req.user)
+  req.isAuthenticated()
+  res.send("done")
+})
 
 router.post("/login", passport.authenticate("local"), (req, res) => {
   res.send("Login successful");
