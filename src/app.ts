@@ -27,7 +27,7 @@ app.use(bodyParser.json());
 
 app.use(
     session({
-        secret: "TODO: Make secret key in ENV",
+        secret: process.env.SESSION_SECRET ?? "secret",
         resave: false,
         saveUninitialized: false,
     })
