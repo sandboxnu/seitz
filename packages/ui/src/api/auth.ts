@@ -1,20 +1,37 @@
 import axios from "axios";
 
-interface LogInDto {
+const axiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true,
+});
+
+export interface LogInDto {
   email: string;
   password: string;
 }
 
+interface GetUserResponse {
+  email: string;
+  password: string;
+  activitiesCreated: string[];
+  studies: string[];
+}
+
 async function logIn(credentials: LogInDto) {
-  await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, credentials);
+  await axiosInstance.post("auth/login", credentials);
 }
 
 async function signUp(credentials: LogInDto) {
-  await axios.post(`${import.meta.env.VITE_API_URL}/auth/signup`, credentials);
+  await axiosInstance.post("/auth/signup", credentials);
 }
 
 async function logOut() {
-  await axios.post(`${import.meta.env.VITE_API_URL}/auth/logout`);
+  await axiosInstance.post("/auth/logout");
 }
 
-export default { logIn, signUp, logOut };
+async function getCurrentUser() {
+  const result = await axiosInstance.get<GetUserResponse>("auth/user");
+  return result.data;
+}
+
+export default { logIn, signUp, logOut, getCurrentUser };

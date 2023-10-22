@@ -26,13 +26,24 @@ const port = process.env.PORT || 4000;
 
 // Middleware
 app.use(bodyParser.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+    credentials: true,
+  })
+);
 
 app.use(
   session({
     secret: process.env.SESSION_SECRET ?? "secret",
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 8 * 60 * 60 * 1000,
+      httpOnly: true,
+    },
   })
 );
 

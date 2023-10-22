@@ -3,6 +3,7 @@ import passport from "passport";
 import User from "../models/user";
 import { Strategy as LocalStrategy } from "passport-local";
 import isAuthenticated from "../middleware/auth";
+import HttpError from "../types/errors";
 
 const router = Router();
 
@@ -37,10 +38,19 @@ router.post("/signup", (req, res, next) => {
     const newUser = new User({ email, password });
     newUser
       .save()
-      .then(({ email }) =>
-        res.send(`Sign up for ${email} has been successful.`)
-      )
-      .catch(next);
+      .then((user) => {
+        req.login(user, (err) => {
+          if (!err) res.sendStatus(201);
+          else next(err);
+        });
+      })
+      .catch((err) => {
+        if (err.name == "MongoServerError" && err.code === 11000) {
+          next(new HttpError(400, "User already exists"));
+        } else {
+          next(err);
+        }
+      });
   }
 });
 
@@ -56,6 +66,13 @@ router.post("/logout", isAuthenticated, (req, res) => {
       res.send("Success logging out");
     }
   });
+});
+
+router.get("/user", (req, res) => {
+  if (!req.user) {
+    return res.sendStatus(401);
+  }
+  res.send(req.user);
 });
 
 export default router;
