@@ -2,6 +2,7 @@ import { Router } from "express";
 import passport from "passport";
 import User from "../models/user";
 import { Strategy as LocalStrategy } from "passport-local";
+import isAuthenticated from "../middleware/auth";
 
 const router = Router();
 
@@ -47,7 +48,7 @@ router.post("/login", passport.authenticate("local"), (req, res) => {
   res.send("Login successful");
 });
 
-router.post("/logout", (req, res) => {
+router.post("/logout", isAuthenticated, (req, res) => {
   req.logout((err) => {
     if (err) {
       res.status(500).send("Failed to log out");
