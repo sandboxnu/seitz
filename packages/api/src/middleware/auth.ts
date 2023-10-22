@@ -8,7 +8,7 @@ const isAuthenticated = function (
   if (req.isAuthenticated()) {
     return next();
   }
-  res.status(401).send("Unauthenticated user").redirect("/login");
+  res.status(401).send({ message: "Unauthenticated user" });
 };
 
 export default isAuthenticated;
