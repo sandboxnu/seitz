@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { useStorage, StorageSerializers } from "@vueuse/core";
 import authAPI from "@/api/auth";
 
-interface IUser {
+export interface IUser {
   email: string;
   password: string;
   activitiesCreated: string[];
@@ -15,9 +15,8 @@ export const useAuthStore = defineStore("auth", () => {
   });
 
   function logOut() {
-    authAPI.logOut().then(() => {
-      currentUser.value = null;
-    });
+    authAPI.logOut();
+    currentUser.value = null;
   }
 
   return { currentUser, logOut };

@@ -33,7 +33,7 @@ passport.deserializeUser((id, done) =>
 router.post("/signup", (req, res, next) => {
   const { email, password } = req.body;
   if (typeof email !== "string" || typeof password !== "string") {
-    res.status(400).send({ message: "Must have fields email and password" });
+    next(new HttpError(400, "Must have fields email and password"));
   } else {
     const newUser = new User({ email, password });
     newUser
@@ -46,7 +46,7 @@ router.post("/signup", (req, res, next) => {
       })
       .catch((err) => {
         if (err.name == "MongoServerError" && err.code === 11000) {
-          next(new HttpError(400, "User already exists"));
+          next(new HttpError(400, "That email is taken"));
         } else {
           next(err);
         }
@@ -54,25 +54,26 @@ router.post("/signup", (req, res, next) => {
   }
 });
 
-router.post("/login", passport.authenticate("local"), (req, res) => {
-  res.send("Login successful");
-});
+router.post(
+  "/login",
+  passport.authenticate("local", { failWithError: true }),
+  (req, res) => {
+    res.sendStatus(200);
+  }
+);
 
-router.post("/logout", isAuthenticated, (req, res) => {
+router.post("/logout", isAuthenticated, (req, res, next) => {
   req.logout((err) => {
     if (err) {
-      res.status(500).send("Failed to log out");
+      next(new HttpError(500));
     } else {
-      res.send("Success logging out");
+      res.sendStatus(200);
     }
   });
 });
 
-router.get("/user", (req, res) => {
-  if (!req.user) {
-    return res.sendStatus(401);
-  }
-  res.send(req.user);
+router.get("/user", isAuthenticated, (req, res) => {
+  res.json(req.user);
 });
 
 export default router;
