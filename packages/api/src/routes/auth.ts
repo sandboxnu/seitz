@@ -12,10 +12,19 @@ passport.use(
       .then((user) => {
         if (!user) {
           done(null, false, { message: "No user exists for the given email" });
-        } else if (user?.verifyPassword(password)) {
-          done(null, user);
         } else {
-          done(null, false, { message: "The given password is incorrect" });
+          user
+            .verifyPassword(password)
+            .then((outcome) => {
+              if (!outcome) {
+                done(null, false, {
+                  message: "The given password is incorrect",
+                });
+              } else {
+                done(null, user);
+              }
+            })
+            .catch(done);
         }
       })
       .catch(done);

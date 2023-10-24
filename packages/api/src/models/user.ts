@@ -1,9 +1,11 @@
 import { Schema, Types, model } from "mongoose";
+import { ENCRYPTION_CONSTANTS as EC } from "../util/constants";
+import bcrypt from "bcrypt";
 
 export interface IUser {
   email: string;
   password: string;
-  verifyPassword: (password: string) => boolean;
+  verifyPassword: (password: string) => Promise<boolean>;
   activitiesCreated: Types.ObjectId[];
   studies: Types.ObjectId[];
 }
@@ -15,10 +17,22 @@ const userSchema = new Schema<IUser>({
   studies: [{ type: Schema.Types.ObjectId, ref: "Study" }],
 });
 
-// TODO: Implement encryption
 userSchema.methods.verifyPassword = function (password: string) {
-  return this.password === password;
+  return bcrypt.compare(password, this.password);
 };
+
+userSchema.pre("save", function (next) {
+  if (!this.isModified("password")) {
+    return next();
+  }
+  try {
+    const hashedPassword = bcrypt.hashSync(this.password, EC.SALT_ROUNDS);
+    this.password = hashedPassword;
+    return next();
+  } catch (err: any) {
+    return next(err);
+  }
+});
 
 const User = model<IUser>("User", userSchema);
 
