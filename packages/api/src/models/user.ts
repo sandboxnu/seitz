@@ -22,16 +22,11 @@ userSchema.methods.verifyPassword = function (password: string) {
 };
 
 userSchema.pre("save", function (next) {
-  if (!this.isModified("password")) {
-    return next();
-  }
-  try {
+  if (this.isModified("password")) {
     const hashedPassword = bcrypt.hashSync(this.password, EC.SALT_ROUNDS);
     this.password = hashedPassword;
-    return next();
-  } catch (err: any) {
-    return next(err);
   }
+  return next();
 });
 
 const User = model<IUser>("User", userSchema);
