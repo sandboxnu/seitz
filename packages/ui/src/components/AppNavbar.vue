@@ -1,9 +1,15 @@
 <script setup lang="ts">
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 
 const route = useRoute();
+const router = useRouter();
 const authStore = useAuthStore();
+
+function logOut() {
+  authStore.logOut();
+  router.push("/login");
+}
 </script>
 
 <template>
@@ -17,7 +23,7 @@ const authStore = useAuthStore();
     <ElMenuItem index="example">Example</ElMenuItem>
     <div class="flex-grow"></div>
     <template v-if="authStore.currentUser">
-      <ElMenuItem index="logout" route="/" :onclick="authStore.logOut">
+      <ElMenuItem index="logout" :onclick="logOut">
         Log Out, {{ authStore.currentUser.email }}
       </ElMenuItem>
     </template>

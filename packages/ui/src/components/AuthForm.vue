@@ -5,6 +5,7 @@ import { ElNotification } from "element-plus";
 const props = defineProps({
   hasPasswordConfirm: Boolean,
   headerText: String,
+  submitText: String,
 });
 
 const emit = defineEmits(["submitted"]);
@@ -49,9 +50,9 @@ function submit() {
       <ElFormItem v-if="hasPasswordConfirm" label="Re-enter Password">
         <ElInput v-model="loginData.passwordConfirm" type="password" />
       </ElFormItem>
-      <ElButton type="primary" class="bg-sky-800" @click="submit"
-        >Submit</ElButton
-      >
+      <ElButton type="primary" class="bg-sky-800" @click="submit">
+        {{ submitText }}
+      </ElButton>
       <input type="submit" hidden />
     </ElForm>
   </ElCard>
