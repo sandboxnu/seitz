@@ -1,13 +1,35 @@
 <script setup lang="ts">
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
 
 const route = useRoute();
+const router = useRouter();
+const authStore = useAuthStore();
+
+function logOut() {
+  authStore.logOut();
+  router.push("/login");
+}
 </script>
 
 <template>
-  <ElMenu :default-active="route.path" mode="horizontal" :router="true">
-    <ElMenuItem index="/">Hello</ElMenuItem>
-    <ElMenuItem index="/test">Test</ElMenuItem>
-    <ElMenuItem index="/example">Example</ElMenuItem>
+  <ElMenu
+    :default-active="route.path"
+    mode="horizontal"
+    :router="true"
+    :ellipsis="false"
+  >
+    <ElMenuItem index="/">Home</ElMenuItem>
+    <ElMenuItem index="example">Example</ElMenuItem>
+    <div class="flex-grow"></div>
+    <template v-if="authStore.currentUser">
+      <ElMenuItem index="logout" :onclick="logOut">
+        Log Out, {{ authStore.currentUser.email }}
+      </ElMenuItem>
+    </template>
+    <template v-else>
+      <ElMenuItem index="login">Log In</ElMenuItem>
+      <ElMenuItem index="signup">Sign Up</ElMenuItem>
+    </template>
   </ElMenu>
 </template>

@@ -1,9 +1,11 @@
 import { ErrorRequestHandler } from "express";
 import { MongooseError } from "mongoose";
 
-const errorHandler: ErrorRequestHandler = (err, _req, res) => {
-  let errStatus = err.statusCode || 500;
-  let errMessage = null;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+  let errStatus = err.status || 500;
+  let errMessage = err.message || undefined;
+
   if (err instanceof MongooseError) {
     switch (err.name) {
       case "ValidationError":
@@ -16,7 +18,9 @@ const errorHandler: ErrorRequestHandler = (err, _req, res) => {
       default:
     }
   }
+
   res.status(errStatus).json({
+    status: errStatus,
     message: errMessage,
     stack: process.env.NODE_ENV === "development" ? err.stack : {},
   });

@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import HttpError from "../types/errors";
 
 const isAuthenticated = function (
   req: Request,
@@ -8,7 +9,7 @@ const isAuthenticated = function (
   if (req.isAuthenticated()) {
     return next();
   }
-  res.status(401).send({ message: "Unauthenticated user" });
+  next(new HttpError(401, "Unauthorized"));
 };
 
 export default isAuthenticated;
