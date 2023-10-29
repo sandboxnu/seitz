@@ -1,3 +1,3 @@
-export const ENCRYPTION_CONSTANTS = {
+export const ENCRYPTION_CONSTANTS = Object.freeze({
   SALT_ROUNDS: 10,
-};
+});
