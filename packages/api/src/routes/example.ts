@@ -4,7 +4,7 @@ import HttpError from "../types/errors";
 
 const router = Router();
 
-router.get("/", (req, res, next) => {
+router.get("/", async (req, res, next) => {
   Car.find()
     .then((cars) => {
       res.json(cars);
