@@ -14,7 +14,7 @@ import errorHandler from "./middleware/error";
 dotenv.config();
 
 // Database connection
-mongoose.connect(process.env.MONGO_URL || "mongodb://localhost:27017/seitz");
+mongoose.connect(process.env.MONGO_URL ?? "mongodb://localhost:27017/seitz");
 const mongo = mongoose.connection;
 mongo.on("error", console.error.bind(console, "Connection error:"));
 mongo.once("open", () => {
@@ -22,17 +22,28 @@ mongo.once("open", () => {
 });
 
 const app = express();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT ?? 4000;
 
 // Middleware
 app.use(bodyParser.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: [process.env.CLIENT_URL ?? "http://localhost:5173"],
+    credentials: true,
+  })
+);
 
 app.use(
   session({
     secret: process.env.SESSION_SECRET ?? "secret",
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 8 * 60 * 60 * 1000,
+      httpOnly: true,
+    },
   })
 );
 

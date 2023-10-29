@@ -7,8 +7,6 @@ const count = ref(0);
 <template>
   <h1>Hello World</h1>
 
-  <RouterLink to="test">Test</RouterLink>
-
   <div>
     <ElButton type="primary" @click="count++"> count is {{ count }} </ElButton>
   </div>
