@@ -5,7 +5,7 @@ import bcrypt from "bcrypt";
 export interface IUser {
   email: string;
   password: string;
-  verifyPassword: (password: string) => Promise<boolean>;
+  verifyPassword(password: string): Promise<boolean>;
   activitiesCreated: Types.ObjectId[];
   studies: Types.ObjectId[];
 }
