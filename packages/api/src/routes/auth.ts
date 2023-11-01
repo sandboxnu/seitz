@@ -44,10 +44,8 @@ router.post("/signup", (req, res, next) => {
   if (typeof email !== "string" || typeof password !== "string") {
     next(new HttpError(400, "Must have fields email and password"));
   } else {
-    const newUser = new User({ email, password });
-    newUser
-      .save()
-      .then((user) => {
+    User.create({ email, password })
+      .then(async (user) => {
         req.login(user, (err) => {
           if (!err) res.sendStatus(201);
           else next(err);

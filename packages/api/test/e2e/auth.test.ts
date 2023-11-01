@@ -16,24 +16,18 @@ afterAll(async () => {
 });
 
 describe("Tests for password encryption and validation", () => {
-  it("should not store raw passwords in the database", (done) => {
+  it("should not store raw passwords in the database", async () => {
     const password = "testcase1";
     const userInfo = {
       email: "testcase1@gmail.com",
       password,
     };
-    request(app)
-      .post("/auth/signup")
-      .send(userInfo)
-      .expect(201)
-      .then(() => {
-        User.findOne({ email: userInfo.email }).then((user) => {
-          expect(user).not.toBeNull();
-          expect(user?.password).toBeDefined();
-          expect(user?.password).not.toEqual(password);
-          expect(user?.verifyPassword(password)).resolves.toBeTruthy();
-          done();
-        });
-      });
+    await request(app).post("/auth/signup").send(userInfo).expect(201);
+
+    const user = await User.findOne({ email: userInfo.email });
+    expect(user).not.toBeNull();
+    expect(user?.password).toBeDefined();
+    expect(user?.password).not.toEqual(password);
+    expect(user?.verifyPassword(password)).resolves.toBeTruthy();
   });
 });

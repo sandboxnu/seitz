@@ -18,14 +18,9 @@ afterAll(async () => {
 
 describe("/example", () => {
   describe("GET /", () => {
-    it("returns [] when there is no data", (done) => {
-      request(app)
-        .get("/example/")
-        .expect(200)
-        .then((response) => {
-          expect(response.body).toEqual([]);
-          done();
-        });
+    it("returns [] when there is no data", async () => {
+      const response = await request(app).get("/example/").expect(200);
+      expect(response.body).toEqual([]);
     });
 
     describe("with data", () => {
@@ -40,16 +35,11 @@ describe("/example", () => {
         });
       });
 
-      it("returns all cars", (done) => {
-        request(app)
-          .get("/example/")
-          .expect(200)
-          .then((response) => {
-            expect(response.body).toHaveLength(1);
-            expect(response.body[0]._id.toString()).toEqual(car._id.toString());
-            expect(response.body[0].make).toEqual(car.make);
-            done();
-          });
+      it("returns all cars", async () => {
+        const response = await request(app).get("/example/").expect(200);
+        expect(response.body).toHaveLength(1);
+        expect(response.body[0]._id.toString()).toEqual(car._id.toString());
+        expect(response.body[0].make).toEqual(car.make);
       });
     });
   });
@@ -66,45 +56,38 @@ describe("/example", () => {
       });
     });
 
-    it("responds 404 when not found", (done) => {
+    it("responds 404 when not found", async () => {
       const bad_id = new mongoose.Types.ObjectId();
-      request(app)
+      await request(app)
         .get("/example/" + bad_id.toString())
-        .expect(404)
-        .then(() => done());
+        .expect(404);
     });
 
-    it("responds with data when found", (done) => {
-      request(app)
+    it("responds with data when found", async () => {
+      const response = await request(app)
         .get("/example/" + car._id.toString())
-        .expect(200)
-        .then((response) => {
-          expect(response.body._id.toString()).toEqual(car._id.toString());
-          expect(response.body.make).toEqual(car.make);
-          done();
-        });
+        .expect(200);
+      expect(response.body._id.toString()).toEqual(car._id.toString());
+      expect(response.body.make).toEqual(car.make);
     });
   });
 
   describe("POST /", () => {
-    it("fails when fields are missing", (done) => {
+    it("fails when fields are missing", async () => {
       const incompleteCar = {
         make: "Chevy",
         model: "Malibu",
       };
 
-      request(app)
+      const response = await request(app)
         .post("/example")
         .send(incompleteCar)
-        .expect(400)
-        .then((response) => {
-          expect(response.body.status).toEqual(400);
-          expect(response.body.message).toContain("Car validation failed");
-          done();
-        });
+        .expect(400);
+      expect(response.body.status).toEqual(400);
+      expect(response.body.message).toContain("Car validation failed");
     });
 
-    it("responds with 201 and creates record", (done) => {
+    it("responds with 201 and creates record", async () => {
       const car = {
         make: "Chevy",
         model: "Malibu",
@@ -112,18 +95,15 @@ describe("/example", () => {
         miles: 40000,
       };
 
-      request(app)
+      const response = await request(app)
         .post("/example")
         .send(car)
-        .expect(201)
-        .then((response) => {
-          expect(response.body).toHaveProperty("_id");
-          expect(response.body.make).toEqual(car.make);
-          expect(response.body.model).toEqual(car.model);
-          expect(response.body.year).toEqual(car.year);
-          expect(response.body.miles).toEqual(car.miles);
-          done();
-        });
+        .expect(201);
+      expect(response.body).toHaveProperty("_id");
+      expect(response.body.make).toEqual(car.make);
+      expect(response.body.model).toEqual(car.model);
+      expect(response.body.year).toEqual(car.year);
+      expect(response.body.miles).toEqual(car.miles);
     });
   });
 });

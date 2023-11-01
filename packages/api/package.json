@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon ./src/index.ts",
     "start": "tsc && node dist/index.js",
-    "test": "jest --watchAll"
+    "test": "jest --runInBand --watchAll"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
