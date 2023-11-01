@@ -2,11 +2,15 @@
 import { useQuery } from "@tanstack/vue-query";
 import carAPI from "@/api/example";
 import CreateCarForm from "./components/CreateCarForm.vue";
+import DraggableList from "./components/DraggableList.vue";
+import { useDragStore } from "@/stores/drag";
 
 const { isLoading, isError, data, error } = useQuery({
   queryKey: ["cars"],
   queryFn: carAPI.getCars,
 });
+
+const dragStore = useDragStore();
 </script>
 <template>
   <div v-if="isLoading">Loading...</div>
@@ -17,6 +21,17 @@ const { isLoading, isError, data, error } = useQuery({
     </p>
     <CreateCarForm />
   </div>
+
+  <DraggableList
+    v-for="idx in dragStore.lists.length"
+    :key="idx - 1"
+    :idx="idx - 1"
+    class="border-2 m-1 w-40 h-40 inline-block align-top"
+  />
+
+  <br />
+
+  {{ dragStore.lists }}
 </template>
 
 <style scoped></style>
