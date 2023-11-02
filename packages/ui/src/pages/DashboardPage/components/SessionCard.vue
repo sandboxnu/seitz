@@ -28,13 +28,15 @@ const tasks = ref([
     <h1 class="text-2xl mb-2">Session 1</h1>
     <Draggable
       v-model="tasks"
-      group="taskbar"
-      handle=".handle"
+      :group="{ name: 'session', put: ['taskbar', 'session'] }"
       item-key="id"
       class="grow"
+      chosenClass="bg-gray-400"
+      dragClass="bg-gray-400"
+      ghostClass="bg-gray-200"
     >
       <template #item="{ element }">
-        <TaskCard :name="element.name" class="mb-2" />
+        <TaskCard draggable :name="element.name" class="mb-2" />
       </template>
     </Draggable>
   </div>

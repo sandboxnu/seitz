@@ -24,11 +24,20 @@ const tasks = ref([
 </script>
 
 <template>
-  <div class="p-6">
+  <div class="p-6 flex flex-col grow">
     <h1 class="text-2xl mb-2">Tasks</h1>
-    <Draggable v-model="tasks" group="taskbar" handle=".handle" item-key="id">
+    <Draggable
+      v-model="tasks"
+      :group="{ name: 'taskbar', pull: 'clone', put: false }"
+      item-key="id"
+      class="grow"
+      chosenClass="bg-gray-400"
+      dragClass="bg-gray-400"
+      ghostClass="bg-gray-200"
+      :sort="false"
+    >
       <template #item="{ element }">
-        <TaskCard :name="element.name" class="mb-2" />
+        <TaskCard draggable :name="element.name" class="mb-2" />
       </template>
     </Draggable>
   </div>
