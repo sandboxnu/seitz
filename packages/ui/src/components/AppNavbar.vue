@@ -21,6 +21,7 @@ function logOut() {
   >
     <ElMenuItem index="/">Home</ElMenuItem>
     <ElMenuItem index="example">Example</ElMenuItem>
+    <ElMenuItem index="dashboard">Dashboard</ElMenuItem>
     <div class="flex-grow"></div>
     <template v-if="authStore.currentUser">
       <ElMenuItem index="logout" :onclick="logOut">
