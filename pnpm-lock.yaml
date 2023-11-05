@@ -114,13 +114,7 @@ importers:
 
   packages/ui:
     dependencies:
-      '@coreui/icons-vue':
-        specifier: ^2.0.0
-        version: 2.0.0(vue@3.3.4)
       '@fortawesome/fontawesome-svg-core':
-        specifier: ^6.4.2
-        version: 6.4.2
-      '@fortawesome/free-regular-svg-icons':
         specifier: ^6.4.2
         version: 6.4.2
       '@fortawesome/free-solid-svg-icons':
@@ -521,14 +515,6 @@ packages:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
     dev: true
 
-  /@coreui/icons-vue@2.0.0(vue@3.3.4):
-    resolution: {integrity: sha512-3OLOv6TExmi93kapV4n9kmJ36fqxTHv3Vn/SPGAUX1btwf0wCmXen4xF3A8OdLEwR0i6Ggqw+MY/T7WjA6k2xg==}
-    peerDependencies:
-      vue: ^3.2.20
-    dependencies:
-      vue: 3.3.4
-    dev: false
-
   /@cspotcode/source-map-support@0.8.1:
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
@@ -809,14 +795,6 @@ packages:
 
   /@fortawesome/fontawesome-svg-core@6.4.2:
     resolution: {integrity: sha512-gjYDSKv3TrM2sLTOKBc5rH9ckje8Wrwgx1CxAPbN5N3Fm4prfi7NsJVWd1jklp7i5uSCVwhZS5qlhMXqLrpAIg==}
-    engines: {node: '>=6'}
-    requiresBuild: true
-    dependencies:
-      '@fortawesome/fontawesome-common-types': 6.4.2
-    dev: false
-
-  /@fortawesome/free-regular-svg-icons@6.4.2:
-    resolution: {integrity: sha512-0+sIUWnkgTVVXVAPQmW4vxb9ZTHv0WstOa3rBx9iPxrrrDH6bNLsDYuwXF9b6fGm+iR7DKQvQshUH/FJm3ed9Q==}
     engines: {node: '>=6'}
     requiresBuild: true
     dependencies:
