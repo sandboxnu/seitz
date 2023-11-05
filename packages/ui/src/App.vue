@@ -4,9 +4,7 @@ import AppNavbar from "./components/AppNavbar.vue";
 
 <template>
   <AppNavbar />
-  <div class="w-40 overflow-x-scroll">
     <RouterView />
-  </div>
 </template>
 
 <style scoped></style>
