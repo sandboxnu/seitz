@@ -3,6 +3,8 @@ import TaskCard from "./TaskCard.vue";
 import Draggable from "vuedraggable";
 import { ref } from "vue";
 
+defineProps<{ name: string; draggable: boolean }>();
+
 const tasks = ref([
   {
     id: 1,
@@ -24,20 +26,34 @@ const tasks = ref([
 </script>
 
 <template>
-  <div class="flex flex-col p-6 border rounded-lg border-black">
-    <h1 class="text-2xl mb-2">Session 1</h1>
-    <Draggable
-      v-model="tasks"
-      :group="{ name: 'session', put: ['taskbar', 'session'] }"
-      item-key="id"
-      class="grow"
-      chosenClass="bg-gray-400"
-      dragClass="bg-gray-400"
-      ghostClass="bg-gray-200"
-    >
-      <template #item="{ element }">
-        <TaskCard draggable :name="element.name" class="mb-2" />
-      </template>
-    </Draggable>
+  <div class="flex flex-col p-6 border rounded-xl border-black">
+    <FontAwesomeIcon
+      v-if="draggable"
+      :icon="['fas', 'grip-horizontal']"
+      class="handle cursor-pointer pr-1"
+    />
+    <h1 class="text-2xl mb-2">{{ name }}</h1>
+    <TransitionGroup>
+      <Draggable
+        v-model="tasks"
+        class="grow"
+        key="draggable"
+        :group="{ name: 'session', put: ['taskbar', 'session'] }"
+        chosenClass="bg-gray-400"
+        dragClass="bg-gray-400"
+        ghostClass="bg-gray-200"
+        item-key="id"
+        :animation="200"
+      >
+        <template #item="{ element }">
+          <TaskCard
+            draggable
+            :name="element.name"
+            :key="element.id"
+            class="mb-2"
+          />
+        </template>
+      </Draggable>
+    </TransitionGroup>
   </div>
 </template>
