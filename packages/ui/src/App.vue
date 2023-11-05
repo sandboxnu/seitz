@@ -4,7 +4,7 @@ import AppNavbar from "./components/AppNavbar.vue";
 
 <template>
   <AppNavbar />
-    <RouterView />
+  <RouterView />
 </template>
 
 <style scoped></style>
