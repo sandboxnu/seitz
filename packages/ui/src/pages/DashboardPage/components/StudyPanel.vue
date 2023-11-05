@@ -15,8 +15,10 @@ const sessions = ref([
 
 <template>
   <div class="flex flex-col border border-black overflow-x-hidden p-5">
-    <h1 class="text-4xl">Study Name goes here</h1>
-    <h2 class="text-2xl my-2">Description goes here</h2>
+    <h1 class="text-4xl"><input type="text" value="Study Name goes here" /></h1>
+    <h2 class="text-2xl my-2">
+      <input type="text" value="Description goes here" />
+    </h2>
     <TransitionGroup>
       <Draggable
         v-model="sessions"
