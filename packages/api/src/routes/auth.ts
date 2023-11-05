@@ -8,28 +8,26 @@ import HttpError from "../types/errors";
 const router = Router();
 
 passport.use(
-  new LocalStrategy({ usernameField: "email" }, (email, password, done) => {
-    User.findOne({ email })
-      .then((user) => {
+  new LocalStrategy(
+    { usernameField: "email" },
+    async (email, password, done) => {
+      try {
+        const user = await User.findOne({ email });
         if (!user) {
-          done(null, false, { message: "No user exists for the given email" });
+          done(new HttpError(401, "Incorrect email or password"), false);
         } else {
-          user
-            .verifyPassword(password)
-            .then((outcome) => {
-              if (!outcome) {
-                done(null, false, {
-                  message: "The given password is incorrect",
-                });
-              } else {
-                done(null, user);
-              }
-            })
-            .catch(done);
+          const correctPassword = await user.verifyPassword(password);
+          if (!correctPassword) {
+            done(new HttpError(401, "Incorrect email or password"), false);
+          } else {
+            done(null, user);
+          }
         }
-      })
-      .catch(done);
-  })
+      } catch (e) {
+        done(e);
+      }
+    }
+  )
 );
 
 passport.serializeUser((user, done) => done(null, user));
