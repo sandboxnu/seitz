@@ -32,7 +32,9 @@ const tasks = ref([
       :icon="['fas', 'grip-horizontal']"
       class="handle cursor-pointer pr-1"
     />
-    <h1 class="text-2xl mb-2"><input type="text" :value="name" /></h1>
+    <h1 class="text-2xl mb-2">
+      <input type="text" :value="name" class="w-full rounded" />
+    </h1>
     <TransitionGroup>
       <Draggable
         v-model="tasks"
