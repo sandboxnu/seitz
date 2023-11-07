@@ -8,19 +8,26 @@ import HttpError from "../types/errors";
 const router = Router();
 
 passport.use(
-  new LocalStrategy({ usernameField: "email" }, (email, password, done) => {
-    User.findOne({ email })
-      .then((user) => {
+  new LocalStrategy(
+    { usernameField: "email" },
+    async (email, password, done) => {
+      try {
+        const user = await User.findOne({ email });
         if (!user) {
-          done(null, false, { message: "No user exists for the given email" });
-        } else if (user?.verifyPassword(password)) {
-          done(null, user);
+          done(new HttpError(401, "Incorrect email or password"), false);
         } else {
-          done(null, false, { message: "The given password is incorrect" });
+          const correctPassword = await user.verifyPassword(password);
+          if (!correctPassword) {
+            done(new HttpError(401, "Incorrect email or password"), false);
+          } else {
+            done(null, user);
+          }
         }
-      })
-      .catch(done);
-  })
+      } catch (e) {
+        done(e);
+      }
+    }
+  )
 );
 
 passport.serializeUser((user, done) => done(null, user));
@@ -35,10 +42,8 @@ router.post("/signup", (req, res, next) => {
   if (typeof email !== "string" || typeof password !== "string") {
     next(new HttpError(400, "Must have fields email and password"));
   } else {
-    const newUser = new User({ email, password });
-    newUser
-      .save()
-      .then((user) => {
+    User.create({ email, password })
+      .then(async (user) => {
         req.login(user, (err) => {
           if (!err) res.sendStatus(201);
           else next(err);
