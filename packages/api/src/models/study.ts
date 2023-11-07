@@ -1,7 +1,12 @@
-import { Schema, Types, model } from "mongoose";
+import { Schema, model } from "mongoose";
+
+export interface IActivity {
+  name: string;
+  quantity: number;
+}
 
 export interface ISession {
-  activities: Types.ObjectId[];
+  activities: IActivity[];
 }
 
 export interface IStudy {
@@ -9,8 +14,13 @@ export interface IStudy {
   sessions: ISession[];
 }
 
+const activitySchema = new Schema<IActivity>({
+  name: { type: String, required: true },
+  quantity: { type: Number, required: true },
+});
+
 const sessionSchema = new Schema<ISession>({
-  activities: [{ type: Schema.Types.ObjectId, ref: "Activity" }],
+  activities: [activitySchema],
 });
 
 const studySchema = new Schema<IStudy>({
