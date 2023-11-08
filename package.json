@@ -18,8 +18,8 @@
     "typescript": "^5.0.2"
   },
   "scripts": {
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint": "eslint . --ext .ts,.vue",
+    "lint:fix": "eslint . --fix --ext .ts,.vue",
     "prettier": "prettier . --check",
     "prettier:fix": "prettier . --write",
     "format": "pnpm prettier:fix && pnpm lint:fix",
