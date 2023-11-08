@@ -32,9 +32,9 @@ const tasks = ref([
         :group="{ name: 'taskbar', pull: 'clone', put: false }"
         item-key="id"
         class="grow"
-        chosenClass="bg-gray-400"
-        dragClass="bg-gray-400"
-        ghostClass="bg-gray-200"
+        chosen-class="bg-gray-400"
+        drag-class="bg-gray-400"
+        ghost-class="bg-gray-200"
         :sort="false"
       >
         <template #item="{ element }">

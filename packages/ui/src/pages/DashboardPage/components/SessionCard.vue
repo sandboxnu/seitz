@@ -37,21 +37,21 @@ const tasks = ref([
     </h1>
     <TransitionGroup>
       <Draggable
+        key="draggable"
         v-model="tasks"
         class="grow"
-        key="draggable"
         :group="{ name: 'session', put: ['taskbar', 'session'] }"
-        chosenClass="bg-gray-400"
-        dragClass="bg-gray-400"
-        ghostClass="bg-gray-200"
+        chosen-class="bg-gray-400"
+        drag-class="bg-gray-400"
+        ghost-class="bg-gray-200"
         item-key="id"
         :animation="200"
       >
         <template #item="{ element }">
           <TaskCard
+            :key="element.id"
             draggable
             :name="element.name"
-            :key="element.id"
             class="mb-2"
           />
         </template>

@@ -23,14 +23,14 @@ const sessions = ref([
     </h2>
     <TransitionGroup>
       <Draggable
+        key="draggable"
         v-model="sessions"
         class="grow flex border-2 border-black rounded-xl p-2 overflow-x-scroll"
-        key="draggable"
         group="sessions"
         item-key="id"
-        chosenClass="bg-gray-200"
-        dragClass="bg-gray-200"
-        ghostClass="bg-gray-200"
+        chosen-class="bg-gray-200"
+        drag-class="bg-gray-200"
+        ghost-class="bg-gray-200"
         handle=".handle"
         :animation="200"
       >
