@@ -14,9 +14,9 @@ const drag = ref(false);
   <Draggable
     v-model="dragStore.lists[idx]"
     group="session-elements"
+    item-key="id"
     @start="drag = true"
     @end="drag = false"
-    item-key="id"
   >
     <template #item="{ element }">
       <div class="cursor-pointer">{{ element }}</div>

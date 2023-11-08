@@ -4,8 +4,14 @@ import { ElNotification } from "element-plus";
 
 const props = defineProps({
   hasPasswordConfirm: Boolean,
-  headerText: String,
-  submitText: String,
+  headerText: {
+    type: String,
+    required: true,
+  },
+  submitText: {
+    type: String,
+    required: true,
+  },
 });
 
 const emit = defineEmits(["submitted"]);
