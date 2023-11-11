@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import SessionCard from "./SessionCard.vue";
 import Draggable from "vuedraggable";
+import AddSession from "./AddSession.vue";
 
 const sessions = ref([
   { id: 1, name: "First Session" },
@@ -11,6 +12,15 @@ const sessions = ref([
   { id: 5, name: "Session 5" },
   { id: 6, name: "Session 6" },
 ]);
+
+const addSession = () => {
+  const newSession = {
+    id: sessions.value.length + 1,
+    name: "New Session",
+  };
+
+  sessions.value.push(newSession);
+};
 </script>
 
 <template>
@@ -44,5 +54,6 @@ const sessions = ref([
         </template>
       </Draggable>
     </TransitionGroup>
+    <AddSession @add-session="addSession" />
   </div>
 </template>
