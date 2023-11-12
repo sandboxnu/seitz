@@ -10,7 +10,7 @@ const routes = [
   { path: "/example", name: "example", component: CarPage },
   { path: "/login", name: "login", component: AuthLoginForm },
   { path: "/signup", name: "signup", component: AuthSignupForm },
-  { path: "/admin", name: "admin", component: AdminPage }
+  { path: "/admin", name: "admin", component: AdminPage },
 ];
 
 const router = createRouter({
