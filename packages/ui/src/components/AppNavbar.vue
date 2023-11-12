@@ -13,7 +13,6 @@ function logOut() {
 
 // function admin() {
 // }
-
 </script>
 
 <template>
@@ -28,10 +27,8 @@ function logOut() {
     <div class="flex-grow"></div>
     <template v-if="authStore.currentUser">
       <template v-if="authStore.currentUser.isAdmin">
-      <ElMenuItem index="admin">
-        Admin Page
-      </ElMenuItem>
-    </template>
+        <ElMenuItem index="admin">Admin</ElMenuItem>
+      </template>
       <ElMenuItem index="logout" :onclick="logOut">
         Log Out, {{ authStore.currentUser.email }}
       </ElMenuItem>
