@@ -31,29 +31,33 @@ const addSession = () => {
     <h2 class="text-2xl my-2">
       <input type="text" placeholder="Add a description" />
     </h2>
-    <TransitionGroup>
-      <Draggable
-        key="draggable"
-        v-model="sessions"
-        class="grow flex border-2 border-black rounded-xl p-2 overflow-x-scroll"
-        group="sessions"
-        item-key="id"
-        chosen-class="bg-gray-200"
-        drag-class="bg-gray-200"
-        ghost-class="bg-gray-200"
-        handle=".handle"
-        :animation="200"
-      >
-        <template #item="{ element }">
-          <SessionCard
-            :key="element.id"
-            :name="element.name"
-            draggable
-            class="w-72 m-2 shrink-0"
-          />
-        </template>
-      </Draggable>
-    </TransitionGroup>
-    <AddSession @add-session="addSession" />
+    <div
+      class="grow flex flex-row border-2 border-black rounded-xl p-2 overflow-x-scroll"
+    >
+      <TransitionGroup>
+        <Draggable
+          key="draggable"
+          v-model="sessions"
+          class="grow flex"
+          group="sessions"
+          item-key="id"
+          chosen-class="bg-gray-200"
+          drag-class="bg-gray-200"
+          ghost-class="bg-gray-200"
+          handle=".handle"
+          :animation="200"
+        >
+          <template #item="{ element }">
+            <SessionCard
+              :key="element.id"
+              :name="element.name"
+              draggable
+              class="w-72 m-2 shrink-0"
+            />
+          </template>
+        </Draggable>
+      </TransitionGroup>
+      <AddSession @add-session="addSession" />
+    </div>
   </div>
 </template>

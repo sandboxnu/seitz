@@ -12,12 +12,14 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import {
   faGripVertical,
   faGripHorizontal,
+  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 
 const pinia = createPinia();
 
 library.add(faGripVertical);
 library.add(faGripHorizontal);
+library.add(faPlus);
 
 createApp(App)
   .use(router)
