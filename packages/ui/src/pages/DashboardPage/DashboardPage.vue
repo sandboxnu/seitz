@@ -14,7 +14,7 @@ if (!authStore.currentUser) {
 
 <template>
   <div class="grow flex">
-    <TaskBank class="flex-none w-72" />
+    <TaskBank class="flex-none w-72 flex" />
     <StudyPanel class="flex-1" />
   </div>
 </template>
