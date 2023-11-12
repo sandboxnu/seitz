@@ -1,34 +1,8 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import * as _ from "lodash";
-// import { useMutation } from "@tanstack/vue-query";
-// import { AxiosError } from "axios";
-// import studiesAPI from "@/api/studies";
-// import { ElNotification } from "element-plus";
 
 export const useStudyBuilderStore = defineStore("studyBuilder", () => {
-  // const studyId = ref(null);
-
-  // const { mutate } = useMutation<void, AxiosError<Error>>({
-  //   mutationFn: studiesAPI.createOrUpdateStudy,
-  //   onSuccess: async () => {
-  //     ElNotification({
-  //       title: "Saved!",
-  //     });
-  //   },
-  //   onError: (err) => {
-  //     ElNotification({
-  //       title: "Error",
-  //       message: err.response?.data.message ?? "",
-  //       type: "error",
-  //     });
-  //   },
-  // });
-
-  // function submit() {
-  //   mutate(sessions.value);
-  // }
-
   const taskBank = ref([
     {
       name: "Boston Naming",
