@@ -5,6 +5,7 @@ import authAPI from "@/api/auth";
 export interface IUser {
   email: string;
   password: string;
+  isAdmin: boolean;
   activitiesCreated: string[];
   studies: string[];
 }
