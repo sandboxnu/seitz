@@ -11,8 +11,6 @@ function logOut() {
   router.push("/login");
 }
 
-// function admin() {
-// }
 </script>
 
 <template>
