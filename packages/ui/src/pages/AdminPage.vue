@@ -8,7 +8,6 @@ const authStore = useAuthStore();
 if (!authStore.currentUser.isAdmin) {
   router.push("/");
 }
-
 </script>
 <template>
   <h1>ADMIN PAGE</h1>

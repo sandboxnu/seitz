@@ -10,7 +10,6 @@ function logOut() {
   authStore.logOut();
   router.push("/login");
 }
-
 </script>
 
 <template>
