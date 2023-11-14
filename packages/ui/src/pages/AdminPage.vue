@@ -5,14 +5,11 @@ import { useAuthStore } from "@/stores/auth";
 const router = useRouter();
 const authStore = useAuthStore();
 
-if (!authStore.currentUser.isAdmin) {
+if (!authStore.currentUser?.isAdmin) {
   router.push("/");
 }
 </script>
 <template>
   <h1>ADMIN PAGE</h1>
-
-  <body>
-    hi you are an admin :D
-  </body>
+  hi you are an admin :D
 </template>

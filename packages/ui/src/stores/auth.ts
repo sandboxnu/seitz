@@ -11,7 +11,7 @@ export interface IUser {
 }
 
 export const useAuthStore = defineStore("auth", () => {
-  const currentUser = useStorage<IUser>("currentUser", null, undefined, {
+  const currentUser = useStorage<IUser | null>("currentUser", null, undefined, {
     serializer: StorageSerializers.object,
   });
 
