@@ -1,25 +1,21 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { useStudyBuilderStore } from "@/stores/studyBuilder";
 import SessionCard from "./SessionCard.vue";
 import Draggable from "vuedraggable";
 import AddSession from "./AddSession.vue";
+import * as _ from "lodash";
 
-const sessions = ref([
-  { id: 1, name: "First Session" },
-  { id: 2, name: "Another Session" },
-  { id: 3, name: "Session 3" },
-  { id: 4, name: "Session 4" },
-  { id: 5, name: "Session 5" },
-  { id: 6, name: "Session 6" },
-]);
+const studyBuilderStore = useStudyBuilderStore();
 
 const addSession = () => {
   const newSession = {
-    id: sessions.value.length + 1,
+    id: _.uniqueId(),
     name: "",
+    tasks: [],
   };
 
-  sessions.value.push(newSession);
+  studyBuilderStore.sessions.push(newSession.id);
+  studyBuilderStore.sessionData[newSession.id] = newSession;
 };
 
 const draggableProps = {
@@ -45,16 +41,16 @@ const draggableProps = {
       <TransitionGroup>
         <Draggable
           key="draggable"
-          v-model="sessions"
+          v-model="studyBuilderStore.sessions"
           v-bind="draggableProps"
           class="flex"
           group="sessions"
           item-key="id"
         >
-          <template #item="{ element }">
+          <template #item="{ element: sessionId }">
             <SessionCard
-              :key="element.id"
-              :name="element.name"
+              :name="studyBuilderStore.sessionData[sessionId].name"
+              :session-id="sessionId"
               draggable
               class="w-72 m-2 shrink-0"
             />

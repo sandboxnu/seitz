@@ -1,26 +1,9 @@
 <script setup lang="ts">
 import TaskCard from "./TaskCard.vue";
 import Draggable from "vuedraggable";
-import { ref } from "vue";
+import { useStudyBuilderStore } from "@/stores/studyBuilder";
 
-const tasks = ref([
-  {
-    id: 1,
-    name: "Boston Naming",
-  },
-  {
-    id: 2,
-    name: "AVDAT",
-  },
-  {
-    id: 3,
-    name: "Cancellation",
-  },
-  {
-    id: 4,
-    name: "Complex Corsi",
-  },
-]);
+const studyBuilderStore = useStudyBuilderStore();
 
 const draggableProps = {
   chosenClass: "bg-gray-400",
@@ -35,7 +18,7 @@ const draggableProps = {
     <TransitionGroup>
       <Draggable
         key="draggable"
-        v-model="tasks"
+        v-model="studyBuilderStore.taskBank"
         v-bind="draggableProps"
         :group="{ name: 'taskbar', pull: 'clone', put: false }"
         item-key="id"

@@ -1,28 +1,28 @@
 <script setup lang="ts">
 import TaskCard from "./TaskCard.vue";
 import Draggable from "vuedraggable";
-import { ref } from "vue";
 
-defineProps<{ name: string; draggable: boolean }>();
+import type { SortableEvent } from "sortablejs";
+import { useStudyBuilderStore } from "@/stores/studyBuilder";
+import * as _ from "lodash";
+import { computed } from "vue";
 
-const tasks = ref([
-  {
-    id: 1,
-    name: "Boston Naming",
-  },
-  {
-    id: 2,
-    name: "AVDAT",
-  },
-  {
-    id: 3,
-    name: "Cancellation",
-  },
-  {
-    id: 4,
-    name: "Complex Corsi",
-  },
-]);
+const props = defineProps<{
+  name: string;
+  draggable: boolean;
+  sessionId: string;
+}>();
+
+const studyBuilderStore = useStudyBuilderStore();
+
+const session = computed(() => studyBuilderStore.sessionData[props.sessionId]);
+
+function onAdd(event: SortableEvent) {
+  let addedIndex = event.newIndex;
+  if (!addedIndex) return;
+
+  session.value.tasks[addedIndex].id = _.uniqueId();
+}
 
 const draggableProps = {
   chosenClass: "bg-gray-400",
@@ -42,11 +42,12 @@ const draggableProps = {
     <TransitionGroup>
       <Draggable
         key="draggable"
-        v-model="tasks"
+        :list="session.tasks"
         v-bind="draggableProps"
         class="flex-1"
         :group="{ name: 'session', put: ['taskbar', 'session'] }"
         item-key="id"
+        @add="onAdd"
       >
         <template #header>
           <input
