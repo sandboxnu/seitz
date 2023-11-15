@@ -27,7 +27,7 @@ const tasks = ref([
 const draggableProps = {
   chosenClass: "bg-gray-400",
   dragClass: "bg-gray-400",
-  ghostClass: "bg-gray-200",
+  ghostClass: "invisible",
   animation: 100,
 };
 </script>
@@ -39,9 +39,6 @@ const draggableProps = {
       :icon="['fas', 'grip-horizontal']"
       class="handle cursor-pointer pr-1"
     />
-    <h1 class="text-2xl mb-2">
-      <input type="text" :value="name" class="w-full rounded bg-transparent" />
-    </h1>
     <TransitionGroup>
       <Draggable
         key="draggable"
@@ -51,6 +48,13 @@ const draggableProps = {
         :group="{ name: 'session', put: ['taskbar', 'session'] }"
         item-key="id"
       >
+        <template #header>
+          <input
+            type="text"
+            :value="name"
+            class="text-2xl mb-2 w-full rounded bg-transparent"
+          />
+        </template>
         <template #item="{ element }">
           <TaskCard
             :key="element.id"

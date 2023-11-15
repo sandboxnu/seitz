@@ -25,7 +25,6 @@ const tasks = ref([
 const draggableProps = {
   chosenClass: "bg-gray-400",
   dragClass: "bg-gray-400",
-  ghostClass: "bg-gray-200",
   animation: 100,
 };
 </script>

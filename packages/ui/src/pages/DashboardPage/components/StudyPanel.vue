@@ -25,7 +25,7 @@ const addSession = () => {
 const draggableProps = {
   chosenClass: "bg-gray-200",
   dragClass: "bg-gray-200",
-  ghostClass: "bg-gray-200",
+  ghostClass: "invisible",
   handle: ".handle",
   animation: 200,
 };

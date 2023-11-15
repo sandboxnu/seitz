@@ -3,6 +3,7 @@ import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 import StudyPanel from "./components/StudyPanel.vue";
 import TaskBank from "./components/TaskBank.vue";
+import Draggable from "vuedraggable";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -13,8 +14,17 @@ if (!authStore.currentUser) {
 </script>
 
 <template>
-  <div class="flex-1 flex">
-    <TaskBank class="flex-none w-72" />
-    <StudyPanel class="flex-1" />
-  </div>
+  <!-- This is sort of a hack to delete elements if they are dropped outside of sessions -->
+  <Draggable
+    class="flex-1 flex"
+    ghost-class="hidden"
+    :group="{ put: ['taskbar', 'session'] }"
+    item-key=""
+  >
+    <template #header>
+      <TaskBank class="flex-none w-72" />
+      <StudyPanel class="flex-1" />
+    </template>
+    <template #item></template>
+  </Draggable>
 </template>
