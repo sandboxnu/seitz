@@ -8,7 +8,6 @@ import * as _ from "lodash";
 import { computed } from "vue";
 
 const props = defineProps<{
-  name: string;
   draggable: boolean;
   sessionId: string;
 }>();
@@ -54,9 +53,9 @@ const draggableProps = {
       >
         <template #header>
           <input
+            v-model="session.name"
             type="text"
             class="text-2xl mb-2 w-full rounded bg-transparent"
-            :value="name"
             placeholder="Untitled Session"
           />
         </template>
