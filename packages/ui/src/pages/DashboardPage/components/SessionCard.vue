@@ -19,9 +19,12 @@ const session = computed(() => studyBuilderStore.sessionData[props.sessionId]);
 
 function onAdd(event: SortableEvent) {
   let addedIndex = event.newIndex;
-  if (!addedIndex) return;
+  if (addedIndex === undefined) return;
 
-  session.value.tasks[addedIndex].id = _.uniqueId();
+  session.value.tasks[addedIndex] = {
+    ...session.value.tasks[addedIndex],
+    id: _.uniqueId(),
+  };
 }
 
 const draggableProps = {

@@ -63,6 +63,14 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
           id: _.uniqueId(),
           name: "AVDAT",
         },
+        {
+          id: _.uniqueId(),
+          name: "Cancellation",
+        },
+        {
+          id: _.uniqueId(),
+          name: "Number Line",
+        },
       ],
     },
     {
@@ -76,6 +84,32 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
         {
           id: _.uniqueId(),
           name: "Cancellation",
+        },
+        {
+          id: _.uniqueId(),
+          name: "Cancellation",
+        },
+        {
+          id: _.uniqueId(),
+          name: "Number Line",
+        },
+      ],
+    },
+    {
+      id: _.uniqueId(),
+      name: "Session 3",
+      tasks: [
+        {
+          id: _.uniqueId(),
+          name: "Boston Naming",
+        },
+        {
+          id: _.uniqueId(),
+          name: "Cancellation",
+        },
+        {
+          id: _.uniqueId(),
+          name: "Number Line",
         },
       ],
     },
