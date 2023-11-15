@@ -21,26 +21,32 @@ const tasks = ref([
     name: "Complex Corsi",
   },
 ]);
+
+const draggableProps = {
+  chosenClass: "bg-gray-400",
+  dragClass: "bg-gray-400",
+  ghostClass: "bg-gray-200",
+  animation: 100,
+};
 </script>
 
 <template>
-  <div class="border border-black">
-    <div class="p-6 flex flex-col grow">
-      <h1 class="text-2xl mb-2">Tasks</h1>
+  <div class="border border-black p-6 flex flex-col">
+    <h1 class="text-2xl mb-2">Tasks</h1>
+    <TransitionGroup>
       <Draggable
+        key="draggable"
         v-model="tasks"
+        v-bind="draggableProps"
         :group="{ name: 'taskbar', pull: 'clone', put: false }"
         item-key="id"
-        class="grow"
-        chosen-class="bg-gray-400"
-        drag-class="bg-gray-400"
-        ghost-class="bg-gray-200"
+        class="flex-1"
         :sort="false"
       >
         <template #item="{ element }">
           <TaskCard draggable :name="element.name" class="mb-2" />
         </template>
       </Draggable>
-    </div>
+    </TransitionGroup>
   </div>
 </template>

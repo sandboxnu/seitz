@@ -13,8 +13,8 @@ if (!authStore.currentUser) {
 </script>
 
 <template>
-  <div class="grow flex">
-    <TaskBank class="flex-none w-72 flex" />
+  <div class="flex-1 flex">
+    <TaskBank class="flex-none w-72" />
     <StudyPanel class="flex-1" />
   </div>
 </template>

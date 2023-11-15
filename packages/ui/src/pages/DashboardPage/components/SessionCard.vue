@@ -23,6 +23,13 @@ const tasks = ref([
     name: "Complex Corsi",
   },
 ]);
+
+const draggableProps = {
+  chosenClass: "bg-gray-400",
+  dragClass: "bg-gray-400",
+  ghostClass: "bg-gray-200",
+  animation: 100,
+};
 </script>
 
 <template>
@@ -39,13 +46,10 @@ const tasks = ref([
       <Draggable
         key="draggable"
         v-model="tasks"
-        class="grow"
+        v-bind="draggableProps"
+        class="flex-1"
         :group="{ name: 'session', put: ['taskbar', 'session'] }"
-        chosen-class="bg-gray-400"
-        drag-class="bg-gray-400"
-        ghost-class="bg-gray-200"
         item-key="id"
-        :animation="200"
       >
         <template #item="{ element }">
           <TaskCard
