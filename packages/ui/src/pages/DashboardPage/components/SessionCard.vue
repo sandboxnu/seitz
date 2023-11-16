@@ -20,8 +20,8 @@ function onAdd(event: SortableEvent) {
   let addedIndex = event.newIndex;
   if (addedIndex === undefined) return;
 
-  session.value.tasks[addedIndex] = {
-    ...session.value.tasks[addedIndex],
+  session.value.tasks[addedIndex - 1] = {
+    ...session.value.tasks[addedIndex - 1],
     id: _.uniqueId(),
   };
 }
