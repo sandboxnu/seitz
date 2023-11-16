@@ -16,7 +16,7 @@ const sessions = ref([
 const addSession = () => {
   const newSession = {
     id: sessions.value.length + 1,
-    name: "New Session",
+    name: "",
   };
 
   sessions.value.push(newSession);

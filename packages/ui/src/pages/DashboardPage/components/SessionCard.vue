@@ -51,8 +51,9 @@ const draggableProps = {
         <template #header>
           <input
             type="text"
-            :value="name"
             class="text-2xl mb-2 w-full rounded bg-transparent"
+            :value="name"
+            placeholder="Untitled Session"
           />
         </template>
         <template #item="{ element }">
