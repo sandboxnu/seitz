@@ -4,7 +4,6 @@ import Draggable from "vuedraggable";
 
 import type { SortableEvent } from "sortablejs";
 import { useStudyBuilderStore } from "@/stores/studyBuilder";
-import * as _ from "lodash";
 import { computed } from "vue";
 
 const props = defineProps<{
@@ -17,13 +16,7 @@ const studyBuilderStore = useStudyBuilderStore();
 const session = computed(() => studyBuilderStore.sessionData[props.sessionId]);
 
 function onAdd(event: SortableEvent) {
-  let addedIndex = event.newIndex;
-  if (addedIndex === undefined) return;
-
-  session.value.tasks[addedIndex - 1] = {
-    ...session.value.tasks[addedIndex - 1],
-    id: _.uniqueId(),
-  };
+  studyBuilderStore.taskAdded(props.sessionId, event.newIndex);
 }
 
 const draggableProps = {

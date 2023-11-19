@@ -3,20 +3,8 @@ import { useStudyBuilderStore } from "@/stores/studyBuilder";
 import SessionCard from "./SessionCard.vue";
 import Draggable from "vuedraggable";
 import AddSession from "./AddSession.vue";
-import * as _ from "lodash";
 
 const studyBuilderStore = useStudyBuilderStore();
-
-const addSession = () => {
-  const newSession = {
-    id: _.uniqueId(),
-    name: "",
-    tasks: [],
-  };
-
-  studyBuilderStore.sessions.push(newSession.id);
-  studyBuilderStore.sessionData[newSession.id] = newSession;
-};
 
 const draggableProps = {
   chosenClass: "bg-gray-200",
@@ -78,7 +66,7 @@ const saveChanges = () => {
           </template>
         </Draggable>
       </TransitionGroup>
-      <AddSession @add-session="addSession" />
+      <AddSession @add-session="studyBuilderStore.addSession" />
     </div>
   </div>
 </template>

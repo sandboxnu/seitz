@@ -97,7 +97,36 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     sessionData.value[s.id] = s;
   });
 
-  const sessions = EXAMPLE_SESSIONS.map((s) => s.id);
+  const sessions = ref(EXAMPLE_SESSIONS.map((s) => s.id));
 
-  return { name, description, taskBank, sessions, sessionData };
+  function addSession() {
+    const newSession = {
+      id: _.uniqueId(),
+      name: "",
+      tasks: [],
+    };
+
+    sessions.value.push(newSession.id);
+    sessionData.value[newSession.id] = newSession;
+  }
+
+  function taskAdded(sessionId: string, taskIndex?: number) {
+    if (!taskIndex) return;
+    const session = sessionData.value[sessionId];
+
+    session.tasks[taskIndex - 1] = {
+      ...session.tasks[taskIndex - 1],
+      id: _.uniqueId(),
+    };
+  }
+
+  return {
+    name,
+    description,
+    taskBank,
+    sessions,
+    sessionData,
+    addSession,
+    taskAdded,
+  };
 });
