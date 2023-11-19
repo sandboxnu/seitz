@@ -11,13 +11,10 @@ const addSession = () => {
 
 <template>
   <div
-    class="flex flex-col w-72 m-2 shrink-0 p-6 border rounded-xl border-black justify-center items-center bg-gray-200"
+    class="flex flex-col w-72 m-2 shrink-0 p-6 border rounded-xl border-black justify-center items-center bg-gray-200 cursor-pointer"
+    @click="addSession"
   >
-    <FontAwesomeIcon
-      :icon="['fas', 'plus']"
-      class="handle cursor-pointer fa-8x"
-      @click="addSession"
-    />
-    <button class="text-2xl" @click="addSession">Add Session</button>
+    <FontAwesomeIcon :icon="['fas', 'plus']" class="fa-8x" />
+    <div class="text-2xl">Add Session</div>
   </div>
 </template>
