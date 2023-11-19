@@ -11,7 +11,7 @@ const addSession = () => {
 
 <template>
   <div
-    class="flex flex-col w-72 m-2 shrink-0 p-6 border rounded-xl border-black justify-center items-center bg-gray-200"
+    class="flex flex-col w-72 m-2 shrink-0 p-6 border rounded-xl border-black justify-center items-center bg-gray-200 cursor-pointer"
     @click="addSession"
   >
     <FontAwesomeIcon :icon="['fas', 'plus']" class="fa-8x" />
