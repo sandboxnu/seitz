@@ -75,7 +75,7 @@ const saveChanges = () => {
           </template>
         </Draggable>
       </TransitionGroup>
-      <AddSession @add-session="addSession" />
+      <AddSession class="cursor-pointer" @add-session="addSession" />
     </div>
   </div>
 </template>
