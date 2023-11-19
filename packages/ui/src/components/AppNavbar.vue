@@ -21,8 +21,9 @@ function logOut() {
   >
     <ElMenuItem index="/">Home</ElMenuItem>
     <ElMenuItem index="example">Example</ElMenuItem>
-    <div class="flex-grow"></div>
     <template v-if="authStore.currentUser">
+      <ElMenuItem index="dashboard">Dashboard</ElMenuItem>
+      <div class="flex-1"></div>
       <template v-if="authStore.currentUser.isAdmin">
         <ElMenuItem index="admin">Admin</ElMenuItem>
       </template>
@@ -31,6 +32,7 @@ function logOut() {
       </ElMenuItem>
     </template>
     <template v-else>
+      <div class="flex-1"></div>
       <ElMenuItem index="login">Log In</ElMenuItem>
       <ElMenuItem index="signup">Sign Up</ElMenuItem>
     </template>
