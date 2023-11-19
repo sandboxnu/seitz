@@ -5,12 +5,13 @@ import authAPI from "@/api/auth";
 export interface IUser {
   email: string;
   password: string;
+  isAdmin: boolean;
   activitiesCreated: string[];
   studies: string[];
 }
 
 export const useAuthStore = defineStore("auth", () => {
-  const currentUser = useStorage<IUser>("currentUser", null, undefined, {
+  const currentUser = useStorage<IUser | null>("currentUser", null, undefined, {
     serializer: StorageSerializers.object,
   });
 

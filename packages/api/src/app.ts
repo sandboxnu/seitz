@@ -5,6 +5,7 @@ import passport from "passport";
 import session from "express-session";
 
 import exampleRoutes from "./routes/example";
+import adminRoutes from "./routes/admin";
 import authRoutes from "./routes/auth";
 import studiesRoutes from "./routes/studies";
 import errorHandler from "./middleware/error";
@@ -38,6 +39,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Routes
+app.use("/admin/", adminRoutes);
 app.use("/example/", exampleRoutes);
 app.use("/studies/", studiesRoutes);
 app.use("/auth/", authRoutes);
