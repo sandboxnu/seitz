@@ -5,22 +5,9 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-interface GetUserResponse {
-  email: string;
-  password: string;
-  isAdmin: boolean;
-  activitiesCreated: string[];
-  studies: string[];
-}
-
-async function getCurrentUser() {
-  const result = await axiosInstance.get<GetUserResponse>("auth/user");
-  return result.data;
-}
-
 async function getStudies() {
   const response = await axiosInstance.get("/studies/");
   return response.data;
 }
 
-export default { getCurrentUser, getStudies };
+export default { getStudies };

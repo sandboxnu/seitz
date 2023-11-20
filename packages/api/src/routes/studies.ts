@@ -1,13 +1,14 @@
 import { Router } from "express";
 import Study from "../models/study";
+import { IUser } from "@/models/user";
 import HttpError from "../types/errors";
+import isAuthenticated from "../middleware/auth";
 
 const router = Router();
 
-router.get("/", (req, res, next) => {
-  Study.find()
-    .then((studies) => res.json(studies))
-    .catch(next);
+router.get("/", isAuthenticated, (req, res) => {
+  const user = req.user as IUser;
+  res.json(user.studies);
 });
 
 router.get("/:id", (req, res, next) => {

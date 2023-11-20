@@ -13,7 +13,6 @@ if (!authStore.currentUser) {
 }
 
 const { data } = useQuery({
-  queryKey: ["studies"],
   queryFn: studiesApi.getStudies,
 });
 

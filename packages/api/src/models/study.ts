@@ -24,7 +24,7 @@ const sessionSchema = new Schema<ISession>({
   activities: [activitySchema],
 });
 
-const studySchema = new Schema<IStudy>({
+export const studySchema = new Schema<IStudy>({
   name: { type: String, required: true },
   description: String,
   sessions: [sessionSchema],
