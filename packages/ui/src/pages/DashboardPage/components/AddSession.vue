@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { defineEmits } from "vue";
 
 const emit = defineEmits(["add-session"]);
 

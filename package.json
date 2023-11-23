@@ -7,6 +7,7 @@
   "license": "MIT",
   "packageManager": "pnpm@8.9.0",
   "devDependencies": {
+    "@types/lodash": "^4.14.201",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
     "@typescript-eslint/parser": "^6.7.5",
     "eslint": "^8.51.0",
@@ -24,5 +25,8 @@
     "prettier:fix": "prettier . --write",
     "format": "pnpm prettier:fix && pnpm lint:fix",
     "prepare": "husky install"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
   }
 }

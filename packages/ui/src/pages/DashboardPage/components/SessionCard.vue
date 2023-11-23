@@ -1,28 +1,21 @@
 <script setup lang="ts">
 import TaskCard from "./TaskCard.vue";
 import Draggable from "vuedraggable";
-import { ref } from "vue";
 
-defineProps<{ name: string; draggable: boolean }>();
+import useImmutable from "@/util/useImmutable";
+import { useStudyBuilderStore } from "@/stores/studyBuilder";
+import { computed } from "vue";
 
-const tasks = ref([
-  {
-    id: 1,
-    name: "Boston Naming",
-  },
-  {
-    id: 2,
-    name: "AVDAT",
-  },
-  {
-    id: 3,
-    name: "Cancellation",
-  },
-  {
-    id: 4,
-    name: "Complex Corsi",
-  },
-]);
+const props = defineProps<{
+  draggable: boolean;
+  sessionId: string;
+}>();
+
+const studyBuilderStore = useStudyBuilderStore();
+
+const session = computed(() => studyBuilderStore.sessionData[props.sessionId]);
+
+const tasks = useImmutable(session.value.tasks);
 
 const draggableProps = {
   chosenClass: "bg-gray-400",
@@ -46,21 +39,21 @@ const draggableProps = {
         v-bind="draggableProps"
         class="flex-1"
         :group="{ name: 'session', put: ['taskbar', 'session'] }"
-        item-key="id"
+        item-key="key"
+        @change="(event) => studyBuilderStore.handleChange(sessionId, event)"
       >
         <template #header>
           <input
+            v-model="session.name"
             type="text"
             class="text-2xl mb-2 w-full rounded bg-transparent"
-            :value="name"
             placeholder="Untitled Session"
           />
         </template>
         <template #item="{ element }">
           <TaskCard
-            :key="element.id"
             draggable
-            :name="element.name"
+            :name="studyBuilderStore.taskData[element.taskId].name"
             class="mb-2"
           />
         </template>
