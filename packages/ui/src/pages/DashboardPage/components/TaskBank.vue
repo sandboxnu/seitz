@@ -25,8 +25,12 @@ const draggableProps = {
         class="flex-1"
         :sort="false"
       >
-        <template #item="{ element }">
-          <TaskCard draggable :name="element.name" class="mb-2" />
+        <template #item="{ element: taskId }">
+          <TaskCard
+            draggable
+            :name="studyBuilderStore.taskData[taskId].name"
+            class="mb-2"
+          />
         </template>
       </Draggable>
     </TransitionGroup>

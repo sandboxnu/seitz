@@ -2,102 +2,48 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import * as _ from "lodash";
 
+import type { ChangeEvent } from "@/types/ChangeEvent";
+
+interface Task {
+  id: string;
+  name: string;
+}
+
+export interface TaskInstance {
+  key: string;
+  taskId: string;
+}
+
 interface Session {
   id: string;
   name: string;
-  tasks: { id: string; name: string }[];
+  tasks: { key: string; taskId: string }[];
 }
 
-const EXAMPLE_SESSIONS = [
-  {
-    id: _.uniqueId(),
-    name: "First Session",
-    tasks: [
-      {
-        id: _.uniqueId(),
-        name: "Boston Naming",
-      },
-      {
-        id: _.uniqueId(),
-        name: "AVDAT",
-      },
-      {
-        id: _.uniqueId(),
-        name: "Cancellation",
-      },
-      {
-        id: _.uniqueId(),
-        name: "Number Line",
-      },
-    ],
-  },
-  {
-    id: _.uniqueId(),
-    name: "Another Session",
-    tasks: [
-      {
-        id: _.uniqueId(),
-        name: "AVDAT",
-      },
-      {
-        id: _.uniqueId(),
-        name: "Cancellation",
-      },
-      {
-        id: _.uniqueId(),
-        name: "Cancellation",
-      },
-      {
-        id: _.uniqueId(),
-        name: "Number Line",
-      },
-    ],
-  },
-  {
-    id: _.uniqueId(),
-    name: "Session 3",
-    tasks: [
-      {
-        id: _.uniqueId(),
-        name: "Boston Naming",
-      },
-      {
-        id: _.uniqueId(),
-        name: "Cancellation",
-      },
-      {
-        id: _.uniqueId(),
-        name: "Number Line",
-      },
-    ],
-  },
+const EXAMPLE_TASK_NAMES = [
+  "Boston Naming",
+  "AVDAT",
+  "Cancellation",
+  "Complex Corsi",
 ];
+
+const EXAMPLE_TASKS: Task[] = EXAMPLE_TASK_NAMES.map((n) => ({
+  id: _.uniqueId(),
+  name: n,
+}));
 
 export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const name = ref<string>();
   const description = ref<string>();
 
-  const taskBank = ref([
-    {
-      name: "Boston Naming",
-    },
-    {
-      name: "AVDAT",
-    },
-    {
-      name: "Cancellation",
-    },
-    {
-      name: "Complex Corsi",
-    },
-  ]);
+  const taskData = ref<Record<string, Task>>({});
+  EXAMPLE_TASKS.forEach((t) => {
+    taskData.value[t.id] = t;
+  });
+  const taskBank = EXAMPLE_TASKS.map((t) => t.id);
 
   const sessionData = ref<Record<string, Session>>({});
-  EXAMPLE_SESSIONS.forEach((s) => {
-    sessionData.value[s.id] = s;
-  });
-
-  const sessions = ref(EXAMPLE_SESSIONS.map((s) => s.id));
+  const sessions = ref<string[]>([]);
 
   function addSession() {
     const newSession = {
@@ -110,23 +56,43 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     sessionData.value[newSession.id] = newSession;
   }
 
-  function taskAdded(sessionId: string, taskIndex?: number) {
-    if (!taskIndex) return;
+  function handleChange(
+    sessionId: string,
+    event: ChangeEvent<string | TaskInstance, TaskInstance>
+  ) {
     const session = sessionData.value[sessionId];
 
-    session.tasks[taskIndex - 1] = {
-      ...session.tasks[taskIndex - 1],
-      id: _.uniqueId(),
-    };
+    function taskAdded(taskIndex: number, element: TaskInstance) {
+      session.tasks.splice(taskIndex, 0, element);
+    }
+
+    function taskRemoved(taskIndex: number) {
+      session.tasks.splice(taskIndex, 1);
+    }
+
+    if ("added" in event) {
+      const element = event.added.element;
+      const task =
+        typeof element == "string"
+          ? { taskId: element, key: _.uniqueId() }
+          : element;
+      taskAdded(event.added.newIndex, task);
+    } else if ("removed" in event) {
+      taskRemoved(event.removed.oldIndex);
+    } else {
+      taskRemoved(event.moved.oldIndex);
+      taskAdded(event.moved.newIndex, event.moved.element);
+    }
   }
 
   return {
     name,
     description,
     taskBank,
+    taskData,
     sessions,
     sessionData,
     addSession,
-    taskAdded,
+    handleChange,
   };
 });

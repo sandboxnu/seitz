@@ -2,7 +2,7 @@
 import TaskCard from "./TaskCard.vue";
 import Draggable from "vuedraggable";
 
-import type { SortableEvent } from "sortablejs";
+import useImmutable from "@/util/useImmutable";
 import { useStudyBuilderStore } from "@/stores/studyBuilder";
 import { computed } from "vue";
 
@@ -15,9 +15,7 @@ const studyBuilderStore = useStudyBuilderStore();
 
 const session = computed(() => studyBuilderStore.sessionData[props.sessionId]);
 
-function onAdd(event: SortableEvent) {
-  studyBuilderStore.taskAdded(props.sessionId, event.newIndex);
-}
+const tasks = useImmutable(session.value.tasks);
 
 const draggableProps = {
   chosenClass: "bg-gray-400",
@@ -37,12 +35,12 @@ const draggableProps = {
     <TransitionGroup>
       <Draggable
         key="draggable"
-        :list="session.tasks"
+        v-model="tasks"
         v-bind="draggableProps"
         class="flex-1"
         :group="{ name: 'session', put: ['taskbar', 'session'] }"
-        item-key="id"
-        @add="onAdd"
+        item-key="key"
+        @change="(event) => studyBuilderStore.handleChange(sessionId, event)"
       >
         <template #header>
           <input
@@ -54,9 +52,8 @@ const draggableProps = {
         </template>
         <template #item="{ element }">
           <TaskCard
-            :key="element.id"
             draggable
-            :name="element.name"
+            :name="studyBuilderStore.taskData[element.taskId].name"
             class="mb-2"
           />
         </template>
