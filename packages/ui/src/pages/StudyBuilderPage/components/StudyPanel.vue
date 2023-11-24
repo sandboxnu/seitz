@@ -23,20 +23,28 @@ const saveChanges = () => {
   <div class="flex flex-col border border-black overflow-x-hidden p-5">
     <div class="flex flex-row items-center justify-between">
       <div class="flex-none w-4/5">
-        <h1 class="text-4xl">
-          <input
-            v-model="studyBuilderStore.name"
-            type="text"
-            placeholder="Untitled Study"
-          />
-        </h1>
-        <h2 class="text-2xl my-2">
-          <input
-            v-model="studyBuilderStore.description"
-            type="text"
-            placeholder="Add a description"
-          />
-        </h2>
+        <ElSkeleton animated :loading="studyBuilderStore.isStudyLoading">
+          <template #template>
+            <ElSkeletonItem variant="text" class="h-11 w-1/2" />
+            <ElSkeletonItem variant="text" class="h-8 mt-2 mb-1 w-3/4" />
+          </template>
+          <template #default>
+            <h1 class="text-4xl">
+              <input
+                v-model="studyBuilderStore.name"
+                type="text"
+                placeholder="Untitled Study"
+              />
+            </h1>
+            <h2 class="text-2xl my-2">
+              <input
+                v-model="studyBuilderStore.description"
+                type="text"
+                placeholder="Add a description"
+              />
+            </h2>
+          </template>
+        </ElSkeleton>
       </div>
       <button
         class="text-base bg-gray-200 border border-black rounded-lg px-5 py-1 h-auto justify-center"
@@ -46,6 +54,7 @@ const saveChanges = () => {
       </button>
     </div>
     <div
+      v-loading="studyBuilderStore.isStudyLoading"
       class="grow flex flex-row border-2 border-black rounded-xl p-2 overflow-x-auto"
     >
       <TransitionGroup>
