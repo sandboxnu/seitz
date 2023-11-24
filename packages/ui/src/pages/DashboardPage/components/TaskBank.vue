@@ -21,7 +21,7 @@ const draggableProps = {
         v-model="studyBuilderStore.taskBank"
         v-bind="draggableProps"
         :group="{ name: 'taskbar', pull: 'clone', put: false }"
-        item-key="id"
+        item-key="_id"
         class="flex-1"
         :sort="false"
       >

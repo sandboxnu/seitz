@@ -14,7 +14,7 @@ export interface ITaskInstance {
 export interface ISession {
   _id: string;
   name: string;
-  activities: ITaskInstance[];
+  tasks: ITaskInstance[];
 }
 
 export interface ICustomizedBattery {

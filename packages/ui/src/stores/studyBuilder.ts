@@ -1,38 +1,23 @@
 import { defineStore } from "pinia";
-import { ref, watch } from "vue";
-import * as _ from "lodash";
+import { ref } from "vue";
+import mongoose from "mongoose";
 
 import studiesApi from "@/api/studies";
-import type { GetStudyResponse } from "@/api/studies";
+import type {
+  ICustomizedBattery,
+  ISession,
+  ITaskInstance,
+} from "@/api/studies";
 import type { ChangeEvent } from "@/types/ChangeEvent";
-import { useRoute } from "vue-router";
-import { useQuery } from "@tanstack/vue-query";
-
-interface Task {
-  _id: string;
-  name: string;
-}
-
-export interface TaskInstance {
-  key: string;
-  taskId: string;
-}
-
-interface Session {
-  _id: string;
-  name: string;
-  tasks: { key: string; taskId: string }[];
-}
-
-const BLANK_STUDY: GetStudyResponse = {
-  name: "",
-  description: "",
-  batteries: [],
-  sessions: [],
-};
+import { useRoute, useRouter } from "vue-router";
+import { useQueryClient } from "@tanstack/vue-query";
+import { AxiosError } from "axios";
+import { ElNotification } from "element-plus";
 
 export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const route = useRoute();
+  const router = useRouter();
+  const queryClient = useQueryClient();
 
   function routeStudyId() {
     if (route.name == "dashboard") {
@@ -41,57 +26,59 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
         return typeof idParam === "string" ? idParam : idParam[0];
       }
     }
-    return null;
+    return new mongoose.Types.ObjectId().toString();
   }
 
-  const studyId = ref<string | null>(routeStudyId());
+  const isNewStudy = route.params.id == "new";
+  const studyId = routeStudyId();
 
-  const {
-    isLoading: isStudyLoading,
-    isError: isStudyError,
-    data: studyData,
-  } = useQuery({
-    queryKey: ["studies", studyId],
-    queryFn: () => {
-      if (studyId.value) return studiesApi.getStudy(studyId.value);
-      else return BLANK_STUDY;
-    },
-  });
+  const isStudyLoading = ref(!isNewStudy);
 
   const name = ref<string>();
   const description = ref<string>();
-  const taskData = ref<Record<string, Task>>({});
+  const taskData = ref<Record<string, ICustomizedBattery>>({});
   const taskBank = ref<string[]>([]);
-  const sessionData = ref<Record<string, Session>>({});
+  const sessionData = ref<Record<string, ISession>>({});
   const sessions = ref<string[]>([]);
 
-  watch(studyData, (newData, oldData) => {
-    if (!oldData && newData) {
-      name.value = newData.name;
-      description.value = newData.description;
-      taskData.value = {};
-      newData.batteries.forEach((b) => {
-        taskData.value[b._id] = b;
+  if (!isNewStudy) {
+    queryClient
+      .fetchQuery({
+        queryKey: ["studies", studyId],
+        queryFn: () => {
+          return studiesApi.getStudy(studyId);
+        },
+      })
+      .then((studyData) => {
+        name.value = studyData.name;
+        description.value = studyData.description;
+        taskData.value = {};
+        studyData.batteries.forEach((b) => {
+          taskData.value[b._id] = b;
+        });
+        taskBank.value = studyData.batteries.map((b) => b._id);
+        sessionData.value = {};
+        studyData.sessions.forEach((s) => {
+          sessionData.value[s._id] = s;
+        });
+        sessions.value = studyData.sessions.map((s) => s._id);
+        isStudyLoading.value = false;
+      })
+      .catch((err: AxiosError<Error>) => {
+        if (err.response?.status == 404) {
+          router.push("/");
+          ElNotification({
+            title: "Error",
+            message: "Study not found",
+            type: "error",
+          });
+        }
       });
-      taskBank.value = newData.batteries.map((b) => b._id);
-      sessionData.value = {};
-      newData.sessions.forEach((s) => {
-        sessionData.value[s._id] = {
-          _id: s._id,
-          name: s.name,
-          tasks: s.activities.map((a) => ({
-            key: _.uniqueId(),
-            taskId: a._id,
-          })),
-        };
-      });
-      sessions.value = newData.sessions.map((s) => s._id);
-    }
-  });
+  }
 
   function addSession() {
     const newSession = {
-      _id: _.uniqueId(),
+      _id: new mongoose.Types.ObjectId().toString(),
       name: "",
       tasks: [],
     };
@@ -102,11 +89,11 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
 
   function handleChange(
     sessionId: string,
-    event: ChangeEvent<string | TaskInstance, TaskInstance>
+    event: ChangeEvent<string | ITaskInstance, ITaskInstance>
   ) {
     const session = sessionData.value[sessionId];
 
-    function taskAdded(taskIndex: number, element: TaskInstance) {
+    function taskAdded(taskIndex: number, element: ITaskInstance) {
       session.tasks.splice(taskIndex, 0, element);
     }
 
@@ -118,7 +105,11 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
       const element = event.added.element;
       const task =
         typeof element == "string"
-          ? { taskId: element, key: _.uniqueId() }
+          ? {
+              _id: new mongoose.Types.ObjectId().toString(),
+              task: element,
+              quantity: 1,
+            }
           : element;
       taskAdded(event.added.newIndex, task);
     } else if ("removed" in event) {
@@ -131,7 +122,6 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
 
   return {
     isStudyLoading,
-    isStudyError,
     name,
     description,
     taskBank,
