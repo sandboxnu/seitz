@@ -55,7 +55,7 @@ const saveChanges = () => {
           v-bind="draggableProps"
           class="flex"
           group="sessions"
-          item-key="id"
+          item-key="_id"
         >
           <template #item="{ element: sessionId }">
             <SessionCard

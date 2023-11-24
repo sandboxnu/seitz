@@ -8,7 +8,7 @@ export interface ITaskInstance {
 
 export interface ISession {
   name: string;
-  activities: ITaskInstance[];
+  tasks: ITaskInstance[];
 }
 
 export interface IStudy {
@@ -29,7 +29,7 @@ const taskInstanceSchema = new Schema<ITaskInstance>({
 
 const sessionSchema = new Schema<ISession>({
   name: { type: String, required: true },
-  activities: [taskInstanceSchema],
+  tasks: [taskInstanceSchema],
 });
 
 const studySchema = new Schema<IStudy>({
