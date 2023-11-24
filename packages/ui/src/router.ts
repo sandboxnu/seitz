@@ -11,7 +11,7 @@ const routes = [
   { path: "/example", name: "example", component: CarPage },
   { path: "/login", name: "login", component: AuthLoginForm },
   { path: "/signup", name: "signup", component: AuthSignupForm },
-  { path: "/dashboard", name: "dashboard", component: DashboardPage },
+  { path: "/dashboard/:id", name: "dashboard", component: DashboardPage },
   { path: "/admin", name: "admin", component: AdminPage },
 ];
 

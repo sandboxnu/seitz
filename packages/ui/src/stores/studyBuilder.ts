@@ -1,11 +1,15 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import * as _ from "lodash";
 
+import studiesApi from "@/api/studies";
+import type { GetStudyResponse } from "@/api/studies";
 import type { ChangeEvent } from "@/types/ChangeEvent";
+import { useRoute } from "vue-router";
+import { useQuery } from "@tanstack/vue-query";
 
 interface Task {
-  id: string;
+  _id: string;
   name: string;
 }
 
@@ -15,45 +19,85 @@ export interface TaskInstance {
 }
 
 interface Session {
-  id: string;
+  _id: string;
   name: string;
   tasks: { key: string; taskId: string }[];
 }
 
-const EXAMPLE_TASK_NAMES = [
-  "Boston Naming",
-  "AVDAT",
-  "Cancellation",
-  "Complex Corsi",
-];
-
-const EXAMPLE_TASKS: Task[] = EXAMPLE_TASK_NAMES.map((n) => ({
-  id: _.uniqueId(),
-  name: n,
-}));
+const BLANK_STUDY: GetStudyResponse = {
+  name: "",
+  description: "",
+  batteries: [],
+  sessions: [],
+};
 
 export const useStudyBuilderStore = defineStore("studyBuilder", () => {
+  const route = useRoute();
+
+  function routeStudyId() {
+    if (route.name == "dashboard") {
+      const idParam = route.params.id;
+      if (idParam && idParam != "new") {
+        return typeof idParam === "string" ? idParam : idParam[0];
+      }
+    }
+    return null;
+  }
+
+  const studyId = ref<string | null>(routeStudyId());
+
+  const {
+    isLoading: isStudyLoading,
+    isError: isStudyError,
+    data: studyData,
+  } = useQuery({
+    queryKey: ["studies", studyId],
+    queryFn: () => {
+      if (studyId.value) return studiesApi.getStudy(studyId.value);
+      else return BLANK_STUDY;
+    },
+  });
+
   const name = ref<string>();
   const description = ref<string>();
-
   const taskData = ref<Record<string, Task>>({});
-  EXAMPLE_TASKS.forEach((t) => {
-    taskData.value[t.id] = t;
-  });
-  const taskBank = EXAMPLE_TASKS.map((t) => t.id);
-
+  const taskBank = ref<string[]>([]);
   const sessionData = ref<Record<string, Session>>({});
   const sessions = ref<string[]>([]);
 
+  watch(studyData, (newData, oldData) => {
+    if (!oldData && newData) {
+      name.value = newData.name;
+      description.value = newData.description;
+      taskData.value = {};
+      newData.batteries.forEach((b) => {
+        taskData.value[b._id] = b;
+      });
+      taskBank.value = newData.batteries.map((b) => b._id);
+      sessionData.value = {};
+      newData.sessions.forEach((s) => {
+        sessionData.value[s._id] = {
+          _id: s._id,
+          name: s.name,
+          tasks: s.activities.map((a) => ({
+            key: _.uniqueId(),
+            taskId: a._id,
+          })),
+        };
+      });
+      sessions.value = newData.sessions.map((s) => s._id);
+    }
+  });
+
   function addSession() {
     const newSession = {
-      id: _.uniqueId(),
+      _id: _.uniqueId(),
       name: "",
       tasks: [],
     };
 
-    sessions.value.push(newSession.id);
-    sessionData.value[newSession.id] = newSession;
+    sessions.value.push(newSession._id);
+    sessionData.value[newSession._id] = newSession;
   }
 
   function handleChange(
@@ -86,6 +130,8 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   }
 
   return {
+    isStudyLoading,
+    isStudyError,
     name,
     description,
     taskBank,

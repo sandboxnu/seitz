@@ -1,30 +1,41 @@
-import { Schema, model } from "mongoose";
+import { Schema, Types, model } from "mongoose";
+import { ICustomizedBattery, customizedBatterySchema } from "./battery";
 
-export interface IActivity {
-  name: string;
+export interface ITaskInstance {
+  task: Types.ObjectId;
   quantity: number;
 }
 
 export interface ISession {
-  activities: IActivity[];
+  name: string;
+  activities: ITaskInstance[];
 }
 
 export interface IStudy {
-  title: string;
+  name: string;
+  description: string;
+  batteries: ICustomizedBattery[];
   sessions: ISession[];
 }
 
-const activitySchema = new Schema<IActivity>({
-  name: { type: String, required: true },
-  quantity: { type: Number, required: true },
+const taskInstanceSchema = new Schema<ITaskInstance>({
+  task: {
+    type: Schema.Types.ObjectId,
+    ref: "CustomizedBattery",
+    required: true,
+  },
+  quantity: { type: Number, required: true, default: 1 },
 });
 
 const sessionSchema = new Schema<ISession>({
-  activities: [activitySchema],
+  name: { type: String, required: true },
+  activities: [taskInstanceSchema],
 });
 
 const studySchema = new Schema<IStudy>({
-  title: { type: String, required: true },
+  name: { type: String, required: true },
+  description: { type: String, required: true },
+  batteries: [customizedBatterySchema],
   sessions: [sessionSchema],
 });
 
