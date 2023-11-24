@@ -100,7 +100,7 @@ export const BatteryStage = model<IBatteryStage>(
   batteryStageSchema
 );
 
-const batterySchema = new Schema<IBattery>({
+export const batterySchema = new Schema<IBattery>({
   name: { type: String, required: true },
   description: { type: String, required: true },
   imageUrl: { type: String, required: true },
@@ -108,3 +108,19 @@ const batterySchema = new Schema<IBattery>({
 });
 
 export const Battery = model<IBattery>("Battery", batterySchema);
+
+// Temporary schema for customized batteries
+export interface ICustomizedBattery {
+  battery: Types.ObjectId;
+  name: string;
+}
+
+export const customizedBatterySchema = new Schema<ICustomizedBattery>({
+  battery: { type: Schema.Types.ObjectId, ref: "Battery", required: true },
+  name: { type: String, required: true },
+});
+
+export const CustomizedBattery = model<ICustomizedBattery>(
+  "CustomizedBattery",
+  customizedBatterySchema
+);
