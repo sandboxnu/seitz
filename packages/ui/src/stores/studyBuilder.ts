@@ -38,8 +38,16 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const description = ref<string>();
   const taskData = ref<Record<string, ICustomizedBattery>>({});
   const taskBank = ref<string[]>([]);
+
+  const EMPTY_SESSION = {
+    _id: new mongoose.Types.ObjectId().toString(),
+    name: "",
+    tasks: [],
+  };
+
   const sessionData = ref<Record<string, ISession>>({});
-  const sessions = ref<string[]>([]);
+  sessionData.value[EMPTY_SESSION._id] = EMPTY_SESSION;
+  const sessions = ref<string[]>([EMPTY_SESSION._id]);
 
   if (!isNewStudy) {
     queryClient
