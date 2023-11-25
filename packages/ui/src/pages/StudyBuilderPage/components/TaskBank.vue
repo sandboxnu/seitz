@@ -2,6 +2,9 @@
 import TaskCard from "./TaskCard.vue";
 import Draggable from "vuedraggable";
 import { useStudyBuilderStore } from "@/stores/studyBuilder";
+import AppButton from "@/components/ui/AppButton.vue";
+
+defineEmits(["show-add"]);
 
 const studyBuilderStore = useStudyBuilderStore();
 
@@ -32,15 +35,18 @@ const draggableProps = {
             v-bind="draggableProps"
             :group="{ name: 'taskbar', pull: 'clone', put: false }"
             item-key="_id"
-            class="flex-1"
+            class="flex-1 flex flex-col items-center"
             :sort="false"
           >
             <template #item="{ element: taskId }">
               <TaskCard
                 draggable
                 :name="studyBuilderStore.taskData[taskId].name"
-                class="mb-2"
+                class="mb-2 w-full"
               />
+            </template>
+            <template #footer>
+              <AppButton @click="$emit('show-add')">Add Task</AppButton>
             </template>
           </Draggable>
         </TransitionGroup>
