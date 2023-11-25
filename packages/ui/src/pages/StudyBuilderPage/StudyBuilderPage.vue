@@ -22,14 +22,14 @@ const dialogVisible = ref(false);
 <template>
   <!-- This is sort of a hack to delete elements if they are dropped outside of sessions -->
   <Draggable
-    class="flex-1 flex"
+    class="flex-1 flex overflow-auto"
     ghost-class="hidden"
     :group="{ put: ['taskbar', 'session'] }"
     item-key=""
   >
     <template #header>
       <TaskBank class="flex-none w-72" @show-add="dialogVisible = true" />
-      <StudyPanel class="flex-1" />
+      <StudyPanel class="grow basis-[750px] shrink-0" />
     </template>
     <template #item></template>
   </Draggable>

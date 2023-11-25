@@ -23,7 +23,7 @@ const saveChanges = () => {
 <template>
   <div class="flex flex-col border border-black overflow-x-hidden p-5">
     <div class="flex flex-row items-center justify-between">
-      <div class="flex-none w-4/5">
+      <div class="flex-1">
         <ElSkeleton animated :loading="studyBuilderStore.isStudyLoading">
           <template #template>
             <ElSkeletonItem variant="text" class="h-11 w-1/2" />
