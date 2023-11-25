@@ -8,6 +8,7 @@ import exampleRoutes from "./routes/example";
 import adminRoutes from "./routes/admin";
 import authRoutes from "./routes/auth";
 import studiesRoutes from "./routes/studies";
+import tasksRoutes from "./routes/tasks";
 import errorHandler from "./middleware/error";
 
 const app = express();
@@ -42,6 +43,7 @@ app.use(passport.session());
 app.use("/admin/", adminRoutes);
 app.use("/example/", exampleRoutes);
 app.use("/studies/", studiesRoutes);
+app.use("/tasks/", tasksRoutes);
 app.use("/auth/", authRoutes);
 
 app.use(errorHandler);

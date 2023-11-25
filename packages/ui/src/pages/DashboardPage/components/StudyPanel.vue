@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useStudyBuilderStore } from "@/stores/studyBuilder";
+import AppButton from "@/components/ui/AppButton.vue";
 import SessionCard from "./SessionCard.vue";
 import Draggable from "vuedraggable";
 import AddSession from "./AddSession.vue";
@@ -46,12 +47,12 @@ const saveChanges = () => {
           </template>
         </ElSkeleton>
       </div>
-      <button
+      <AppButton
         class="text-base bg-gray-200 border border-black rounded-lg px-5 py-1 h-auto justify-center"
         @click="saveChanges"
       >
         Save Changes
-      </button>
+      </AppButton>
     </div>
     <div
       v-loading="studyBuilderStore.isStudyLoading"

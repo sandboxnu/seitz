@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import mongoose from "mongoose";
 
-import studiesApi from "@/api/studies";
+import studiesAPI from "@/api/studies";
 import type {
   ICustomizedBattery,
   ISession,
@@ -13,6 +13,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useQueryClient } from "@tanstack/vue-query";
 import { AxiosError } from "axios";
 import { ElNotification } from "element-plus";
+import { GetTaskResponse } from "@/api/tasks";
 
 export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const route = useRoute();
@@ -54,7 +55,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
       .fetchQuery({
         queryKey: ["studies", studyId],
         queryFn: () => {
-          return studiesApi.getStudy(studyId);
+          return studiesAPI.getStudy(studyId);
         },
       })
       .then((studyData) => {
@@ -82,6 +83,20 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
           });
         }
       });
+  }
+
+  function addTaskInstance(task: GetTaskResponse) {
+    const newId = new mongoose.Types.ObjectId().toString();
+    taskData.value[newId] = {
+      _id: newId,
+      battery: task._id,
+      name: task.name,
+    };
+    taskBank.value.push(newId);
+  }
+
+  function hasInstanceOfTask(taskId: string) {
+    return !!Object.values(taskData.value).find((t) => t.battery == taskId);
   }
 
   function addSession() {
@@ -138,5 +153,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     sessionData,
     addSession,
     handleChange,
+    addTaskInstance,
+    hasInstanceOfTask,
   };
 });

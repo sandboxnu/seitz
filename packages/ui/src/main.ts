@@ -13,6 +13,8 @@ import {
   faGripVertical,
   faGripHorizontal,
   faPlus,
+  faXmark,
+  faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 
 const pinia = createPinia();
@@ -20,6 +22,8 @@ const pinia = createPinia();
 library.add(faGripVertical);
 library.add(faGripHorizontal);
 library.add(faPlus);
+library.add(faXmark);
+library.add(faCheck);
 
 createApp(App)
   .use(router)
