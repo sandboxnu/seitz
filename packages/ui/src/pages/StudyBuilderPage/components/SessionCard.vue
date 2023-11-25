@@ -15,7 +15,7 @@ const studyBuilderStore = useStudyBuilderStore();
 
 const session = computed(() => studyBuilderStore.sessionData[props.sessionId]);
 
-const tasks = useImmutable(session.value.tasks);
+const tasks = useImmutable(() => session.value.tasks);
 
 const draggableProps = {
   chosenClass: "bg-gray-400",

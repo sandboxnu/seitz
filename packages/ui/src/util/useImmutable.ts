@@ -1,8 +1,8 @@
 import { computed } from "vue";
 
-export default function useImmutable<T>(thing: T) {
+export default function useImmutable<T>(getter: () => T) {
   return computed({
-    get: () => thing,
+    get: getter,
     set: () => {},
   });
 }
