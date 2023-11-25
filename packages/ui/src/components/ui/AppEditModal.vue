@@ -7,7 +7,7 @@ const props = defineProps<{
   header: string;
   subHeader?: string;
 }>();
-defineEmits(["close"]);
+defineEmits(["cancel", "save"]);
 
 const visibleState = useImmutable(() => props.visible);
 </script>
@@ -19,20 +19,20 @@ const visibleState = useImmutable(() => props.visible);
     width="80%"
     align-center
     :show-close="false"
-    @close="$emit('close')"
+    @close="$emit('cancel')"
   >
-    <template #header="{ close, titleId, titleClass }">
+    <template #header="{ titleId, titleClass }">
       <div class="flex items-center gap-5 px-5">
         <FontAwesomeIcon
           :icon="['fas', 'xmark']"
           class="w-5 h-5 cursor-pointer"
-          @click="close"
+          @click="$emit('cancel')"
         />
         <div class="flex-1">
           <p :id="titleId" :class="['text-xl', titleClass]">{{ header }}</p>
           <p v-if="subHeader" class="font-light">{{ subHeader }}</p>
         </div>
-        <AppButton @click="close">Save</AppButton>
+        <AppButton @click="$emit('save')">Save</AppButton>
       </div>
     </template>
     <slot />

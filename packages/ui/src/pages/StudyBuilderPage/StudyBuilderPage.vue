@@ -28,8 +28,11 @@ const dialogVisible = ref(false);
     item-key=""
   >
     <template #header>
-      <TaskBank class="flex-none w-72" @show-add="dialogVisible = true" />
-      <StudyPanel class="grow basis-[750px] shrink-0" />
+      <TaskBank
+        class="flex-none w-72 overflow-y-auto"
+        @show-add="dialogVisible = true"
+      />
+      <StudyPanel class="grow basis-[650px] shrink-0" />
     </template>
     <template #item></template>
   </Draggable>
@@ -37,7 +40,8 @@ const dialogVisible = ref(false);
     :visible="dialogVisible"
     header="Task Library"
     sub-header="Select tasks to add to your task bank"
-    @close="dialogVisible = false"
+    @cancel="dialogVisible = false"
+    @save="dialogVisible = false"
   >
     <TaskLibrary />
   </AppEditModal>
