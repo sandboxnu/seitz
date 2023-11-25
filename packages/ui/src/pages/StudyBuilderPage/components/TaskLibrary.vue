@@ -16,10 +16,11 @@ const studyBuilderStore = useStudyBuilderStore();
   <template v-if="isLoading">Loading...</template>
   <template v-else-if="isError">Error</template>
   <template v-else>
-    <div class="flex flex-wrap justify-center">
+    <div class="flex flex-wrap justify-center max-w-[800px] mx-auto">
       <div v-for="task in data" :key="task._id" class="mx-3 mb-3">
         <TaskLibraryItem
           :name="task.name"
+          :description="task.description"
           :selected="studyBuilderStore.hasInstanceOfTask(task._id)"
           @flip="studyBuilderStore.addTaskInstance(task)"
         />
