@@ -25,7 +25,7 @@ function logOut() {
       <ElMenuItem index="/dashboard/new">Dashboard</ElMenuItem>
       <div class="flex-1"></div>
       <template v-if="authStore.currentUser.isAdmin">
-        <ElMenuItem index="admin">Admin</ElMenuItem>
+        <ElMenuItem index="/admin">Admin</ElMenuItem>
       </template>
       <ElMenuItem index="/logout" :onclick="logOut">
         Log Out, {{ authStore.currentUser.email }}
