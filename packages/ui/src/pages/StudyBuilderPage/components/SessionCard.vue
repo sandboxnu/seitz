@@ -26,30 +26,30 @@ const draggableProps = {
 </script>
 
 <template>
-  <div class="flex flex-col p-6 border rounded-xl border-black">
+  <div
+    class="flex flex-col p-6 border rounded-xl border-black overflow-y-hidden"
+  >
     <FontAwesomeIcon
       v-if="draggable"
       :icon="['fas', 'grip-horizontal']"
       class="handle cursor-pointer pr-1"
+    />
+    <input
+      v-model="session.name"
+      type="text"
+      class="text-2xl mb-2 w-full rounded bg-transparent"
+      placeholder="Untitled Session"
     />
     <TransitionGroup>
       <Draggable
         key="draggable"
         v-model="tasks"
         v-bind="draggableProps"
-        class="flex-1"
+        class="flex-1 overflow-y-auto"
         :group="{ name: 'session', put: ['taskbar', 'session'] }"
         item-key="_id"
         @change="(event) => studyBuilderStore.handleChange(sessionId, event)"
       >
-        <template #header>
-          <input
-            v-model="session.name"
-            type="text"
-            class="text-2xl mb-2 w-full rounded bg-transparent"
-            placeholder="Untitled Session"
-          />
-        </template>
         <template #item="{ element }">
           <TaskCard
             draggable

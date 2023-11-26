@@ -5,10 +5,9 @@ defineProps<{
   selected: boolean;
   name: string;
   description: string;
+  imageUrl: string;
 }>();
 defineEmits(["flip"]);
-
-const uuid = crypto.randomUUID();
 </script>
 
 <template>
@@ -21,11 +20,7 @@ const uuid = crypto.randomUUID();
         ]"
         @click="if (!selected) $emit('flip');"
       >
-        <ElImage
-          :src="`https://picsum.photos/300/300?${uuid}`"
-          fit="cover"
-          class="h-full w-full"
-        />
+        <ElImage :src="imageUrl" fit="cover" class="h-full w-full" />
         <div
           v-if="selected"
           class="absolute w-full h-full top-0 left-0 bg-white/60"

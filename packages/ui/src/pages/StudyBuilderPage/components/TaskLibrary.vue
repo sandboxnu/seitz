@@ -21,6 +21,7 @@ const studyBuilderStore = useStudyBuilderStore();
         <TaskLibraryItem
           :name="task.name"
           :description="task.description"
+          :image-url="task.imageUrl"
           :selected="studyBuilderStore.hasInstanceOfTask(task._id)"
           @flip="studyBuilderStore.addTaskInstance(task)"
         />
