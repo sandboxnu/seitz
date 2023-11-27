@@ -15,6 +15,7 @@ interface GetUserResponse {
   password: string;
   isAdmin: boolean;
   activitiesCreated: string[];
+  studies: string[];
 }
 
 async function logIn(credentials: LogInDto) {

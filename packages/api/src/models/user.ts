@@ -1,6 +1,5 @@
 import { Schema, Types, model } from "mongoose";
 import { ENCRYPTION_CONSTANTS as EC } from "../util/constants";
-import { IStudy, studySchema } from "./study";
 import bcrypt from "bcrypt";
 
 export interface IUser {
@@ -9,7 +8,7 @@ export interface IUser {
   isAdmin: boolean;
   verifyPassword(password: string): Promise<boolean>;
   activitiesCreated: Types.ObjectId[];
-  studies: IStudy[];
+  studies: Types.ObjectId[];
 }
 
 const userSchema = new Schema<IUser>({
@@ -17,7 +16,7 @@ const userSchema = new Schema<IUser>({
   password: { type: String, required: true },
   isAdmin: { type: Boolean, required: true, default: false },
   activitiesCreated: [{ type: Schema.Types.ObjectId, ref: "Activity" }],
-  studies: [studySchema],
+  studies: [{ type: Schema.Types.ObjectId, ref: "Study" }],
 });
 
 userSchema.methods.verifyPassword = function (password: string) {

@@ -10,4 +10,8 @@ async function getStudies() {
   return response.data;
 }
 
-export default { getStudies };
+async function deleteStudy(id: string) {
+  await axiosInstance.delete(`/studies/${id}`);
+}
+
+export default { getStudies, deleteStudy };

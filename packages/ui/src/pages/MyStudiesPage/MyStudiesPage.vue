@@ -3,7 +3,7 @@ import { useAuthStore } from "../../stores/auth";
 import { RouterLink, useRouter } from "vue-router";
 import StudyComponent from "./components/StudyComponent.vue";
 import { useQuery } from "@tanstack/vue-query";
-import studiesApi from "@/api/studies";
+import studiesAPI from "@/api/studies";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -12,32 +12,36 @@ if (!authStore.currentUser) {
   router.push("/login");
 }
 
-const { data } = useQuery({
-  queryFn: studiesApi.getStudies,
+const { data, refetch } = useQuery({
+  queryKey: ["studies"],
+  queryFn: studiesAPI.getStudies,
 });
 
 const studies = data;
 </script>
 
 <template>
-  <div class="flex justify-center mt-14 mb-6">
-    <div class="flex flex-row w-3/4">
-      <h1 class="flex w-3/5 text-3xl font-bold">My Studies</h1>
-      <div class="flex w-2/5 justify-end">
-        <RouterLink to="/study">
-          <button
-            class="flex text-sm bg-neutral-300 border border-black rounded-lg py-1 w-30 p-4 h-8 justify-center"
-          >
-            + New Study
-          </button>
-        </RouterLink>
-      </div>
+  <div class="mt-14 mx-auto w-3/4 min-w-[600px]">
+    <div class="flex items-center">
+      <h1 class="text-3xl font-bold">My Studies</h1>
+      <div class="flex-1"></div>
+      <RouterLink
+        to="/study"
+        class="flex text-sm bg-neutral-300 border border-black rounded-lg py-1 w-30 p-4 h-8 justify-center"
+      >
+        + New Study
+      </RouterLink>
     </div>
-  </div>
 
-  <div class="flex flex-col">
-    <div v-for="study in studies" :key="study.id" class="flex justify-center">
-      <StudyComponent :name="study.name" :description="study.description" />
+    <div class="flex flex-col">
+      <StudyComponent
+        v-for="study in studies"
+        :id="study._id"
+        :key="study._id"
+        :name="study.name"
+        :description="study.description"
+        @deleted="refetch"
+      />
     </div>
   </div>
 </template>

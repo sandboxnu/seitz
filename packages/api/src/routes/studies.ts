@@ -1,14 +1,39 @@
 import { Router } from "express";
-import Study from "../models/study";
+import Study, { IStudy } from "../models/study";
 import { IUser } from "@/models/user";
 import HttpError from "../types/errors";
 import isAuthenticated from "../middleware/auth";
+import { HydratedDocument } from "mongoose";
 
 const router = Router();
 
 router.get("/", isAuthenticated, (req, res) => {
-  const user = req.user as IUser;
-  res.json(user.studies);
+  const user = req.user as HydratedDocument<IUser>;
+  user
+    .populate<{ studies: IStudy[] }>("studies")
+    .then((user) => res.json(user.studies));
+});
+
+router.delete("/:id", isAuthenticated, async (req, res, next) => {
+  try {
+    const user = req.user as HydratedDocument<IUser>;
+    const studyIndex = user.studies.findIndex(
+      (id) => id.toString() === req.params["id"]
+    );
+    if (studyIndex === -1) {
+      return next(new HttpError(403));
+    }
+    const study = await Study.findById(req.params["id"]);
+    if (!study) {
+      return next(new HttpError(404));
+    }
+    study.deleteOne();
+    user.studies.splice(studyIndex, 1);
+    user.save();
+    res.sendStatus(200);
+  } catch (e) {
+    next(e);
+  }
 });
 
 router.get("/:id", (req, res, next) => {
