@@ -10,7 +10,8 @@ export interface ISession {
 }
 
 export interface IStudy {
-  title: string;
+  name: string;
+  description: string;
   sessions: ISession[];
 }
 
@@ -23,8 +24,9 @@ const sessionSchema = new Schema<ISession>({
   activities: [activitySchema],
 });
 
-const studySchema = new Schema<IStudy>({
-  title: { type: String, required: true },
+export const studySchema = new Schema<IStudy>({
+  name: { type: String, required: true },
+  description: { type: String, required: true },
   sessions: [sessionSchema],
 });
 
