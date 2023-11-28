@@ -12,30 +12,30 @@ defineEmits(["flip"]);
 
 <template>
   <div class="w-40">
-    <ElTooltip effect="dark" :content="description" placement="right">
+    <!-- <ElTooltip effect="dark" :content="description" placement="right"> -->
+    <div
+      :class="[
+        'relative w-full h-40 rounded-3xl border-black overflow-hidden',
+        selected ? 'border-4' : 'border cursor-pointer',
+      ]"
+      @click="if (!selected) $emit('flip');"
+    >
+      <ElImage :src="imageUrl" fit="cover" class="h-full w-full" />
       <div
-        :class="[
-          'relative w-full h-40 rounded-3xl border-black overflow-hidden',
-          selected ? 'border-4' : 'border cursor-pointer',
-        ]"
-        @click="if (!selected) $emit('flip');"
-      >
-        <ElImage :src="imageUrl" fit="cover" class="h-full w-full" />
+        v-if="selected"
+        class="absolute w-full h-full top-0 left-0 bg-white/60"
+      ></div>
+      <div class="absolute right-3 bottom-3">
         <div
-          v-if="selected"
-          class="absolute w-full h-full top-0 left-0 bg-white/60"
-        ></div>
-        <div class="absolute right-3 bottom-3">
-          <div
-            class="rounded-full h-6 w-6 bg-black text-white flex justify-center items-center"
-          >
-            <FontAwesomeIcon :icon="['fas', selected ? 'check' : 'plus']" />
-          </div>
+          class="rounded-full h-6 w-6 bg-black text-white flex justify-center items-center"
+        >
+          <FontAwesomeIcon :icon="['fas', selected ? 'check' : 'plus']" />
         </div>
       </div>
-    </ElTooltip>
-    <ElTooltip effect="dark" :content="name" placement="bottom">
-      <div class="text-base text-black truncate">{{ name }}</div>
-    </ElTooltip>
+    </div>
+    <!-- </ElTooltip>
+    <ElTooltip effect="dark" :content="name" placement="bottom"> -->
+    <div class="text-base text-black truncate">{{ name }}</div>
+    <!-- </ElTooltip> -->
   </div>
 </template>

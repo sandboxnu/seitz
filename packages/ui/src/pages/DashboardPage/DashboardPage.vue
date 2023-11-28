@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import { useRouter } from "vue-router";
 import Draggable from "vuedraggable";
 
 import { useAuthStore } from "@/stores/auth";
 import StudyPanel from "./components/StudyPanel.vue";
 import TaskBank from "./components/TaskBank.vue";
-import TaskLibrary from "./components/TaskLibrary.vue";
-import AppEditModal from "@/components/ui/AppEditModal.vue";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -15,8 +12,6 @@ const authStore = useAuthStore();
 if (!authStore.currentUser) {
   router.push("/login");
 }
-
-const dialogVisible = ref(false);
 </script>
 
 <template>
@@ -28,15 +23,12 @@ const dialogVisible = ref(false);
     item-key=""
   >
     <template #header>
-      <TaskBank
-        class="flex-none w-72 overflow-y-auto"
-        @show-add="dialogVisible = true"
-      />
+      <TaskBank class="flex-none border border-black overflow-y-auto" />
       <StudyPanel class="grow basis-[650px] shrink-0" />
     </template>
     <template #item></template>
   </Draggable>
-  <AppEditModal
+  <!-- <AppEditModal
     :visible="dialogVisible"
     header="Task Library"
     sub-header="Select tasks to add to your task bank"
@@ -44,5 +36,5 @@ const dialogVisible = ref(false);
     @save="dialogVisible = false"
   >
     <TaskLibrary />
-  </AppEditModal>
+  </AppEditModal> -->
 </template>
