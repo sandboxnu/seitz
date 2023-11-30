@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import mongoose from "mongoose";
 
 import studiesAPI from "@/api/studies";
@@ -39,6 +39,14 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const taskBank = ref<string[]>([]);
   const sessionData = ref<Record<string, ISession>>({});
   const sessions = ref<string[]>([]);
+  const editingTaskId = ref<string>();
+  const editingTask = computed(() => {
+    if (!editingTaskId.value) {
+      return undefined;
+    } else {
+      return taskData.value[editingTaskId.value];
+    }
+  });
 
   function initialize() {
     if (route.name !== "study") return;
@@ -51,6 +59,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     taskBank.value = [];
     sessionData.value = {};
     sessions.value = [];
+    editingTaskId.value = undefined;
 
     if (isNewStudy.value) {
       const EMPTY_SESSION = {
@@ -171,6 +180,8 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     taskData,
     sessions,
     sessionData,
+    editingTaskId,
+    editingTask,
     addSession,
     handleChange,
     addTaskInstance,

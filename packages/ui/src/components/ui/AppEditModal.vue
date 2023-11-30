@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import useImmutable from "@/util/useImmutable.ts";
+import useImmutable from "@/util/useImmutable";
 import AppButton from "./AppButton.vue";
 
 const props = defineProps<{
   visible: boolean;
-  header: string;
+  header?: string;
   subHeader?: string;
 }>();
 defineEmits(["cancel", "save"]);
