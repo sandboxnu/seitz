@@ -12,7 +12,10 @@ const { isLoading, isError, data } = useQuery({
 
 //for storing inputted data, not sure how to represent battery stages
 const formData = reactive({
+  dropdown: "",
+  number: 0,
   input: "",
+  checkbox: "", //not sure how to represent checkbox input
 });
 </script>
 
@@ -22,7 +25,7 @@ const formData = reactive({
   <template v-else>
     <div class="mx-6">
       <h1 class="text-xl text-black font-bold">{{ data!.name }}</h1>
-      <ElForm>
+      <ElForm :model="formData">
         <div v-for="stage in data!.stages" :key="stage._id">
           <h2 class="text-base text-black font-bold mt-4">
             {{ stage.stageLabel }}
@@ -30,7 +33,10 @@ const formData = reactive({
           <div v-for="option in stage.options" :key="option._id">
             <template v-if="option.type == 'dropdown'">
               <ElFormItem :label="option.name" class="block text-black">
-                <ElSelect placeholder="select option">
+                <ElSelect
+                  v-model="formData.dropdown"
+                  placeholder="select option"
+                >
                   <ElOption
                     v-for="dropdownOption in option.options"
                     :key="dropdownOption"
@@ -43,6 +49,7 @@ const formData = reactive({
             <template v-else-if="option.type == 'number'">
               <ElFormItem :label="option.name" class="block text-black">
                 <ElInputNumber
+                  v-model="formData.number"
                   :min="option.min"
                   :max="option.max"
                   :step="option.step"
