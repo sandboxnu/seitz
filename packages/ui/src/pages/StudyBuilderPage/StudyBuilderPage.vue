@@ -49,6 +49,7 @@ const libraryVisible = ref(false);
     <TaskLibrary />
   </AppEditModal>
   <AppEditModal
+    v-if="studyBuilderStore.editingTask?.name !== undefined"
     :visible="studyBuilderStore.editingTaskId !== undefined"
     :header="studyBuilderStore.editingTask?.name"
     sub-header="Customize your task"
