@@ -1,85 +1,96 @@
 <script setup lang="ts">
-import { useQuery } from "@tanstack/vue-query";
+import { useQueryClient } from "@tanstack/vue-query";
 import tasksAPI from "@/api/tasks";
-import { reactive } from "vue";
+import { ref } from "vue";
 
 const props = defineProps<{ batteryId: string }>();
 
-const { isLoading, isError, data } = useQuery({
-  queryKey: ["tasks", props.batteryId],
-  queryFn: () => tasksAPI.getTask(props.batteryId),
-});
+const queryClient = useQueryClient();
 
-//for storing inputted data, not sure how to represent battery stages
-const formData = reactive({
-  dropdown: "",
-  number: 0,
-  input: "",
-  checkbox: "", //not sure how to represent checkbox input
-});
+const data = ref();
+const isLoading = ref(true);
+const isError = ref(false);
+const formValues = ref<Record<string, string | number | boolean>>({});
+
+queryClient
+  .fetchQuery({
+    queryKey: ["tasks", props.batteryId],
+    queryFn: () => tasksAPI.getTask(props.batteryId),
+  })
+  .then((task) => {
+    data.value = task;
+    const values: Record<string, string | number | boolean> = {};
+
+    task.stages.forEach((stage) => {
+      stage.options.forEach((option) => {
+        values[option._id] = option.default;
+      });
+    });
+
+    formValues.value = values;
+    isLoading.value = false;
+  })
+  .catch(() => {
+    isError.value = true;
+    isLoading.value = false;
+  });
 </script>
 
 <template>
   <template v-if="isLoading">Loading...</template>
   <template v-else-if="isError">Error</template>
-  <template v-else>
+  <template v-else-if="data">
     <div class="mx-6">
-      <h1 class="text-xl text-black font-bold">{{ data!.name }}</h1>
-      <ElForm :model="formData">
-        <div v-for="stage in data!.stages" :key="stage._id">
-          <h2 class="text-base text-black font-bold mt-4">
-            {{ stage.stageLabel }}
-          </h2>
-          <div v-for="option in stage.options" :key="option._id">
-            <template v-if="option.type == 'dropdown'">
-              <ElFormItem :label="option.name" class="block text-black">
-                <ElSelect
-                  v-model="formData.dropdown"
-                  placeholder="select option"
-                >
-                  <ElOption
-                    v-for="dropdownOption in option.options"
-                    :key="dropdownOption"
-                    :label="dropdownOption"
-                    :value="dropdownOption"
-                  ></ElOption>
-                </ElSelect>
-              </ElFormItem>
-            </template>
-            <template v-else-if="option.type == 'number'">
-              <ElFormItem :label="option.name" class="block text-black">
-                <ElInputNumber
-                  v-model="formData.number"
-                  :min="option.min"
-                  :max="option.max"
-                  :step="option.step"
-                  placeholder="0"
-                  class="mr-2"
-                ></ElInputNumber>
-                seconds
-              </ElFormItem>
-            </template>
-            <template v-else-if="option.type == 'text'">
-              <ElFormItem :label="option.name" class="block text-black">
-                <!-- text-black does not apply to the label, not sure if :label or {{ option.name }} is better -->
-                {{ option.name }}
-                <ElInput
-                  v-model="formData.input"
-                  type="textarea"
-                  placeholder="type here"
-                ></ElInput>
-              </ElFormItem>
-            </template>
-            <template v-else-if="option.type == 'checkbox'">
-              <ElFormItem :label="option.name" class="block text-black">
-                <ElCheckboxGroup>
-                  <ElCheckbox label="Option 1"></ElCheckbox>
-                  <ElCheckbox label="Option 2"></ElCheckbox>
-                  <ElCheckbox label="Option 3"></ElCheckbox>
-                  <ElCheckbox label="Option 4"></ElCheckbox>
-                </ElCheckboxGroup>
-              </ElFormItem>
-            </template>
+      <ElForm style="--el-text-color-regular: black">
+        <div class="flex flex-col gap-4">
+          <div v-for="stage in data.stages" :key="stage._id">
+            <h2 class="text-base text-black font-bold">
+              {{ stage.stageLabel }}
+            </h2>
+            <div v-for="option in stage.options" :key="option._id">
+              <template v-if="option.type == 'dropdown'">
+                <ElFormItem :label="option.name" class="block">
+                  <ElSelect
+                    v-model="formValues[option._id]"
+                    placeholder="select option"
+                  >
+                    <ElOption
+                      v-for="(dropdownOption, index) in option.options"
+                      :key="index"
+                      :label="dropdownOption"
+                      :value="index"
+                    ></ElOption>
+                  </ElSelect>
+                </ElFormItem>
+              </template>
+              <template v-else-if="option.type == 'number'">
+                <ElFormItem :label="option.name" class="block">
+                  <ElInputNumber
+                    v-model="formValues[option._id]"
+                    :min="option.min"
+                    :max="option.max"
+                    :step="option.step"
+                    placeholder="0"
+                    class="mr-2"
+                  ></ElInputNumber>
+                  seconds
+                </ElFormItem>
+              </template>
+              <template v-else-if="option.type == 'text'">
+                <ElFormItem :label="option.name" class="block">
+                  <ElInput
+                    v-model="formValues[option._id]"
+                    type="textarea"
+                    placeholder="type here"
+                  ></ElInput>
+                </ElFormItem>
+              </template>
+              <template v-else-if="option.type == 'checkbox'">
+                <ElFormItem :label="option.name">
+                  <ElCheckbox v-model="formValues[option._id]" />
+                </ElFormItem>
+              </template>
+            </div>
           </div>
         </div>
       </ElForm>
