@@ -20,21 +20,21 @@ function logOut() {
     :ellipsis="false"
   >
     <ElMenuItem index="/">Home</ElMenuItem>
-    <ElMenuItem index="example">Example</ElMenuItem>
+    <ElMenuItem index="/example">Example</ElMenuItem>
     <template v-if="authStore.currentUser">
-      <ElMenuItem index="dashboard">Dashboard</ElMenuItem>
+      <ElMenuItem index="/dashboard">Dashboard</ElMenuItem>
       <div class="flex-1"></div>
       <template v-if="authStore.currentUser.isAdmin">
-        <ElMenuItem index="admin">Admin</ElMenuItem>
+        <ElMenuItem index="/admin">Admin</ElMenuItem>
       </template>
-      <ElMenuItem index="logout" :onclick="logOut">
+      <ElMenuItem index="/logout" :onclick="logOut">
         Log Out, {{ authStore.currentUser.email }}
       </ElMenuItem>
     </template>
     <template v-else>
       <div class="flex-1"></div>
-      <ElMenuItem index="login">Log In</ElMenuItem>
-      <ElMenuItem index="signup">Sign Up</ElMenuItem>
+      <ElMenuItem index="/login">Log In</ElMenuItem>
+      <ElMenuItem index="/signup">Sign Up</ElMenuItem>
     </template>
   </ElMenu>
 </template>

@@ -39,7 +39,7 @@ const draggableProps = {
         v-bind="draggableProps"
         class="flex-1"
         :group="{ name: 'session', put: ['taskbar', 'session'] }"
-        item-key="key"
+        item-key="_id"
         @change="(event) => studyBuilderStore.handleChange(sessionId, event)"
       >
         <template #header>
@@ -53,7 +53,7 @@ const draggableProps = {
         <template #item="{ element }">
           <TaskCard
             draggable
-            :name="studyBuilderStore.taskData[element.taskId].name"
+            :name="studyBuilderStore.taskData[element.task].name"
             class="mb-2"
           />
         </template>

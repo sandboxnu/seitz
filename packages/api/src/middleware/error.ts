@@ -13,7 +13,7 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
         errMessage = err.message;
         break;
       case "CastError":
-        errStatus = 400;
+        errStatus = 404;
         break;
       default:
     }

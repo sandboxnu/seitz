@@ -39,7 +39,7 @@ router.delete("/:id", isAuthenticated, async (req, res, next) => {
 router.get("/:id", (req, res, next) => {
   Study.findById(req.params["id"])
     .then((study) => {
-      if (!study) throw new HttpError(404);
+      if (!study) return next(new HttpError(404));
       res.json(study);
     })
     .catch(next);

@@ -7,7 +7,6 @@ export interface IUser {
   password: string;
   isAdmin: boolean;
   verifyPassword(password: string): Promise<boolean>;
-  activitiesCreated: Types.ObjectId[];
   studies: Types.ObjectId[];
 }
 
@@ -15,7 +14,6 @@ const userSchema = new Schema<IUser>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   isAdmin: { type: Boolean, required: true, default: false },
-  activitiesCreated: [{ type: Schema.Types.ObjectId, ref: "Activity" }],
   studies: [{ type: Schema.Types.ObjectId, ref: "Study" }],
 });
 

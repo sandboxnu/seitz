@@ -22,7 +22,7 @@ const { mutate } = useMutation({
     </h2>
     <div class="flex-1"></div>
     <RouterLink
-      to="/study"
+      :to="{ name: 'study', params: { id } }"
       class="flex flex-none text-sm bg-neutral-300 justify-center border border-black rounded-lg py-1 w-20"
     >
       Edit

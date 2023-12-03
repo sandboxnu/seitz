@@ -26,7 +26,7 @@ const studies = data;
       <h1 class="text-3xl font-bold">My Studies</h1>
       <div class="flex-1"></div>
       <RouterLink
-        to="/study"
+        :to="{ name: 'study', params: { id: 'new' } }"
         class="flex text-sm bg-neutral-300 border border-black rounded-lg py-1 w-30 p-4 h-8 justify-center"
       >
         + New Study

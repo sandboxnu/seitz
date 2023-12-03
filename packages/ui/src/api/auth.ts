@@ -14,7 +14,6 @@ interface GetUserResponse {
   email: string;
   password: string;
   isAdmin: boolean;
-  activitiesCreated: string[];
   studies: string[];
 }
 
