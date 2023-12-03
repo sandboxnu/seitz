@@ -20,7 +20,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const queryClient = useQueryClient();
 
   function routeStudyId() {
-    if (route.name == "study") {
+    if (route.name === "study") {
       const idParam = route.params.id;
       if (idParam && idParam !== "new") {
         return typeof idParam === "string" ? idParam : idParam[0];
