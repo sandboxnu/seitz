@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import studiesAPI from "@/api/studies";
 import tasksAPI from "@/api/tasks";
 import type {
+  GetStudyResponse,
   ICustomizedBattery,
   ISession,
   ITaskInstance,
@@ -20,6 +21,32 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const route = useRoute();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { mutate } = useMutation({
+    mutationFn({
+      studyId,
+      ...studyData
+    }: { studyId: string } & GetStudyResponse) {
+      return studiesAPI.saveStudy(studyId, studyData);
+    },
+    onMutate() {
+      isStudyLoading.value = true;
+    },
+    async onSuccess() {
+      ElNotification({
+        title: "Saved!",
+      });
+    },
+    onError(err: AxiosError<Error>) {
+      ElNotification({
+        title: "Error",
+        message: err.response?.data.message ?? "",
+        type: "error",
+      });
+    },
+    onSettled() {
+      isStudyLoading.value = false;
+    },
+  });
 
   function routeStudyId() {
     if (route.name === "study") {
@@ -34,6 +61,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const isNewStudy = ref(true);
   const studyId = ref<string>();
   const isStudyLoading = ref(false);
+  const isStudySaving = ref(false);
   const name = ref<string>();
   const description = ref<string>();
   const taskData = ref<Record<string, ICustomizedBattery>>({});
@@ -173,10 +201,22 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     }
   }
 
+  function saveStudyStore() {
+    if (isStudyLoading.value || isStudySaving.value) return;
+    mutate({
+      studyId: studyId.value!,
+      name: name.value ?? "",
+      description: description.value ?? "",
+      batteries: taskBank.value.map((id) => taskData.value[id]), // TODO clean this up
+      sessions: sessions.value.map((id) => sessionData.value[id]),
+    });
+  }
+
   watch(() => route.params.id, initialize, { immediate: true });
 
   return {
     isStudyLoading,
+    isStudySaving,
     name,
     description,
     taskBank,
@@ -184,6 +224,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     sessions,
     sessionData,
     addSession,
+    saveStudyStore,
     handleChange,
     addTaskInstance,
   };

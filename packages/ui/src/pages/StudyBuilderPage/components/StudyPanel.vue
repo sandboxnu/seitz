@@ -14,10 +14,6 @@ const draggableProps = {
   handle: ".handle",
   animation: 200,
 };
-
-const saveChanges = () => {
-  console.log("changes saved");
-};
 </script>
 
 <template>
@@ -49,7 +45,7 @@ const saveChanges = () => {
       </div>
       <AppButton
         class="text-base bg-gray-200 border border-black rounded-lg px-5 py-1 h-auto justify-center"
-        @click="saveChanges"
+        @click="studyBuilderStore.saveStudyStore"
       >
         Save Changes
       </AppButton>

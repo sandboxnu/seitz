@@ -25,6 +25,10 @@ async function deleteStudy(id: string) {
   await axiosInstance.delete(`/studies/${id}`);
 }
 
+async function saveStudy(id: string, studyData: GetStudyResponse) {
+  await axiosInstance.put(`/studies/${id}`, studyData);
+}
+
 export interface ITaskInstance {
   _id: string;
   task: string;
@@ -55,4 +59,4 @@ async function getStudy(id: string) {
   return result.data;
 }
 
-export default { getStudies, deleteStudy, getStudy };
+export default { getStudies, deleteStudy, getStudy, saveStudy };

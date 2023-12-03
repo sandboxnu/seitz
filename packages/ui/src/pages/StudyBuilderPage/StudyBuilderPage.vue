@@ -11,6 +11,7 @@ import TaskEditingPanel from "./components/TaskEditingPanel.vue";
 
 const router = useRouter();
 const authStore = useAuthStore();
+const studyBuilderStore = useStudyBuilderStore();
 
 if (!authStore.currentUser) {
   router.push("/login");
@@ -22,6 +23,9 @@ const taskEditingStore = useTaskEditingStore();
 <template>
   <!-- This is sort of a hack to delete elements if they are dropped outside of sessions -->
   <Draggable
+    v-loading="
+      studyBuilderStore.isStudyLoading || studyBuilderStore.isStudySaving
+    "
     class="flex-1 flex overflow-auto"
     ghost-class="hidden"
     :group="{ put: ['taskbar', 'session'] }"
