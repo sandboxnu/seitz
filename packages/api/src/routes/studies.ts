@@ -4,6 +4,7 @@ import { IUser } from "@/models/user";
 import HttpError from "../types/errors";
 import isAuthenticated from "../middleware/auth";
 import { HydratedDocument } from "mongoose";
+import { ICustomizedBattery } from "@/models/battery";
 
 const router = Router();
 
@@ -36,8 +37,9 @@ router.delete("/:id", isAuthenticated, async (req, res, next) => {
   }
 });
 
-router.get("/:id", (req, res, next) => {
+router.get("/:id", isAuthenticated, (req, res, next) => {
   Study.findById(req.params["id"])
+    .populate<{ batteries: ICustomizedBattery[] }>("batteries")
     .then((study) => {
       if (!study) return next(new HttpError(404));
       res.json(study);

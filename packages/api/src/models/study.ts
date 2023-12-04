@@ -1,5 +1,4 @@
 import { Schema, Types, model } from "mongoose";
-import { ICustomizedBattery, customizedBatterySchema } from "./battery";
 
 export interface ITaskInstance {
   task: Types.ObjectId;
@@ -14,7 +13,7 @@ export interface ISession {
 export interface IStudy {
   name: string;
   description: string;
-  batteries: ICustomizedBattery[];
+  batteries: Types.ObjectId[];
   sessions: ISession[];
 }
 
@@ -35,7 +34,7 @@ const sessionSchema = new Schema<ISession>({
 const studySchema = new Schema<IStudy>({
   name: { type: String, required: true },
   description: { type: String, required: true },
-  batteries: [customizedBatterySchema],
+  batteries: [{ type: Schema.Types.ObjectId, ref: "CustomizedBattery" }],
   sessions: [sessionSchema],
 });
 
