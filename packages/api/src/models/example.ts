@@ -16,6 +16,4 @@ const carSchema = new Schema<ICar>({
   miles: { type: Number, required: true },
 });
 
-const Car = model<ICar>("Car", carSchema);
-
-export default Car;
+export const Car = model<ICar>("Car", carSchema);

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import HttpError from "../types/errors";
-import { IUser } from "../models/user";
+import { IUser } from "../models";
 
 const isAdmin = function (req: Request, res: Response, next: NextFunction) {
   const user = req.user as IUser;

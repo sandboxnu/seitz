@@ -84,11 +84,17 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
           isStudyLoading.value = false;
         })
         .catch((err: AxiosError<Error>) => {
+          router.push("/");
           if (err.response?.status == 404) {
-            router.push("/");
             ElNotification({
               title: "Error",
               message: "Study not found",
+              type: "error",
+            });
+          } else {
+            ElNotification({
+              title: "Error",
+              message: "Error loading study",
               type: "error",
             });
           }
