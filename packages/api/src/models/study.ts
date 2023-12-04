@@ -38,6 +38,4 @@ const studySchema = new Schema<IStudy>({
   sessions: [sessionSchema],
 });
 
-const Study = model<IStudy>("Study", studySchema);
-
-export default Study;
+export const Study = model<IStudy>("Study", studySchema);

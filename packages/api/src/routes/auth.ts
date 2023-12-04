@@ -1,6 +1,6 @@
 import { Router } from "express";
 import passport from "passport";
-import User from "../models/user";
+import { User } from "../models";
 import { Strategy as LocalStrategy } from "passport-local";
 import isAuthenticated from "../middleware/auth";
 import HttpError from "../types/errors";

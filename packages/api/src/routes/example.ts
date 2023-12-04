@@ -1,5 +1,5 @@
 import { Router } from "express";
-import Car from "../models/example";
+import { Car } from "../models";
 import HttpError from "../types/errors";
 
 const router = Router();

@@ -1,7 +1,7 @@
 import request from "supertest";
 import app from "../../src/app";
 import mongoose from "mongoose";
-import User from "../../src/models/user";
+import { User } from "../../src/models";
 
 beforeAll(async () => {
   await mongoose.connect("mongodb://localhost:27017/seitz-test");

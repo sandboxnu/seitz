@@ -2,7 +2,7 @@ import mongoose, { HydratedDocument } from "mongoose";
 import request from "supertest";
 
 import app from "../../src/app";
-import Car, { ICar } from "../../src/models/example";
+import { Car, ICar } from "../../src/models";
 
 beforeAll(async () => {
   await mongoose.connect("mongodb://localhost:27017/seitz-test");

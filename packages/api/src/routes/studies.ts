@@ -1,10 +1,8 @@
 import { Router } from "express";
-import Study, { IStudy } from "../models/study";
-import { IUser } from "@/models/user";
+import { Study, IStudy, IUser } from "../models";
 import HttpError from "../types/errors";
 import isAuthenticated from "../middleware/auth";
 import { HydratedDocument } from "mongoose";
-import { ICustomizedBattery } from "@/models/battery";
 
 const router = Router();
 
@@ -39,7 +37,7 @@ router.delete("/:id", isAuthenticated, async (req, res, next) => {
 
 router.get("/:id", isAuthenticated, (req, res, next) => {
   Study.findById(req.params["id"])
-    .populate<{ batteries: ICustomizedBattery[] }>("batteries")
+    .populate("batteries")
     .then((study) => {
       if (!study) return next(new HttpError(404));
       res.json(study);
