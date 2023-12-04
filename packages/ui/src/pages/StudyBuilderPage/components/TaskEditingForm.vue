@@ -86,8 +86,12 @@ queryClient
                 </ElFormItem>
               </template>
               <template v-else-if="option.type == 'checkbox'">
-                <ElFormItem :label="option.name">
-                  <ElCheckbox v-model="formValues[option._id]" />
+                <ElFormItem>
+                  <ElCheckbox
+                    v-model="formValues[option._id]"
+                    :label="option.name"
+                    size="large"
+                  />
                 </ElFormItem>
               </template>
             </div>
