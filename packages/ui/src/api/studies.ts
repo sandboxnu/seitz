@@ -39,6 +39,7 @@ export interface ISession {
 
 export interface ICustomizedBattery {
   _id: string;
+  battery: string;
   name: string;
 }
 
