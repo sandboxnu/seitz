@@ -18,7 +18,7 @@ defineEmits(["flip"]);
           'relative w-full h-40 rounded-3xl border-black overflow-hidden',
           selected ? 'border-4' : 'border cursor-pointer',
         ]"
-        @click="if (!selected) $emit('flip');"
+        @click="$emit('flip')"
       >
         <ElImage :src="imageUrl" fit="cover" class="h-full w-full" />
         <div

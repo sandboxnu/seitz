@@ -2,29 +2,28 @@
 import { useQueryClient } from "@tanstack/vue-query";
 import tasksAPI from "@/api/tasks";
 import { ref } from "vue";
+import { ICustomizedBattery } from "@/api/studies";
 
-const props = defineProps<{ batteryId: string }>();
+const props = defineProps<{ customBattery: ICustomizedBattery }>();
 
 const queryClient = useQueryClient();
 
-const data = ref();
+const battery = ref();
 const isLoading = ref(true);
 const isError = ref(false);
-const formValues = ref<Record<string, string | number | boolean>>({});
+const formValues = ref<Record<string, unknown>>({});
 
 queryClient
   .fetchQuery({
-    queryKey: ["tasks", props.batteryId],
-    queryFn: () => tasksAPI.getTask(props.batteryId),
+    queryKey: ["tasks", "custom", props.customBattery._id],
+    queryFn: () => tasksAPI.getTask(props.customBattery._id),
   })
   .then((task) => {
-    data.value = task;
-    const values: Record<string, string | number | boolean> = {};
+    battery.value = task.battery;
+    const values: Record<string, unknown> = {};
 
-    task.stages.forEach((stage) => {
-      stage.options.forEach((option) => {
-        values[option._id] = option.default;
-      });
+    task.values.forEach((value) => {
+      values[value.option] = value.value;
     });
 
     formValues.value = values;
@@ -39,11 +38,11 @@ queryClient
 <template>
   <template v-if="isLoading">Loading...</template>
   <template v-else-if="isError">Error</template>
-  <template v-else-if="data">
+  <template v-else-if="battery">
     <div class="mx-6">
       <ElForm style="--el-text-color-regular: black">
         <div class="flex flex-col gap-4">
-          <div v-for="stage in data.stages" :key="stage._id">
+          <div v-for="stage in battery.stages" :key="stage._id">
             <h2 class="text-base text-black font-bold">
               {{ stage.stageLabel }}
             </h2>
@@ -59,7 +58,7 @@ queryClient
                       :key="index"
                       :label="dropdownOption"
                       :value="index"
-                    ></ElOption>
+                    />
                   </ElSelect>
                 </ElFormItem>
               </template>
@@ -72,8 +71,7 @@ queryClient
                     :step="option.step"
                     placeholder="0"
                     class="mr-2"
-                  ></ElInputNumber>
-                  seconds
+                  />
                 </ElFormItem>
               </template>
               <template v-else-if="option.type == 'text'">
@@ -82,7 +80,7 @@ queryClient
                     v-model="formValues[option._id]"
                     type="textarea"
                     placeholder="type here"
-                  ></ElInput>
+                  />
                 </ElFormItem>
               </template>
               <template v-else-if="option.type == 'checkbox'">

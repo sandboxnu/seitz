@@ -58,7 +58,7 @@ const libraryVisible = ref(false);
   >
     <TaskEditingForm
       v-if="studyBuilderStore.editingTaskId !== undefined"
-      :battery-id="studyBuilderStore.editingTask!.battery"
+      :custom-battery="studyBuilderStore.editingTask"
     />
   </AppEditModal>
 </template>

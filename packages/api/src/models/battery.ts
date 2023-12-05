@@ -1,6 +1,7 @@
 import { Schema, Types, model } from "mongoose";
 
 export interface IGenericOption<T> {
+  _id?: Types.ObjectId;
   name: string;
   default: T;
 }
@@ -109,15 +110,27 @@ export const batterySchema = new Schema<IBattery>({
 
 export const Battery = model<IBattery>("Battery", batterySchema);
 
-// Temporary schema for customized batteries
+export interface IOptionValue {
+  option: Types.ObjectId;
+  value: unknown;
+}
+
+// TODO: Tech Debt - is there a better typing for this?
+const optionValueSchema = new Schema<IOptionValue>({
+  option: Schema.Types.ObjectId,
+  value: Schema.Types.Mixed,
+});
+
 export interface ICustomizedBattery {
   battery: Types.ObjectId;
   name: string;
+  values: IOptionValue[];
 }
 
 export const customizedBatterySchema = new Schema<ICustomizedBattery>({
   battery: { type: Schema.Types.ObjectId, ref: "Battery", required: true },
   name: { type: String, required: true },
+  values: [optionValueSchema],
 });
 
 export const CustomizedBattery = model<ICustomizedBattery>(

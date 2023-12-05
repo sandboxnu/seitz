@@ -15,7 +15,7 @@ const visibleState = useImmutable(() => props.visible);
 <template>
   <ElDialog
     v-model="visibleState"
-    class="rounded-3xl max-h-[500px] overflow-hidden flex flex-col"
+    class="rounded-3xl min-h-[400px] h-5/6 overflow-hidden flex flex-col"
     width="80%"
     align-center
     :show-close="false"

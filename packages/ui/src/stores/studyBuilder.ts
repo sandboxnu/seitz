@@ -3,6 +3,7 @@ import { computed, ref, watch } from "vue";
 import mongoose from "mongoose";
 
 import studiesAPI from "@/api/studies";
+import tasksAPI from "@/api/tasks";
 import type {
   ICustomizedBattery,
   ISession,
@@ -10,7 +11,7 @@ import type {
 } from "@/api/studies";
 import type { ChangeEvent } from "@/types/ChangeEvent";
 import { useRoute, useRouter } from "vue-router";
-import { useQueryClient } from "@tanstack/vue-query";
+import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { AxiosError } from "axios";
 import { ElNotification } from "element-plus";
 import { GetTaskResponse } from "@/api/tasks";
@@ -112,14 +113,28 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     }
   }
 
+  const createCustomTaskMutation = useMutation({
+    mutationFn: (data: { batteryId: string; name: string }) =>
+      tasksAPI.createCustomTask(data.batteryId, data.name),
+  });
+
   function addTaskInstance(task: GetTaskResponse) {
-    const newId = new mongoose.Types.ObjectId().toString();
-    taskData.value[newId] = {
-      _id: newId,
-      battery: task._id,
-      name: task.name,
-    };
-    taskBank.value.push(newId);
+    createCustomTaskMutation.mutate(
+      {
+        batteryId: task._id,
+        name: task.name + " " + crypto.randomUUID(),
+      },
+      {
+        onSuccess: (data) => {
+          const newId = data._id;
+          taskData.value[newId] = {
+            ...data,
+            battery: data.battery,
+          };
+          taskBank.value.push(newId);
+        },
+      }
+    );
   }
 
   function hasInstanceOfTask(taskId: string) {

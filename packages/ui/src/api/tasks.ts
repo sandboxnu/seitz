@@ -48,8 +48,25 @@ export interface GetTaskResponse {
   imageUrl: string;
 }
 
-export interface GetSingularTaskResponse extends GetTaskResponse {
+interface GetSingularTaskResponse extends GetTaskResponse {
   stages: IBatteryStage[];
+}
+
+interface IOptionValue {
+  option: string;
+  value: unknown;
+}
+
+interface GetCustomTaskResponse {
+  _id: string;
+  battery: string;
+  name: string;
+  values: IOptionValue[];
+}
+
+export interface GetSingleCustomTaskResponse
+  extends Omit<GetCustomTaskResponse, "battery"> {
+  battery: GetSingularTaskResponse;
 }
 
 async function getAllTasks() {
@@ -58,10 +75,20 @@ async function getAllTasks() {
 }
 
 async function getTask(id: string) {
-  const result = await axiosInstance.get<GetSingularTaskResponse>(
-    `tasks/${id}`
+  const result = await axiosInstance.get<GetSingleCustomTaskResponse>(
+    `tasks/custom/${id}`
   );
   return result.data;
 }
 
-export default { getAllTasks, getTask };
+async function createCustomTask(batteryId: string, name: string) {
+  const result = await axiosInstance.post<GetCustomTaskResponse>(
+    `tasks/${batteryId}/custom`,
+    {
+      name,
+    }
+  );
+  return result.data;
+}
+
+export default { getAllTasks, getTask, createCustomTask };
