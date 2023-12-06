@@ -63,7 +63,7 @@ const libraryVisible = ref(false);
       <div v-if="libraryVisible" class="flex-none flex justify-end">
         <div class="w-[804px] flex justify-end">
           <div
-            class="flex-none w-[780px] overflow-y-auto border-2 border-black rounded-3xl p-5 flex flex-col items-end gap-2"
+            class="flex-none w-[780px] overflow-y-auto border-2 border-black rounded-3xl pt-5 px-5 flex flex-col items-end"
           >
             <div
               class="self-stretch flex items-center gap-5 px-5 py-3 border-b border-neutral-300"
@@ -74,7 +74,7 @@ const libraryVisible = ref(false);
               </div>
               <AppButton @click="libraryVisible = false">Done</AppButton>
             </div>
-            <TaskLibrary />
+            <TaskLibrary class="overflow-y-auto pt-5" />
           </div>
         </div>
       </div>

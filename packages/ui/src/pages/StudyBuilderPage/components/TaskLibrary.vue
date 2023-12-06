@@ -20,7 +20,7 @@ const studyBuilderStore = useStudyBuilderStore();
       <AppButton @click="refetch">Retry</AppButton>
     </div>
   </template>
-  <template v-else>
+  <div v-else>
     <ElSkeleton animated :loading="isLoading">
       <template #template>
         <div class="flex flex-wrap justify-center max-w-[800px] mx-auto">
@@ -46,5 +46,5 @@ const studyBuilderStore = useStudyBuilderStore();
         </div>
       </template>
     </ElSkeleton>
-  </template>
+  </div>
 </template>
