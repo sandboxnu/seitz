@@ -119,10 +119,14 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   });
 
   function addTaskInstance(task: GetTaskResponse) {
+    let existingCount = 0;
+    for (const taskId of taskBank.value) {
+      if (taskData.value[taskId].battery === task._id) existingCount += 1;
+    }
     createCustomTaskMutation.mutate(
       {
         batteryId: task._id,
-        name: task.name + " " + crypto.randomUUID(),
+        name: task.name + (existingCount == 0 ? "" : ` (${existingCount})`),
       },
       {
         onSuccess: (data) => {
@@ -135,10 +139,6 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
         },
       }
     );
-  }
-
-  function hasInstanceOfTask(taskId: string) {
-    return !!Object.values(taskData.value).find((t) => t.battery == taskId);
   }
 
   function addSession() {
@@ -200,6 +200,5 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     addSession,
     handleChange,
     addTaskInstance,
-    hasInstanceOfTask,
   };
 });
