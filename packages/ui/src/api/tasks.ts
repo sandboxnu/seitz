@@ -48,7 +48,7 @@ export interface GetTaskResponse {
   imageUrl: string;
 }
 
-interface GetSingularTaskResponse extends GetTaskResponse {
+export interface GetSingularTaskResponse extends GetTaskResponse {
   stages: IBatteryStage[];
 }
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useQueryClient } from "@tanstack/vue-query";
-import tasksAPI from "@/api/tasks";
+import tasksAPI, { GetSingularTaskResponse } from "@/api/tasks";
 import { ref } from "vue";
 import { ICustomizedBattery } from "@/api/studies";
 
@@ -8,10 +8,12 @@ const props = defineProps<{ customBattery: ICustomizedBattery }>();
 
 const queryClient = useQueryClient();
 
-const battery = ref();
+const battery = ref<GetSingularTaskResponse>();
 const isLoading = ref(true);
 const isError = ref(false);
-const formValues = ref<Record<string, unknown>>({});
+// TODO: Fix the typing here
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const formValues = ref<Record<string, any>>({});
 
 queryClient
   .fetchQuery({
@@ -20,13 +22,12 @@ queryClient
   })
   .then((task) => {
     battery.value = task.battery;
-    const values: Record<string, unknown> = {};
+    formValues.value = {};
 
     task.values.forEach((value) => {
-      values[value.option] = value.value;
+      formValues.value[value.option] = value.value;
     });
 
-    formValues.value = values;
     isLoading.value = false;
   })
   .catch(() => {
@@ -39,7 +40,12 @@ queryClient
   <template v-if="isLoading">Loading...</template>
   <template v-else-if="isError">Error</template>
   <template v-else-if="battery">
-    <div class="mx-6">
+    <template v-if="battery.stages.length == 0">
+      <div class="flex w-full h-full items-center justify-center">
+        <ElEmpty description="No options to customize" />
+      </div>
+    </template>
+    <div v-else class="mx-6">
       <ElForm style="--el-text-color-regular: black">
         <div class="flex flex-col gap-4">
           <div v-for="stage in battery.stages" :key="stage._id">

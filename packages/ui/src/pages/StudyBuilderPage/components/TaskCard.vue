@@ -9,10 +9,7 @@ const studyBuilderStore = useStudyBuilderStore();
 <template>
   <div
     :class="[
-      'border',
-      'rounded-lg',
-      'p-2',
-      'border-black',
+      'rounded-lg p-2 border border-black flex items-center gap-2',
       { 'cursor-pointer': draggable },
     ]"
     @click="studyBuilderStore.editingTaskId = taskId"
@@ -20,8 +17,10 @@ const studyBuilderStore = useStudyBuilderStore();
     <FontAwesomeIcon
       v-if="draggable"
       :icon="['fas', 'grip-vertical']"
-      class="handle cursor-pointer pr-1"
+      class="handle"
     />
-    {{ studyBuilderStore.taskData[taskId].name }}
+    <div class="truncate">
+      {{ studyBuilderStore.taskData[taskId].name }}
+    </div>
   </div>
 </template>
