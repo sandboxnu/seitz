@@ -9,9 +9,12 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
+    // TODO fix this to instantly cause redirect to login
     if (error.response.status === 401) {
       const authStore = useAuthStore();
       authStore.currentUser = null;
+    } else {
+      throw error;
     }
   }
 );

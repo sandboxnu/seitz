@@ -38,7 +38,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     },
     onError(err: AxiosError<Error>) {
       ElNotification({
-        title: "Error",
+        title: "Error saving study",
         message: err.response?.data.message ?? "",
         type: "error",
       });

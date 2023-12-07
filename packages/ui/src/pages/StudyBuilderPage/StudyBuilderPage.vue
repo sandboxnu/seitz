@@ -8,15 +8,16 @@ import TaskBank from "./components/TaskBank.vue";
 import AppEditModal from "@/components/ui/AppEditModal.vue";
 import { useTaskEditingStore } from "@/stores/taskEditing";
 import TaskEditingPanel from "./components/TaskEditingPanel.vue";
+import { useStudyBuilderStore } from "@/stores/studyBuilder";
 
 const router = useRouter();
 const authStore = useAuthStore();
-const studyBuilderStore = useStudyBuilderStore();
 
 if (!authStore.currentUser) {
   router.push("/login");
 }
 
+const studyBuilderStore = useStudyBuilderStore();
 const taskEditingStore = useTaskEditingStore();
 </script>
 
