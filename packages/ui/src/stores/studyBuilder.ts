@@ -55,7 +55,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
         return typeof idParam === "string" ? idParam : idParam[0];
       }
     }
-    return undefined;
+    return new mongoose.Types.ObjectId().toString();
   }
 
   const isNewStudy = ref(true);
@@ -207,7 +207,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
       studyId: studyId.value!,
       name: name.value ?? "",
       description: description.value ?? "",
-      batteries: taskBank.value.map((id) => taskData.value[id]), // TODO clean this up
+      batteries: taskBank.value.map((id) => taskData.value[id]), // TODO: fix this
       sessions: sessions.value.map((id) => sessionData.value[id]),
     });
   }
