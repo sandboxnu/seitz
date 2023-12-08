@@ -28,6 +28,15 @@ router.get("/custom/:id", (req, res, next) => {
     .catch(next);
 });
 
+router.put("/custom/:id", async (req, res, next) => {
+  CustomizedBattery.findOneAndUpdate({ _id: req.params["id"] }, req.body, {
+    upsert: true,
+    new: true,
+  })
+    .then((task) => res.json(task))
+    .catch(next);
+});
+
 router.post("/:id/custom", (req, res, next) => {
   req.body.name;
   Battery.findById(req.params.id)

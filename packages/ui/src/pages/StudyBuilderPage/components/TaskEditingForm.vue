@@ -1,55 +1,35 @@
 <script setup lang="ts">
-import { useQueryClient } from "@tanstack/vue-query";
-import tasksAPI, { GetSingularTaskResponse } from "@/api/tasks";
-import { ref } from "vue";
-import { ICustomizedBattery } from "@/api/studies";
+import { storeToRefs } from "pinia";
+import { useTaskEditingStore } from "@/stores/taskEditing";
+import AppButton from "@/components/ui/AppButton.vue";
 
-const props = defineProps<{ customBattery: ICustomizedBattery }>();
-
-const queryClient = useQueryClient();
-
-const battery = ref<GetSingularTaskResponse>();
-const isLoading = ref(true);
-const isError = ref(false);
-// TODO: Fix the typing here
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const formValues = ref<Record<string, any>>({});
-
-queryClient
-  .fetchQuery({
-    queryKey: ["tasks", "custom", props.customBattery._id],
-    queryFn: () => tasksAPI.getTask(props.customBattery._id),
-  })
-  .then((task) => {
-    battery.value = task.battery;
-    formValues.value = {};
-
-    task.values.forEach((value) => {
-      formValues.value[value.option] = value.value;
-    });
-
-    isLoading.value = false;
-  })
-  .catch(() => {
-    isError.value = true;
-    isLoading.value = false;
-  });
+const store = useTaskEditingStore();
+const { isLoading, isError, name, battery, formValues } = storeToRefs(store);
 </script>
 
 <template>
-  <template v-if="isLoading">Loading...</template>
-  <template v-else-if="isError">Error</template>
-  <template v-else-if="battery">
+  <template v-if="!isLoading && isError">Error</template>
+  <div v-else-if="battery" v-loading="isLoading" class="mx-6">
+    <div class="flex gap-2 items-center mb-4">
+      <input
+        v-model="name"
+        class="flex-1 text-xl font-bold rounded"
+        type="text"
+        :placeholder="battery.name"
+      />
+      <AppButton @click="store.save">Save</AppButton>
+      <AppButton @click="store.saveAs">Save As</AppButton>
+    </div>
     <template v-if="battery.stages.length == 0">
       <div class="flex w-full h-full items-center justify-center">
         <ElEmpty description="No options to customize" />
       </div>
     </template>
-    <div v-else class="mx-6">
-      <ElForm style="--el-text-color-regular: black">
+    <template v-else>
+      <ElForm>
         <div class="flex flex-col gap-4">
           <div v-for="stage in battery.stages" :key="stage._id">
-            <h2 class="text-base text-black font-bold">
+            <h2 class="text-base font-bold">
               {{ stage.stageLabel }}
             </h2>
             <div v-for="option in stage.options" :key="option._id">
@@ -102,6 +82,6 @@ queryClient
           </div>
         </div>
       </ElForm>
-    </div>
-  </template>
+    </template>
+  </div>
 </template>

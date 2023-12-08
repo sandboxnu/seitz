@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { useStudyBuilderStore } from "@/stores/studyBuilder";
+import { useTaskEditingStore } from "@/stores/taskEditing";
 
 defineProps<{ taskId: string; draggable: boolean }>();
 
 const studyBuilderStore = useStudyBuilderStore();
+const taskEditingStore = useTaskEditingStore();
 </script>
 
 <template>
@@ -12,7 +14,7 @@ const studyBuilderStore = useStudyBuilderStore();
       'rounded-lg p-2 border border-black flex items-center gap-2',
       { 'cursor-pointer': draggable },
     ]"
-    @click="studyBuilderStore.editingTaskId = taskId"
+    @click="taskEditingStore.select(taskId)"
   >
     <FontAwesomeIcon
       v-if="draggable"

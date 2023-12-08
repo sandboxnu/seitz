@@ -69,6 +69,12 @@ export interface GetSingleCustomTaskResponse
   battery: GetSingularTaskResponse;
 }
 
+export interface EditTaskDTO {
+  name: string;
+  battery: string;
+  values: IOptionValue[];
+}
+
 async function getAllTasks() {
   const result = await axiosInstance.get<GetTaskResponse[]>(`tasks`);
   return result.data;
@@ -91,4 +97,11 @@ async function createCustomTask(batteryId: string, name: string) {
   return result.data;
 }
 
-export default { getAllTasks, getTask, createCustomTask };
+async function saveTask(id: string, taskData: EditTaskDTO) {
+  return await axiosInstance.put<GetCustomTaskResponse>(
+    `/tasks/custom/${id}`,
+    taskData
+  );
+}
+
+export default { getAllTasks, getTask, createCustomTask, saveTask };

@@ -6,8 +6,8 @@ import { useAuthStore } from "@/stores/auth";
 import StudyPanel from "./components/StudyPanel.vue";
 import TaskBank from "./components/TaskBank.vue";
 import AppEditModal from "@/components/ui/AppEditModal.vue";
-import { useStudyBuilderStore } from "@/stores/studyBuilder";
-import TaskEditingForm from "./components/TaskEditingForm.vue";
+import { useTaskEditingStore } from "@/stores/taskEditing";
+import TaskEditingPanel from "./components/TaskEditingPanel.vue";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -16,7 +16,7 @@ if (!authStore.currentUser) {
   router.push("/login");
 }
 
-const studyBuilderStore = useStudyBuilderStore();
+const taskEditingStore = useTaskEditingStore();
 </script>
 
 <template>
@@ -34,16 +34,12 @@ const studyBuilderStore = useStudyBuilderStore();
     <template #item></template>
   </Draggable>
   <AppEditModal
-    v-if="studyBuilderStore.editingTask?.name !== undefined"
-    :visible="studyBuilderStore.editingTaskId !== undefined"
-    :header="studyBuilderStore.editingTask?.name"
+    :visible="taskEditingStore.editingTaskId !== undefined"
+    header="Edit Task"
     sub-header="Customize your task"
-    @cancel="studyBuilderStore.editingTaskId = undefined"
-    @save="studyBuilderStore.editingTaskId = undefined"
+    @cancel="taskEditingStore.editingTaskId = undefined"
+    @done="taskEditingStore.editingTaskId = undefined"
   >
-    <TaskEditingForm
-      v-if="studyBuilderStore.editingTaskId !== undefined"
-      :custom-battery="studyBuilderStore.editingTask"
-    />
+    <TaskEditingPanel />
   </AppEditModal>
 </template>
