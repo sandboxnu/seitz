@@ -29,11 +29,12 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
       return studiesAPI.saveStudy(studyId, studyData);
     },
     onMutate() {
-      isStudyLoading.value = true;
+      isStudySaving.value = true;
     },
     async onSuccess() {
       ElNotification({
         title: "Saved!",
+        type: "success",
       });
     },
     onError(err: AxiosError<Error>) {
@@ -44,7 +45,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
       });
     },
     onSettled() {
-      isStudyLoading.value = false;
+      isStudySaving.value = false;
     },
   });
 
