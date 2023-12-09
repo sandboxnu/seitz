@@ -9,9 +9,12 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
+    // TODO fix this to instantly cause redirect to login
     if (error.response.status === 401) {
       const authStore = useAuthStore();
       authStore.currentUser = null;
+    } else {
+      throw error;
     }
   }
 );
@@ -23,6 +26,10 @@ async function getStudies() {
 
 async function deleteStudy(id: string) {
   await axiosInstance.delete(`/studies/${id}`);
+}
+
+async function saveStudy(id: string, studyData: GetStudyResponse) {
+  await axiosInstance.put(`/studies/${id}`, studyData);
 }
 
 export interface ITaskInstance {
@@ -55,4 +62,4 @@ async function getStudy(id: string) {
   return result.data;
 }
 
-export default { getStudies, deleteStudy, getStudy };
+export default { getStudies, deleteStudy, getStudy, saveStudy };

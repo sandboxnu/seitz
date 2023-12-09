@@ -52,13 +52,20 @@ router.post("/", (req, res, next) => {
     .catch(next);
 });
 
-router.put("/:id", (req, res, next) => {
-  Study.updateOne({ _id: req.params["id"] }, req.body)
-    .then((study) => {
-      if (!study) throw new HttpError(404);
-      res.json(study);
-    })
-    .catch(next);
+router.put("/:id", isAuthenticated, async (req, res, next) => {
+  try {
+    const study = await Study.findOneAndUpdate(
+      { _id: req.params["id"] },
+      req.body,
+      { upsert: true, new: true }
+    );
+    const user = req.user as HydratedDocument<IUser>;
+    if (!user.studies.includes(study._id))
+      await user.updateOne({ $push: { studies: study._id } });
+    res.json(study);
+  } catch (e) {
+    next();
+  }
 });
 
 export default router;
