@@ -60,27 +60,29 @@ const draggableProps = {
     </div>
     <div
       v-loading="studyBuilderStore.isStudyLoading"
-      class="grow flex flex-row border-2 border-black rounded-xl p-2 overflow-x-auto"
+      class="grow border-2 border-black rounded-xl overflow-x-hidden"
     >
-      <TransitionGroup>
-        <Draggable
-          key="draggable"
-          v-model="studyBuilderStore.sessions"
-          v-bind="draggableProps"
-          class="flex"
-          group="sessions"
-          item-key="_id"
-        >
-          <template #item="{ element: sessionId }">
-            <SessionCard
-              :session-id="sessionId"
-              draggable
-              class="w-72 m-2 shrink-0"
-            />
-          </template>
-        </Draggable>
-      </TransitionGroup>
-      <SessionAdd @add-session="studyBuilderStore.addSession" />
+      <div class="w-full h-full flex flex-row overflow-x-auto">
+        <TransitionGroup>
+          <Draggable
+            key="draggable"
+            v-model="studyBuilderStore.sessions"
+            v-bind="draggableProps"
+            class="flex"
+            group="sessions"
+            item-key="_id"
+          >
+            <template #item="{ element: sessionId }">
+              <SessionCard
+                :session-id="sessionId"
+                draggable
+                class="w-72 m-2 shrink-0"
+              />
+            </template>
+          </Draggable>
+        </TransitionGroup>
+        <SessionAdd @add-session="studyBuilderStore.addSession" />
+      </div>
     </div>
   </div>
 </template>

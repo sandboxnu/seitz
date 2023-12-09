@@ -20,7 +20,7 @@ const studyBuilderStore = useStudyBuilderStore();
       <AppButton @click="refetch">Retry</AppButton>
     </div>
   </template>
-  <div v-else>
+  <template v-else>
     <ElSkeleton animated :loading="isLoading">
       <template #template>
         <div class="flex flex-wrap justify-center max-w-[800px] mx-auto">
@@ -34,8 +34,8 @@ const studyBuilderStore = useStudyBuilderStore();
         </div>
       </template>
       <template #default>
-        <div class="flex flex-wrap max-w-[800px] mx-auto">
-          <div v-for="task in data" :key="task._id" class="mx-3 mb-3">
+        <div class="grid grid-cols-4 gap-3">
+          <div v-for="task in data" :key="task._id">
             <TaskLibraryItem
               :name="task.name"
               :description="task.description"
@@ -46,5 +46,5 @@ const studyBuilderStore = useStudyBuilderStore();
         </div>
       </template>
     </ElSkeleton>
-  </div>
+  </template>
 </template>
