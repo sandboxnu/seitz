@@ -39,11 +39,7 @@ const draggableProps = {
             :sort="false"
           >
             <template #item="{ element: taskId }">
-              <TaskCard
-                draggable
-                :name="studyBuilderStore.taskData[taskId].name"
-                class="mb-2 w-full"
-              />
+              <TaskCard draggable :task-id="taskId" class="mb-2 w-full" />
             </template>
             <template #footer>
               <AppButton @click="$emit('show-add')">Add Task</AppButton>

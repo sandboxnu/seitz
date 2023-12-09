@@ -1,5 +1,9 @@
 <script setup lang="ts">
-defineProps<{ name: string; draggable: boolean }>();
+import { useStudyBuilderStore } from "@/stores/studyBuilder";
+
+defineProps<{ taskId: string; draggable: boolean }>();
+
+const studyBuilderStore = useStudyBuilderStore();
 </script>
 
 <template>
@@ -11,12 +15,13 @@ defineProps<{ name: string; draggable: boolean }>();
       'border-black',
       { 'cursor-pointer': draggable },
     ]"
+    @click="studyBuilderStore.editingTaskId = taskId"
   >
     <FontAwesomeIcon
       v-if="draggable"
       :icon="['fas', 'grip-vertical']"
       class="handle cursor-pointer pr-1"
     />
-    {{ name }}
+    {{ studyBuilderStore.taskData[taskId].name }}
   </div>
 </template>

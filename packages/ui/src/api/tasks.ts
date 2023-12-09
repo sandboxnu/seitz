@@ -5,6 +5,42 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
+interface IGenericOption<T> {
+  _id: string;
+  name: string;
+  default: T;
+}
+
+interface INumberOption extends IGenericOption<number> {
+  type: "number";
+  min?: number;
+  max?: number;
+  step?: number;
+}
+
+interface ITextOption extends IGenericOption<string> {
+  type: "text";
+  maxLength?: number;
+}
+
+interface IDropdownOption extends IGenericOption<number> {
+  type: "dropdown";
+  options: string[];
+}
+
+interface ICheckboxOption extends IGenericOption<boolean> {
+  type: "checkbox";
+}
+
+type IOption = INumberOption | ITextOption | IDropdownOption | ICheckboxOption;
+
+interface IBatteryStage {
+  _id: string;
+  type: string;
+  stageLabel: string;
+  options: IOption[];
+}
+
 export interface GetTaskResponse {
   _id: string;
   name: string;
@@ -12,9 +48,20 @@ export interface GetTaskResponse {
   imageUrl: string;
 }
 
+export interface GetSingularTaskResponse extends GetTaskResponse {
+  stages: IBatteryStage[];
+}
+
 async function getAllTasks() {
   const result = await axiosInstance.get<GetTaskResponse[]>(`tasks`);
   return result.data;
 }
 
-export default { getAllTasks };
+async function getTask(id: string) {
+  const result = await axiosInstance.get<GetSingularTaskResponse>(
+    `tasks/${id}`
+  );
+  return result.data;
+}
+
+export default { getAllTasks, getTask };
