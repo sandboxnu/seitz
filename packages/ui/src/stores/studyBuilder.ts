@@ -32,6 +32,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
       isStudySaving.value = true;
     },
     async onSuccess() {
+      router.push({ name: "study", params: { id: studyId.value } });
       ElNotification({
         title: "Saved!",
         type: "success",
@@ -217,6 +218,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
 
   return {
     studyId,
+    isNewStudy,
     isStudyLoading,
     isStudySaving,
     name,

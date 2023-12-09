@@ -49,7 +49,10 @@ const draggableProps = {
       <div
         class="flex-1 flex gap-2 items-end justify-end min-w-[200px] flex-wrap"
       >
-        <ServerCode class="shrink grow-0 min-w-0" />
+        <ServerCode
+          v-if="!studyBuilderStore.isNewStudy"
+          class="shrink grow-0 min-w-0"
+        />
         <AppButton class="flex-none" @click="studyBuilderStore.saveStudyStore">
           Save Changes
         </AppButton>
