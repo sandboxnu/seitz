@@ -32,7 +32,7 @@ const taskEditingStore = useTaskEditingStore();
   >
     <template #header>
       <TaskBank class="flex-none border border-black" />
-      <StudyPanel class="grow basis-[650px] shrink-0" />
+      <StudyPanel class="grow basis-[750px] shrink-0" />
     </template>
     <template #item></template>
   </Draggable>

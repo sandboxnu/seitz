@@ -4,6 +4,7 @@ import AppButton from "@/components/ui/AppButton.vue";
 import SessionCard from "./SessionCard.vue";
 import Draggable from "vuedraggable";
 import AddSession from "./AddSession.vue";
+import ServerCode from "./ServerCode.vue";
 
 const studyBuilderStore = useStudyBuilderStore();
 
@@ -18,7 +19,7 @@ const draggableProps = {
 
 <template>
   <div class="flex flex-col border border-black overflow-x-hidden p-5">
-    <div class="flex flex-row items-center justify-between">
+    <div class="flex flex-row items-center gap-2 mb-2">
       <div class="flex-1">
         <ElSkeleton animated :loading="studyBuilderStore.isStudyLoading">
           <template #template>
@@ -29,6 +30,7 @@ const draggableProps = {
             <h1 class="text-4xl">
               <input
                 v-model="studyBuilderStore.name"
+                class="w-full"
                 type="text"
                 placeholder="Untitled Study"
               />
@@ -36,6 +38,7 @@ const draggableProps = {
             <h2 class="text-2xl my-2">
               <input
                 v-model="studyBuilderStore.description"
+                class="w-full"
                 type="text"
                 placeholder="Add a description"
               />
@@ -43,12 +46,14 @@ const draggableProps = {
           </template>
         </ElSkeleton>
       </div>
-      <AppButton
-        class="text-base bg-gray-200 border border-black rounded-lg px-5 py-1 h-auto justify-center"
-        @click="studyBuilderStore.saveStudyStore"
+      <div
+        class="flex-1 flex gap-2 items-end justify-end min-w-[200px] flex-wrap"
       >
-        Save Changes
-      </AppButton>
+        <ServerCode class="shrink grow-0 min-w-0" />
+        <AppButton class="flex-none" @click="studyBuilderStore.saveStudyStore">
+          Save Changes
+        </AppButton>
+      </div>
     </div>
     <div
       v-loading="studyBuilderStore.isStudyLoading"

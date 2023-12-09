@@ -16,14 +16,11 @@ import {
   faXmark,
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
+import { faCopy } from "@fortawesome/free-regular-svg-icons";
 
 const pinia = createPinia();
 
-library.add(faGripVertical);
-library.add(faGripHorizontal);
-library.add(faPlus);
-library.add(faXmark);
-library.add(faCheck);
+library.add(faGripVertical, faGripHorizontal, faPlus, faXmark, faCheck, faCopy);
 
 createApp(App)
   .use(router)

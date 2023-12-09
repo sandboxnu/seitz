@@ -216,6 +216,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   watch(() => route.params.id, initialize, { immediate: true });
 
   return {
+    studyId,
     isStudyLoading,
     isStudySaving,
     name,
