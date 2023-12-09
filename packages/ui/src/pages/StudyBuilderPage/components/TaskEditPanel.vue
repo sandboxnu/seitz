@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useStudyBuilderStore } from "@/stores/studyBuilder";
 import { useTaskEditingStore } from "@/stores/taskEditing";
-import TaskEditingForm from "./TaskEditingForm.vue";
+import TaskEditForm from "./TaskEditForm.vue";
 
 const studyBuilderStore = useStudyBuilderStore();
 const taskEditingStore = useTaskEditingStore();
@@ -25,7 +25,7 @@ const taskEditingStore = useTaskEditingStore();
       </div>
     </div>
     <div class="flex-1 border border-gray-400 rounded-xl overflow-hidden">
-      <TaskEditingForm />
+      <TaskEditForm />
     </div>
   </div>
 </template>

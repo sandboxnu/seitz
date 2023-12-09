@@ -3,8 +3,8 @@ import { useStudyBuilderStore } from "@/stores/studyBuilder";
 import AppButton from "@/components/ui/AppButton.vue";
 import SessionCard from "./SessionCard.vue";
 import Draggable from "vuedraggable";
-import AddSession from "./AddSession.vue";
-import ServerCode from "./ServerCode.vue";
+import SessionAdd from "./SessionAdd.vue";
+import StudyServerCode from "./StudyServerCode.vue";
 
 const studyBuilderStore = useStudyBuilderStore();
 
@@ -49,7 +49,7 @@ const draggableProps = {
       <div
         class="flex-1 flex gap-2 items-end justify-end min-w-[200px] flex-wrap"
       >
-        <ServerCode
+        <StudyServerCode
           v-if="!studyBuilderStore.isNewStudy"
           class="shrink grow-0 min-w-0"
         />
@@ -80,7 +80,7 @@ const draggableProps = {
           </template>
         </Draggable>
       </TransitionGroup>
-      <AddSession @add-session="studyBuilderStore.addSession" />
+      <SessionAdd @add-session="studyBuilderStore.addSession" />
     </div>
   </div>
 </template>

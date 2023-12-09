@@ -7,7 +7,7 @@ import StudyPanel from "./components/StudyPanel.vue";
 import TaskBank from "./components/TaskBank.vue";
 import AppEditModal from "@/components/ui/AppEditModal.vue";
 import { useTaskEditingStore } from "@/stores/taskEditing";
-import TaskEditingPanel from "./components/TaskEditingPanel.vue";
+import TaskEditPanel from "./components/TaskEditPanel.vue";
 import { useStudyBuilderStore } from "@/stores/studyBuilder";
 
 const router = useRouter();
@@ -43,6 +43,6 @@ const taskEditingStore = useTaskEditingStore();
     @cancel="taskEditingStore.editingTaskId = undefined"
     @done="taskEditingStore.editingTaskId = undefined"
   >
-    <TaskEditingPanel />
+    <TaskEditPanel />
   </AppEditModal>
 </template>
