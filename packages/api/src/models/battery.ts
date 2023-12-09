@@ -54,7 +54,7 @@ const optionSchema = new Schema<IOption>(
 
 const batteryStageSchema = new Schema<IBatteryStage>({
   type: { type: String, required: true },
-  stageLabel: { type: String, required: true },
+  stageLabel: String,
   options: [optionSchema],
 });
 
@@ -102,7 +102,7 @@ export const BatteryStage = model<IBatteryStage>(
 
 export const batterySchema = new Schema<IBattery>({
   name: { type: String, required: true },
-  description: { type: String, required: true },
+  description: String,
   imageUrl: { type: String, required: true },
   stages: [{ type: Schema.Types.ObjectId, ref: "BatteryStage" }],
 });
