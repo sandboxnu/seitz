@@ -3,8 +3,9 @@ import { useQuery } from "@tanstack/vue-query";
 import tasksAPI from "@/api/tasks";
 import TaskLibraryItem from "./TaskLibraryItem.vue";
 import { useStudyBuilderStore } from "@/stores/studyBuilder";
+import AppButton from "@/components/ui/AppButton.vue";
 
-const { isLoading, isError, data } = useQuery({
+const { isLoading, isError, data, refetch } = useQuery({
   queryKey: ["tasks"],
   queryFn: tasksAPI.getAllTasks,
 });
@@ -13,19 +14,37 @@ const studyBuilderStore = useStudyBuilderStore();
 </script>
 
 <template>
-  <template v-if="isLoading">Loading...</template>
-  <template v-else-if="isError">Error</template>
-  <template v-else>
-    <div class="flex flex-wrap justify-center max-w-[800px] mx-auto">
-      <div v-for="task in data" :key="task._id" class="mx-3 mb-3">
-        <TaskLibraryItem
-          :name="task.name"
-          :description="task.description"
-          :image-url="task.imageUrl"
-          :selected="studyBuilderStore.hasInstanceOfTask(task._id)"
-          @flip="studyBuilderStore.addTaskInstance(task)"
-        />
-      </div>
+  <template v-if="isError && !isLoading">
+    <div class="w-full h-full flex flex-col justify-center items-center">
+      <ElEmpty description="Error loading task library" />
+      <AppButton @click="refetch">Retry</AppButton>
     </div>
   </template>
+  <div v-else>
+    <ElSkeleton animated :loading="isLoading">
+      <template #template>
+        <div class="flex flex-wrap justify-center max-w-[800px] mx-auto">
+          <div v-for="i in 16" :key="i" class="w-40 mx-3 mb-3">
+            <ElSkeletonItem
+              variant="image"
+              class="w-40 h-40 rounded-3xl border border-black mb-1"
+            />
+            <ElSkeletonItem variant="text" class="h-5" />
+          </div>
+        </div>
+      </template>
+      <template #default>
+        <div class="flex flex-wrap max-w-[800px] mx-auto">
+          <div v-for="task in data" :key="task._id" class="mx-3 mb-3">
+            <TaskLibraryItem
+              :name="task.name"
+              :description="task.description"
+              :image-url="task.imageUrl"
+              @flip="studyBuilderStore.addTaskInstance(task)"
+            />
+          </div>
+        </div>
+      </template>
+    </ElSkeleton>
+  </div>
 </template>

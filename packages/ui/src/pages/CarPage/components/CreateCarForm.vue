@@ -1,19 +1,14 @@
 <script setup lang="ts">
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
-import carAPI, { GetCarResponse } from "@/api/example";
+import carAPI from "@/api/example";
 import { ref } from "vue";
 
 const queryClient = useQueryClient();
 
 const { isLoading, isError, error, isSuccess, mutate } = useMutation({
   mutationFn: carAPI.createCar,
-  onSuccess: (createdCar) => {
-    queryClient.setQueryData(
-      ["cars"],
-      (oldCars: GetCarResponse[] | undefined) => {
-        return oldCars ? oldCars.concat([createdCar]) : [createdCar];
-      }
-    );
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ["cars"] });
   },
 });
 

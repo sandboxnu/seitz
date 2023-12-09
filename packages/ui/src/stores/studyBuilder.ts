@@ -1,8 +1,9 @@
 import { defineStore } from "pinia";
-import { computed, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import mongoose from "mongoose";
 
 import studiesAPI from "@/api/studies";
+import tasksAPI from "@/api/tasks";
 import type {
   ICustomizedBattery,
   ISession,
@@ -10,7 +11,7 @@ import type {
 } from "@/api/studies";
 import type { ChangeEvent } from "@/types/ChangeEvent";
 import { useRoute, useRouter } from "vue-router";
-import { useQueryClient } from "@tanstack/vue-query";
+import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { AxiosError } from "axios";
 import { ElNotification } from "element-plus";
 import { GetTaskResponse } from "@/api/tasks";
@@ -39,14 +40,6 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const taskBank = ref<string[]>([]);
   const sessionData = ref<Record<string, ISession>>({});
   const sessions = ref<string[]>([]);
-  const editingTaskId = ref<string>();
-  const editingTask = computed(() => {
-    if (!editingTaskId.value) {
-      return undefined;
-    } else {
-      return taskData.value[editingTaskId.value];
-    }
-  });
 
   function initialize() {
     if (route.name !== "study") return;
@@ -59,7 +52,6 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     taskBank.value = [];
     sessionData.value = {};
     sessions.value = [];
-    editingTaskId.value = undefined;
 
     if (isNewStudy.value) {
       const EMPTY_SESSION = {
@@ -112,18 +104,29 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     }
   }
 
-  function addTaskInstance(task: GetTaskResponse) {
-    const newId = new mongoose.Types.ObjectId().toString();
-    taskData.value[newId] = {
-      _id: newId,
-      battery: task._id,
-      name: task.name,
-    };
-    taskBank.value.push(newId);
-  }
+  const createCustomTaskMutation = useMutation({
+    mutationFn: (data: { batteryId: string; name: string }) =>
+      tasksAPI.createCustomTask(data.batteryId, data.name),
+  });
 
-  function hasInstanceOfTask(taskId: string) {
-    return !!Object.values(taskData.value).find((t) => t.battery == taskId);
+  function addTaskInstance(task: GetTaskResponse) {
+    let existingCount = 0;
+    for (const taskId of taskBank.value) {
+      if (taskData.value[taskId].battery === task._id) existingCount += 1;
+    }
+    createCustomTaskMutation.mutate(
+      {
+        batteryId: task._id,
+        name: task.name + (existingCount == 0 ? "" : ` (${existingCount})`),
+      },
+      {
+        onSuccess: (data) => {
+          const newId = data._id;
+          taskData.value[newId] = data;
+          taskBank.value.push(newId);
+        },
+      }
+    );
   }
 
   function addSession() {
@@ -180,11 +183,8 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     taskData,
     sessions,
     sessionData,
-    editingTaskId,
-    editingTask,
     addSession,
     handleChange,
     addTaskInstance,
-    hasInstanceOfTask,
   };
 });

@@ -1,50 +1,35 @@
 <script setup lang="ts">
-import { useQueryClient } from "@tanstack/vue-query";
-import tasksAPI from "@/api/tasks";
-import { ref } from "vue";
+import { storeToRefs } from "pinia";
+import { useTaskEditingStore } from "@/stores/taskEditing";
+import AppButton from "@/components/ui/AppButton.vue";
 
-const props = defineProps<{ batteryId: string }>();
-
-const queryClient = useQueryClient();
-
-const data = ref();
-const isLoading = ref(true);
-const isError = ref(false);
-const formValues = ref<Record<string, string | number | boolean>>({});
-
-queryClient
-  .fetchQuery({
-    queryKey: ["tasks", props.batteryId],
-    queryFn: () => tasksAPI.getTask(props.batteryId),
-  })
-  .then((task) => {
-    data.value = task;
-    const values: Record<string, string | number | boolean> = {};
-
-    task.stages.forEach((stage) => {
-      stage.options.forEach((option) => {
-        values[option._id] = option.default;
-      });
-    });
-
-    formValues.value = values;
-    isLoading.value = false;
-  })
-  .catch(() => {
-    isError.value = true;
-    isLoading.value = false;
-  });
+const store = useTaskEditingStore();
+const { isLoading, isError, name, battery, formValues } = storeToRefs(store);
 </script>
 
 <template>
-  <template v-if="isLoading">Loading...</template>
-  <template v-else-if="isError">Error</template>
-  <template v-else-if="data">
-    <div class="mx-6">
-      <ElForm style="--el-text-color-regular: black">
+  <template v-if="!isLoading && isError">Error</template>
+  <div v-else-if="battery" v-loading="isLoading" class="mx-6">
+    <div class="flex gap-2 items-center mb-4">
+      <input
+        v-model="name"
+        class="flex-1 text-xl font-bold rounded"
+        type="text"
+        :placeholder="battery.name"
+      />
+      <AppButton @click="store.save">Save</AppButton>
+      <AppButton @click="store.saveAs">Save As</AppButton>
+    </div>
+    <template v-if="battery.stages.length == 0">
+      <div class="flex w-full h-full items-center justify-center">
+        <ElEmpty description="No options to customize" />
+      </div>
+    </template>
+    <template v-else>
+      <ElForm>
         <div class="flex flex-col gap-4">
-          <div v-for="stage in data.stages" :key="stage._id">
-            <h2 class="text-base text-black font-bold">
+          <div v-for="stage in battery.stages" :key="stage._id">
+            <h2 class="text-base font-bold">
               {{ stage.stageLabel }}
             </h2>
             <div v-for="option in stage.options" :key="option._id">
@@ -59,7 +44,7 @@ queryClient
                       :key="index"
                       :label="dropdownOption"
                       :value="index"
-                    ></ElOption>
+                    />
                   </ElSelect>
                 </ElFormItem>
               </template>
@@ -72,8 +57,7 @@ queryClient
                     :step="option.step"
                     placeholder="0"
                     class="mr-2"
-                  ></ElInputNumber>
-                  seconds
+                  />
                 </ElFormItem>
               </template>
               <template v-else-if="option.type == 'text'">
@@ -82,7 +66,7 @@ queryClient
                     v-model="formValues[option._id]"
                     type="textarea"
                     placeholder="type here"
-                  ></ElInput>
+                  />
                 </ElFormItem>
               </template>
               <template v-else-if="option.type == 'checkbox'">
@@ -98,6 +82,6 @@ queryClient
           </div>
         </div>
       </ElForm>
-    </div>
-  </template>
+    </template>
+  </div>
 </template>

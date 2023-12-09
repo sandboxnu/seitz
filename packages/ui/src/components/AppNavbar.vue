@@ -14,15 +14,24 @@ function logOut() {
 
 <template>
   <ElMenu
+    class="border-b-0 flex items-center"
     :default-active="route.path"
     mode="horizontal"
     :router="true"
     :ellipsis="false"
+    background-color="black"
+    text-color="white"
+    active-text-color="white"
   >
-    <ElMenuItem index="/">Home</ElMenuItem>
-    <ElMenuItem index="/example">Example</ElMenuItem>
+    <RouterLink
+      to="/"
+      class="text-white text-xl pl-6 mr-2 pb-1 flex items-center"
+    >
+      <span class="font-light">Northeastern</span>&nbsp;
+      <span class="font-bold">Brain Game Center</span>
+    </RouterLink>
     <template v-if="authStore.currentUser">
-      <ElMenuItem index="/dashboard">Dashboard</ElMenuItem>
+      <ElMenuItem index="/studies">My Studies</ElMenuItem>
       <div class="flex-1"></div>
       <template v-if="authStore.currentUser.isAdmin">
         <ElMenuItem index="/admin">Admin</ElMenuItem>
@@ -38,3 +47,9 @@ function logOut() {
     </template>
   </ElMenu>
 </template>
+
+<style>
+.el-menu-item:hover {
+  background: #333333 !important;
+}
+</style>

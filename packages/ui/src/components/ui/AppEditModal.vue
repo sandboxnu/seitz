@@ -7,15 +7,16 @@ const props = defineProps<{
   header?: string;
   subHeader?: string;
 }>();
-defineEmits(["cancel", "save"]);
+defineEmits(["cancel", "done"]);
 
 const visibleState = useImmutable(() => props.visible);
 </script>
 
 <template>
   <ElDialog
+    id="edit-modal"
     v-model="visibleState"
-    class="rounded-3xl max-h-[500px] overflow-hidden flex flex-col"
+    class="rounded-3xl min-h-[400px] h-5/6 overflow-hidden flex flex-col"
     width="80%"
     align-center
     :show-close="false"
@@ -39,7 +40,7 @@ const visibleState = useImmutable(() => props.visible);
           </p>
           <p v-if="subHeader" class="font-light">{{ subHeader }}</p>
         </div>
-        <AppButton @click="$emit('save')">Save</AppButton>
+        <AppButton @click="$emit('done')">Done</AppButton>
       </div>
     </template>
     <slot />
@@ -47,6 +48,10 @@ const visibleState = useImmutable(() => props.visible);
 </template>
 
 <style>
+#edit-modal {
+  --el-text-color-regular: black;
+}
+
 .el-dialog__body {
   flex: 1;
   overflow: auto;

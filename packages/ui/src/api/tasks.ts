@@ -52,16 +52,56 @@ export interface GetSingularTaskResponse extends GetTaskResponse {
   stages: IBatteryStage[];
 }
 
+interface IOptionValue {
+  option: string;
+  value: unknown;
+}
+
+interface GetCustomTaskResponse {
+  _id: string;
+  battery: string;
+  name: string;
+  values: IOptionValue[];
+}
+
+export interface GetSingleCustomTaskResponse
+  extends Omit<GetCustomTaskResponse, "battery"> {
+  battery: GetSingularTaskResponse;
+}
+
+export interface EditTaskDTO {
+  name: string;
+  battery: string;
+  values: IOptionValue[];
+}
+
 async function getAllTasks() {
   const result = await axiosInstance.get<GetTaskResponse[]>(`tasks`);
   return result.data;
 }
 
 async function getTask(id: string) {
-  const result = await axiosInstance.get<GetSingularTaskResponse>(
-    `tasks/${id}`
+  const result = await axiosInstance.get<GetSingleCustomTaskResponse>(
+    `tasks/custom/${id}`
   );
   return result.data;
 }
 
-export default { getAllTasks, getTask };
+async function createCustomTask(batteryId: string, name: string) {
+  const result = await axiosInstance.post<GetCustomTaskResponse>(
+    `tasks/${batteryId}/custom`,
+    {
+      name,
+    }
+  );
+  return result.data;
+}
+
+async function saveTask(id: string, taskData: EditTaskDTO) {
+  return await axiosInstance.put<GetCustomTaskResponse>(
+    `/tasks/custom/${id}`,
+    taskData
+  );
+}
+
+export default { getAllTasks, getTask, createCustomTask, saveTask };
