@@ -7,7 +7,7 @@ import StudyPanel from "./components/StudyPanel.vue";
 import TaskBank from "./components/TaskBank.vue";
 import AppEditModal from "@/components/ui/AppEditModal.vue";
 import { useTaskEditingStore } from "@/stores/taskEditing";
-import TaskEditingPanel from "./components/TaskEditingPanel.vue";
+import TaskEditPanel from "./components/TaskEditPanel.vue";
 import { useStudyBuilderStore } from "@/stores/studyBuilder";
 
 const router = useRouter();
@@ -32,7 +32,7 @@ const taskEditingStore = useTaskEditingStore();
   >
     <template #header>
       <TaskBank class="flex-none border border-black" />
-      <StudyPanel class="grow basis-[650px] shrink-0" />
+      <StudyPanel class="grow basis-[750px] shrink-0" />
     </template>
     <template #item></template>
   </Draggable>
@@ -43,6 +43,6 @@ const taskEditingStore = useTaskEditingStore();
     @cancel="taskEditingStore.editingTaskId = undefined"
     @done="taskEditingStore.editingTaskId = undefined"
   >
-    <TaskEditingPanel />
+    <TaskEditPanel />
   </AppEditModal>
 </template>

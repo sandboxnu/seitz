@@ -61,12 +61,12 @@ const libraryVisible = ref(false);
     </div>
     <Transition name="slide">
       <div v-if="libraryVisible" class="flex-none flex justify-end">
-        <div class="w-[804px] flex justify-end">
+        <div class="w-[764px] flex justify-end">
           <div
-            class="flex-none w-[780px] overflow-y-auto border-2 border-black rounded-3xl pt-5 px-5 flex flex-col items-end"
+            class="flex-none w-[740px] overflow-y-hidden border-2 border-black rounded-3xl pt-5 flex flex-col"
           >
             <div
-              class="self-stretch flex items-center gap-5 px-5 py-3 border-b border-neutral-300"
+              class="self-stretch flex items-center gap-5 mx-5 px-5 py-3 border-b border-neutral-300"
             >
               <div class="flex-1">
                 <p class="text-xl text-black font-bold">Task Library</p>
@@ -74,7 +74,9 @@ const libraryVisible = ref(false);
               </div>
               <AppButton @click="libraryVisible = false">Done</AppButton>
             </div>
-            <TaskLibrary class="overflow-y-auto pt-5" />
+            <div class="overflow-y-auto pt-5 w-full flex justify-center">
+              <TaskLibrary />
+            </div>
           </div>
         </div>
       </div>
@@ -85,14 +87,14 @@ const libraryVisible = ref(false);
 <style scoped>
 .slide-leave-active,
 .slide-enter-active {
-  transition: 0.5s;
+  transition: 0.75s;
   transition-property: width;
   overflow: hidden;
 }
 
 .slide-enter-to,
 .slide-leave-from {
-  width: 804px;
+  width: 764px;
 }
 
 .slide-enter-from,

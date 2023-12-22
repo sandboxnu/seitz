@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAuthStore } from "../../stores/auth";
 import { RouterLink, useRouter } from "vue-router";
-import StudyComponent from "./components/StudyComponent.vue";
+import MyStudiesItem from "./components/MyStudiesItem.vue";
 import { useQuery } from "@tanstack/vue-query";
 import studiesAPI from "@/api/studies";
 
@@ -34,7 +34,7 @@ const studies = data;
     </div>
 
     <div class="flex flex-col">
-      <StudyComponent
+      <MyStudiesItem
         v-for="study in studies"
         :id="study._id"
         :key="study._id"
