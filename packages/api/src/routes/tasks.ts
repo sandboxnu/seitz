@@ -6,7 +6,7 @@ import {
   IOptionValue,
 } from "../models/battery";
 import HttpError from "../types/errors";
-import { Study } from "@/models";
+import { Study } from "../models";
 
 const router = Router();
 
@@ -38,7 +38,7 @@ router.put("/custom/:id", async (req, res, next) => {
     .catch(next);
 });
 
-router.post("/:id/custom?studyId=xxx", (req, res, next) => {
+router.post("/:id/custom", (req, res, next) => {
   const studyId = req.query.studyId;
   req.body.name;
   Battery.findById(req.params.id)
@@ -60,9 +60,12 @@ router.post("/:id/custom?studyId=xxx", (req, res, next) => {
         values,
       })
         .then((customBattery) => {
-          Study.findByIdAndUpdate(studyId, {
-            $push: { batteries: customBattery.battery },
-          });
+          Study.findByIdAndUpdate(
+            { _id: studyId },
+            {
+              $push: { batteries: customBattery._id },
+            }
+          ).catch(next);
           res.status(201).json(customBattery);
         })
         .catch(next);
