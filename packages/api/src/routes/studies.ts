@@ -2,8 +2,8 @@ import { Router } from "express";
 import { Study, IStudy, IUser } from "../models";
 import HttpError from "../types/errors";
 import isAuthenticated from "../middleware/auth";
-import { HydratedDocument } from "mongoose";
-import { ICustomizedBattery } from "@/models/battery";
+import mongoose, { HydratedDocument } from "mongoose";
+import { CustomizedBattery, ICustomizedBattery } from "../models/battery";
 
 const router = Router();
 
@@ -63,6 +63,26 @@ router.put("/:id", isAuthenticated, async (req, res, next) => {
     if (!user.studies.includes(study._id))
       await user.updateOne({ $push: { studies: study._id } });
     res.json(study);
+  } catch (e) {
+    next();
+  }
+});
+
+router.put("/:studyId/tasks/:taskId", async (req, res, next) => {
+  CustomizedBattery.findOneAndUpdate({ _id: req.params["taskId"] }, req.body, {
+    upsert: true,
+    new: true,
+  })
+    .then((task) => res.json(task))
+    .catch(next);
+
+  try {
+    const taskId = { _id: req.params["taskId"] };
+    const taskObjectId = new mongoose.Types.ObjectId(taskId._id);
+    const study = await Study.findOne({ _id: req.params["studyId"] });
+    if (!study?.batteries.includes(taskObjectId)) {
+      await study?.updateOne({ $push: { batteries: taskObjectId } });
+    }
   } catch (e) {
     next();
   }
