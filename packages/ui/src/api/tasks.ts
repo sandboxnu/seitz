@@ -87,12 +87,17 @@ async function getTask(id: string) {
   return result.data;
 }
 
-async function createCustomTask(batteryId: string, name: string) {
+async function createCustomTask(
+  batteryId: string,
+  name: string,
+  studyId: string | undefined
+) {
   const result = await axiosInstance.post<GetCustomTaskResponse>(
     `tasks/${batteryId}/custom`,
     {
       name,
-    }
+    },
+    { params: { studyId } }
   );
   return result.data;
 }

@@ -136,7 +136,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
 
   const createCustomTaskMutation = useMutation({
     mutationFn: (data: { batteryId: string; name: string }) =>
-      tasksAPI.createCustomTask(data.batteryId, data.name),
+      tasksAPI.createCustomTask(data.batteryId, data.name, studyId.value),
   });
 
   function addTaskInstance(task: GetTaskResponse) {
