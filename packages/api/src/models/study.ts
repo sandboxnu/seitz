@@ -32,8 +32,8 @@ const sessionSchema = new Schema<ISession>({
 });
 
 const studySchema = new Schema<IStudy>({
-  name: { type: String, required: true },
-  description: { type: String, required: true },
+  name: { type: String, default: "" },
+  description: { type: String, default: "" },
   batteries: [{ type: Schema.Types.ObjectId, ref: "CustomizedBattery" }],
   sessions: [sessionSchema],
 });
