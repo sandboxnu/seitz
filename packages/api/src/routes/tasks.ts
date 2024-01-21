@@ -10,7 +10,7 @@ import HttpError from "../types/errors";
 const router = Router();
 
 router.get("/", async (req, res, next) => {
-  Battery.find()
+  Battery.find({ deleted: false })
     .then((batteries) => res.json(batteries))
     .catch(next);
 });
@@ -38,7 +38,6 @@ router.put("/custom/:id", async (req, res, next) => {
 });
 
 router.post("/:id/custom", (req, res, next) => {
-  req.body.name;
   Battery.findById(req.params.id)
     .populate<{ stages: IBatteryStage[] }>("stages")
     .then((battery) => {
@@ -60,6 +59,12 @@ router.post("/:id/custom", (req, res, next) => {
         .then((customBattery) => res.status(201).json(customBattery))
         .catch(next);
     })
+    .catch(next);
+});
+
+router.delete("/:id", (req, res, next) => {
+  Battery.updateOne({ _id: req.params["id"] }, { deleted: true })
+    .then(() => res.sendStatus(200))
     .catch(next);
 });
 
