@@ -19,7 +19,6 @@ const { data, refetch } = useQuery({
   queryFn: studiesAPI.getStudies,
 });
 
-// created to link to POST /studies endpoint
 const { mutate, isLoading } = useMutation({
   mutationFn: () => studiesAPI.createStudy(),
   onSuccess: (createdStudy) => {
