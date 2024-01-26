@@ -90,7 +90,7 @@ async function getTask(id: string) {
 async function createCustomTask(
   batteryId: string,
   name: string,
-  studyId: string | undefined
+  studyId: string
 ) {
   const result = await axiosInstance.post<GetCustomTaskResponse>(
     `tasks/${batteryId}/custom`,
