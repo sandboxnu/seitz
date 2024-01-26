@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import studiesAPI from "@/api/studies";
 import { useMutation } from "@tanstack/vue-query";
+import AppButton from "@/components/ui/AppButton.vue";
 
 const emit = defineEmits(["deleted"]);
 const props = defineProps<{ name: string; description: string; id: string }>();
@@ -21,17 +22,10 @@ const { mutate } = useMutation({
       {{ description }}
     </h2>
     <div class="flex-1"></div>
-    <RouterLink
-      :to="{ name: 'study', params: { id } }"
-      class="flex flex-none text-sm bg-neutral-300 justify-center border border-black rounded-lg py-1 w-20"
-    >
-      Edit
+
+    <RouterLink :to="{ name: 'study', params: { id } }">
+      <AppButton>Edit</AppButton>
     </RouterLink>
-    <button
-      class="flex flex-none text-sm bg-neutral-300 justify-center border border-black rounded-lg py-1 w-20"
-      @click="mutate()"
-    >
-      Delete
-    </button>
+    <AppButton @click="mutate">Delete</AppButton>
   </div>
 </template>
