@@ -33,7 +33,7 @@ const studies = data;
     <div class="flex items-center">
       <h1 class="text-3xl font-bold">My Studies</h1>
       <div class="flex-1"></div>
-      <AppButton @click="mutate()"> + New Study </AppButton>
+      <AppButton @click="mutate">+ New Study</AppButton>
     </div>
 
     <div class="flex flex-col">

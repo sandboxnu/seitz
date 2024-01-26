@@ -48,15 +48,9 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   });
 
   function routeStudyId() {
-    if (route.name === "study") {
-      const idParam = route.params.id;
-      if (!idParam) {
-        router.push("/");
-        return "";
-      }
-      return typeof idParam === "string" ? idParam : idParam[0];
-    }
-    return "";
+    if (route.name !== "study") return "";
+    const idParam = route.params.id;
+    return typeof idParam === "string" ? idParam : idParam[0];
   }
 
   const studyId = ref<string>("");

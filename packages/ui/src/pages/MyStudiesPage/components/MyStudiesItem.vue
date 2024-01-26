@@ -22,9 +22,10 @@ const { mutate } = useMutation({
       {{ description }}
     </h2>
     <div class="flex-1"></div>
-    <AppButton>
-      <RouterLink :to="{ name: 'study', params: { id } }"> Edit </RouterLink>
-    </AppButton>
-    <AppButton @click="mutate()"> Delete </AppButton>
+
+    <RouterLink :to="{ name: 'study', params: { id } }">
+      <AppButton>Edit</AppButton>
+    </RouterLink>
+    <AppButton @click="mutate">Delete</AppButton>
   </div>
 </template>

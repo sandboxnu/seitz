@@ -52,7 +52,7 @@ router.post("/new", isAuthenticated, async (req, res, next) => {
     const study = await Study.create({});
 
     await user.updateOne({ $push: { studies: study._id } });
-    setTimeout(() => res.status(201).json(study), 3000);
+    res.status(201).json(study);
   } catch (e) {
     next(e);
   }
