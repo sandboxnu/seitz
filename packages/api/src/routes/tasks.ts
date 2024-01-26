@@ -6,6 +6,7 @@ import {
   IOptionValue,
 } from "../models/battery";
 import HttpError from "../types/errors";
+import isAdmin from "../middleware/admin";
 
 const router = Router();
 
@@ -62,7 +63,7 @@ router.post("/:id/custom", (req, res, next) => {
     .catch(next);
 });
 
-router.delete("/:id", (req, res, next) => {
+router.delete("/:id", isAdmin, (req, res, next) => {
   Battery.updateOne({ _id: req.params["id"] }, { deleted: true })
     .then(() => res.sendStatus(200))
     .catch(next);
