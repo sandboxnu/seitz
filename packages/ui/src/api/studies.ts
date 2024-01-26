@@ -19,19 +19,6 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-async function getStudies() {
-  const response = await axiosInstance.get("/studies/");
-  return response.data;
-}
-
-async function deleteStudy(id: string) {
-  await axiosInstance.delete(`/studies/${id}`);
-}
-
-async function saveStudy(id: string, studyData: GetStudyResponse) {
-  await axiosInstance.put(`/studies/${id}`, studyData);
-}
-
 export interface ITaskInstance {
   _id: string;
   task: string;
@@ -51,10 +38,15 @@ export interface ICustomizedBattery {
 }
 
 export interface GetStudyResponse {
+  _id: string;
   name: string;
   description: string;
   batteries: ICustomizedBattery[];
   sessions: ISession[];
+}
+async function getStudies() {
+  const response = await axiosInstance.get<GetStudyResponse[]>("/studies/");
+  return response.data;
 }
 
 async function getStudy(id: string) {
@@ -62,4 +54,17 @@ async function getStudy(id: string) {
   return result.data;
 }
 
-export default { getStudies, deleteStudy, getStudy, saveStudy };
+async function createStudy() {
+  const response = await axiosInstance.post<GetStudyResponse>("/studies/new");
+  return response.data;
+}
+
+async function deleteStudy(id: string) {
+  await axiosInstance.delete(`/studies/${id}`);
+}
+
+async function saveStudy(id: string, studyData: GetStudyResponse) {
+  await axiosInstance.put(`/studies/${id}`, studyData);
+}
+
+export default { getStudies, deleteStudy, getStudy, saveStudy, createStudy };
