@@ -6,6 +6,7 @@ import {
   IOptionValue,
 } from "../models/battery";
 import HttpError from "../types/errors";
+import { Study } from "../models";
 
 const router = Router();
 
@@ -28,16 +29,8 @@ router.get("/custom/:id", (req, res, next) => {
     .catch(next);
 });
 
-router.put("/custom/:id", async (req, res, next) => {
-  CustomizedBattery.findOneAndUpdate({ _id: req.params["id"] }, req.body, {
-    upsert: true,
-    new: true,
-  })
-    .then((task) => res.json(task))
-    .catch(next);
-});
-
 router.post("/:id/custom", (req, res, next) => {
+  const studyId = req.query.studyId;
   req.body.name;
   Battery.findById(req.params.id)
     .populate<{ stages: IBatteryStage[] }>("stages")
@@ -57,7 +50,15 @@ router.post("/:id/custom", (req, res, next) => {
         name: req.body.name,
         values,
       })
-        .then((customBattery) => res.status(201).json(customBattery))
+        .then((customBattery) => {
+          Study.findByIdAndUpdate(
+            { _id: studyId },
+            {
+              $push: { batteries: customBattery._id },
+            }
+          ).catch(next);
+          res.status(201).json(customBattery);
+        })
         .catch(next);
     })
     .catch(next);
