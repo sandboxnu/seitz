@@ -85,30 +85,48 @@ router.put("/:id", isAuthenticated, async (req, res, next) => {
   }
 });
 
-router.put("/:studyId/tasks/:taskId", async (req, res, next) => {
-  try {
-    const study = await Study.findOne({ _id: req.params["studyId"] });
-    if (!study) {
-      return next(new HttpError(404));
-    }
-
-    const task = await CustomizedBattery.findOneAndUpdate(
-      { _id: req.params["taskId"] },
-      req.body,
-      {
-        upsert: true,
-        new: true,
+router.put(
+  "/:studyId/tasks/:taskId",
+  isAuthenticated,
+  async (req, res, next) => {
+    try {
+      const study = await Study.findOne({ _id: req.params["studyId"] });
+      if (!study) {
+        return next(new HttpError(404));
       }
-    );
+      //do we need to check if custom task id is included in the study's batteries?
+      if (
+        !study.batteries.some(
+          (taskId) => taskId.toString() === req.params["taskId"]
+        )
+      ) {
+        return next(new HttpError(403));
+      }
 
-    const taskObjectId = task._id;
-    if (!study.batteries.some((id) => id.equals(taskObjectId))) {
-      await study.updateOne({ $push: { batteries: taskObjectId } });
+      const user = req.user as HydratedDocument<IUser>;
+      if (!user.studies.some((id) => id.toString() === req.params["studyId"])) {
+        return next(new HttpError(403));
+      }
+
+      const task = await CustomizedBattery.findOneAndUpdate(
+        { _id: req.params["taskId"] },
+        req.body,
+        {
+          upsert: true,
+          new: true,
+        }
+      );
+
+      //should the custom task already be in the study's batteries?
+      const taskObjectId = task._id;
+      if (!study.batteries.some((id) => id.equals(taskObjectId))) {
+        await study.updateOne({ $push: { batteries: taskObjectId } });
+      }
+      res.json(task);
+    } catch (e) {
+      next();
     }
-    res.json(task);
-  } catch (e) {
-    next();
   }
-});
+);
 
 export default router;
