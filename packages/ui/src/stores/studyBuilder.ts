@@ -22,11 +22,8 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { mutate } = useMutation({
-    mutationFn({
-      studyId,
-      ...studyData
-    }: { studyId: string } & GetStudyResponse) {
-      return studiesAPI.saveStudy(studyId, studyData);
+    mutationFn(studyData: GetStudyResponse) {
+      return studiesAPI.saveStudy(studyData._id, studyData);
     },
     onMutate() {
       isStudySaving.value = true;
@@ -51,17 +48,12 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   });
 
   function routeStudyId() {
-    if (route.name === "study") {
-      const idParam = route.params.id;
-      if (idParam && idParam !== "new") {
-        return typeof idParam === "string" ? idParam : idParam[0];
-      }
-    }
-    return new mongoose.Types.ObjectId().toString();
+    if (route.name !== "study") return "";
+    const idParam = route.params.id;
+    return typeof idParam === "string" ? idParam : idParam[0];
   }
 
-  const isNewStudy = ref(true);
-  const studyId = ref<string>();
+  const studyId = ref<string>("");
   const isStudyLoading = ref(false);
   const isStudySaving = ref(false);
   const name = ref<string>();
@@ -73,9 +65,9 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
 
   function initialize() {
     if (route.name !== "study") return;
-    isNewStudy.value = route.params.id == "new";
+
     studyId.value = routeStudyId();
-    isStudyLoading.value = !isNewStudy.value;
+    isStudyLoading.value = true;
     name.value = undefined;
     description.value = undefined;
     taskData.value = {};
@@ -83,60 +75,49 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     sessionData.value = {};
     sessions.value = [];
 
-    if (isNewStudy.value) {
-      const EMPTY_SESSION = {
-        _id: new mongoose.Types.ObjectId().toString(),
-        name: "",
-        tasks: [],
-      };
-
-      sessionData.value = { [EMPTY_SESSION._id]: EMPTY_SESSION };
-      sessions.value = [EMPTY_SESSION._id];
-    } else {
-      queryClient
-        .fetchQuery({
-          queryKey: ["studies", studyId],
-          queryFn: () => {
-            return studiesAPI.getStudy(studyId.value!);
-          },
-        })
-        .then((studyData) => {
-          name.value = studyData.name;
-          description.value = studyData.description;
-          taskData.value = {};
-          studyData.batteries.forEach((b) => {
-            taskData.value[b._id] = b;
-          });
-          taskBank.value = studyData.batteries.map((b) => b._id);
-          sessionData.value = {};
-          studyData.sessions.forEach((s) => {
-            sessionData.value[s._id] = s;
-          });
-          sessions.value = studyData.sessions.map((s) => s._id);
-          isStudyLoading.value = false;
-        })
-        .catch((err: AxiosError<Error>) => {
-          router.push("/");
-          if (err.response?.status == 404) {
-            ElNotification({
-              title: "Error",
-              message: "Study not found",
-              type: "error",
-            });
-          } else {
-            ElNotification({
-              title: "Error",
-              message: "Error loading study",
-              type: "error",
-            });
-          }
+    queryClient
+      .fetchQuery({
+        queryKey: ["studies", studyId],
+        queryFn: () => {
+          return studiesAPI.getStudy(studyId.value!);
+        },
+      })
+      .then((studyData) => {
+        name.value = studyData.name;
+        description.value = studyData.description;
+        taskData.value = {};
+        studyData.batteries.forEach((b) => {
+          taskData.value[b._id] = b;
         });
-    }
+        taskBank.value = studyData.batteries.map((b) => b._id);
+        sessionData.value = {};
+        studyData.sessions.forEach((s) => {
+          sessionData.value[s._id] = s;
+        });
+        sessions.value = studyData.sessions.map((s) => s._id);
+        isStudyLoading.value = false;
+      })
+      .catch((err: AxiosError<Error>) => {
+        router.push("/");
+        if (err.response?.status == 404) {
+          ElNotification({
+            title: "Error",
+            message: "Study not found",
+            type: "error",
+          });
+        } else {
+          ElNotification({
+            title: "Error",
+            message: "Error loading study",
+            type: "error",
+          });
+        }
+      });
   }
 
   const createCustomTaskMutation = useMutation({
     mutationFn: (data: { batteryId: string; name: string }) =>
-      tasksAPI.createCustomTask(data.batteryId, data.name),
+      tasksAPI.createCustomTask(data.batteryId, data.name, studyId.value),
   });
 
   function addTaskInstance(task: GetTaskResponse) {
@@ -206,7 +187,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   function saveStudyStore() {
     if (isStudyLoading.value || isStudySaving.value) return;
     mutate({
-      studyId: studyId.value!,
+      _id: studyId.value!,
       name: name.value ?? "",
       description: description.value ?? "",
       batteries: taskBank.value.map((id) => taskData.value[id]), // TODO: fix this
@@ -218,7 +199,6 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
 
   return {
     studyId,
-    isNewStudy,
     isStudyLoading,
     isStudySaving,
     name,

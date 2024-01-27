@@ -8,7 +8,7 @@ import {
 import HttpError from "../types/errors";
 import isAuthenticated from "../middleware/auth";
 import { HydratedDocument } from "mongoose";
-import { IStudy, IUser } from "@/models";
+import { IStudy, Study, IUser } from "@/models";
 
 const router = Router();
 
@@ -43,28 +43,8 @@ router.get("/custom/:id", isAuthenticated, async (req, res, next) => {
     .catch(next);
 });
 
-router.put("/custom/:id", isAuthenticated, async (req, res, next) => {
-  const user = req.user as HydratedDocument<IUser>;
-  const myStudies = (await user.populate<{ studies: IStudy[] }>("studies"))
-    .studies;
-
-  if (
-    !myStudies.some((s) =>
-      s.batteries.some((b) => b.toString() === req.params["id"])
-    )
-  ) {
-    return next(new HttpError(403));
-  }
-
-  CustomizedBattery.findOneAndUpdate({ _id: req.params["id"] }, req.body, {
-    upsert: true,
-    new: true,
-  })
-    .then((task) => res.json(task))
-    .catch(next);
-});
-
 router.post("/:id/custom", isAuthenticated, (req, res, next) => {
+  const studyId = req.query.studyId;
   Battery.findById(req.params.id)
     .populate<{ stages: IBatteryStage[] }>("stages")
     .then((battery) => {
@@ -83,7 +63,15 @@ router.post("/:id/custom", isAuthenticated, (req, res, next) => {
         name: req.body.name,
         values,
       })
-        .then((customBattery) => res.status(201).json(customBattery))
+        .then((customBattery) => {
+          Study.findByIdAndUpdate(
+            { _id: studyId },
+            {
+              $push: { batteries: customBattery._id },
+            }
+          ).catch(next);
+          res.status(201).json(customBattery);
+        })
         .catch(next);
     })
     .catch(next);

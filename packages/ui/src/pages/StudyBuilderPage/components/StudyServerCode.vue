@@ -7,7 +7,6 @@ const studyBuilderStore = useStudyBuilderStore();
 const copied = ref(false);
 
 function copyCode() {
-  if (!studyBuilderStore.studyId) return;
   navigator.clipboard.writeText(studyBuilderStore.studyId).then(() => {
     copied.value = true;
     setTimeout(() => {

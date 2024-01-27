@@ -3,7 +3,7 @@ import { Study, IStudy, IUser } from "../models";
 import HttpError from "../types/errors";
 import isAuthenticated from "../middleware/auth";
 import { HydratedDocument } from "mongoose";
-import { ICustomizedBattery } from "@/models/battery";
+import { CustomizedBattery, ICustomizedBattery } from "../models/battery";
 
 const router = Router();
 
@@ -55,10 +55,16 @@ router.get("/:id", isAuthenticated, (req, res, next) => {
   }
 });
 
-router.post("/", isAuthenticated, (req, res, next) => {
-  Study.create(req.body)
-    .then((study) => res.status(201).json(study))
-    .catch(next);
+router.post("/new", isAuthenticated, async (req, res, next) => {
+  try {
+    const user = req.user as HydratedDocument<IUser>;
+    const study = await Study.create({});
+
+    await user.updateOne({ $push: { studies: study._id } });
+    res.status(201).json(study);
+  } catch (e) {
+    next(e);
+  }
 });
 
 router.put("/:id", isAuthenticated, async (req, res, next) => {
@@ -71,9 +77,35 @@ router.put("/:id", isAuthenticated, async (req, res, next) => {
     const study = await Study.findOneAndUpdate(
       { _id: req.params["id"] },
       req.body,
-      { upsert: true, new: true }
+      { new: true }
     );
     res.json(study);
+  } catch (e) {
+    next();
+  }
+});
+
+router.put("/:studyId/tasks/:taskId", async (req, res, next) => {
+  try {
+    const study = await Study.findOne({ _id: req.params["studyId"] });
+    if (!study) {
+      return next(new HttpError(404));
+    }
+
+    const task = await CustomizedBattery.findOneAndUpdate(
+      { _id: req.params["taskId"] },
+      req.body,
+      {
+        upsert: true,
+        new: true,
+      }
+    );
+
+    const taskObjectId = task._id;
+    if (!study.batteries.some((id) => id.equals(taskObjectId))) {
+      await study.updateOne({ $push: { batteries: taskObjectId } });
+    }
+    res.json(task);
   } catch (e) {
     next();
   }
