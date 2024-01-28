@@ -8,6 +8,7 @@ import {
   IOption,
 } from "../models/battery";
 import { HydratedDocument } from "mongoose";
+import * as crypto from "crypto";
 
 const router = Router();
 

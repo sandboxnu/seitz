@@ -2,8 +2,9 @@
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import taskAPI, { UploadBattery } from "@/api/tasks";
+import taskAPI from "@/api/tasks";
 import AppButton from "@/components/ui/AppButton.vue";
+import { ElNotification } from "element-plus";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -13,9 +14,32 @@ if (!authStore.currentUser?.isAdmin) {
   router.push("/");
 }
 
-const { mutate } = useMutation(taskAPI.deleteTask, {
+const deleteMutation = useMutation(taskAPI.deleteTask, {
   onSuccess: () => {
     queryClient.invalidateQueries(["tasks"]);
+    ElNotification({
+      title: "Success",
+      message: "Battery deleted successfully",
+      type: "success",
+    });
+  },
+});
+
+const uploadMutation = useMutation(taskAPI.uploadBattery, {
+  onSuccess: () => {
+    queryClient.invalidateQueries(["tasks"]);
+    ElNotification({
+      title: "Success",
+      message: "Battery uploaded successfully",
+      type: "success",
+    });
+  },
+  onError: () => {
+    ElNotification({
+      title: "Error",
+      message: "There was an error uploading the battery",
+      type: "error",
+    });
   },
 });
 
@@ -31,8 +55,8 @@ function handleFileUpload(event: Event) {
   reader.readAsText(file, "UTF-8");
   reader.onload = (readerEvent) => {
     const content = readerEvent.target?.result as string;
-    const parsedContent = JSON.parse(content) as UploadBattery;
-    taskAPI.uploadBattery(parsedContent);
+    const parsedContent = JSON.parse(content);
+    uploadMutation.mutate(parsedContent);
   };
 }
 </script>
@@ -56,6 +80,8 @@ function handleFileUpload(event: Event) {
   <div v-for="task in data" :key="task._id" class="border border-black p-4">
     <h2 class="text-xl">{{ task.name }}</h2>
     <p>{{ task.description }}</p>
-    <AppButton @click="mutate(task._id)"> Delete Me! 😲 </AppButton>
+    <AppButton @click="deleteMutation.mutate(task._id)">
+      Delete Me! 😲
+    </AppButton>
   </div>
 </template>

@@ -76,14 +76,6 @@ export interface EditTaskDTO {
   values: IOptionValue[];
 }
 
-export interface UploadBattery {
-  Type: string;
-  Name: string;
-  Description: string;
-  Stages: object[]; // TODO: type this
-  Version: number;
-}
-
 async function getAllTasks() {
   const result = await axiosInstance.get<GetTaskResponse[]>(`tasks`);
   return result.data;
@@ -117,7 +109,7 @@ async function deleteTask(id: string) {
   return await axiosInstance.delete(`/tasks/${id}`);
 }
 
-async function uploadBattery(data: UploadBattery) {
+async function uploadBattery(data: object) {
   return await axiosInstance.post(`/admin/battery`, data);
 }
 
