@@ -5,10 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc && vite build",
+    "dev:electron": "cap open @capacitor-community/electron",
+    "build": "vue-tsc && vite build && cap copy @capacitor-community/electron",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@capacitor-community/electron": "^5.0.1",
+    "@capacitor/core": "^5.6.0",
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-regular-svg-icons": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
@@ -23,6 +26,7 @@
     "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
+    "@capacitor/cli": "^5.6.0",
     "@types/node": "^20.6.2",
     "@vitejs/plugin-vue": "^4.2.3",
     "autoprefixer": "^10.4.16",
