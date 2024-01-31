@@ -6,12 +6,13 @@ import {
   IOptionValue,
 } from "../models/battery";
 import HttpError from "../types/errors";
+import isAdmin from "../middleware/admin";
 import { Study } from "../models";
 
 const router = Router();
 
 router.get("/", async (req, res, next) => {
-  Battery.find()
+  Battery.find({ deleted: false })
     .then((batteries) => res.json(batteries))
     .catch(next);
 });
@@ -31,7 +32,6 @@ router.get("/custom/:id", (req, res, next) => {
 
 router.post("/:id/custom", (req, res, next) => {
   const studyId = req.query.studyId;
-  req.body.name;
   Battery.findById(req.params.id)
     .populate<{ stages: IBatteryStage[] }>("stages")
     .then((battery) => {
@@ -61,6 +61,12 @@ router.post("/:id/custom", (req, res, next) => {
         })
         .catch(next);
     })
+    .catch(next);
+});
+
+router.delete("/:id", isAdmin, (req, res, next) => {
+  Battery.updateOne({ _id: req.params["id"] }, { deleted: true })
+    .then(() => res.sendStatus(200))
     .catch(next);
 });
 

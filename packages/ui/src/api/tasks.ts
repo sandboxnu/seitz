@@ -46,6 +46,7 @@ export interface GetTaskResponse {
   name: string;
   description: string;
   imageUrl: string;
+  deleted: boolean;
 }
 
 export interface GetSingularTaskResponse extends GetTaskResponse {
@@ -109,4 +110,19 @@ async function saveTask(id: string, taskData: EditTaskDTO) {
   );
 }
 
-export default { getAllTasks, getTask, createCustomTask, saveTask };
+async function deleteTask(id: string) {
+  return await axiosInstance.delete(`/tasks/${id}`);
+}
+
+async function uploadBattery(data: object) {
+  return await axiosInstance.post(`/admin/battery`, data);
+}
+
+export default {
+  getAllTasks,
+  getTask,
+  createCustomTask,
+  saveTask,
+  deleteTask,
+  uploadBattery,
+};
