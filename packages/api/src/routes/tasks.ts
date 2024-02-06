@@ -28,7 +28,7 @@ router.get("/custom/:id", isAuthenticated, async (req, res, next) => {
       s.batteries.some((b) => b.toString() === req.params["id"])
     )
   ) {
-    return next(new HttpError(403));
+    return next(new HttpError(404));
   }
 
   CustomizedBattery.findById(req.params.id)
@@ -44,7 +44,14 @@ router.get("/custom/:id", isAuthenticated, async (req, res, next) => {
 });
 
 router.post("/:id/custom", isAuthenticated, (req, res, next) => {
+  const user = req.user as HydratedDocument<IUser>;
   const studyId = req.query.studyId;
+  const study = user.studies.find((id) => id.toString() === studyId);
+
+  if (!study) {
+    return next(new HttpError(404));
+  }
+
   Battery.findById(req.params.id)
     .populate<{ stages: IBatteryStage[] }>("stages")
     .then((battery) => {

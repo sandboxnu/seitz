@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { Study, IStudy, IUser } from "../models";
+import { Study, IStudy, IUser, User } from "../models";
 import HttpError from "../types/errors";
 import isAuthenticated from "../middleware/auth";
 import { HydratedDocument } from "mongoose";
@@ -40,13 +40,12 @@ router.get("/:id", isAuthenticated, (req, res, next) => {
   try {
     const user = req.user as HydratedDocument<IUser>;
     if (!user.studies.some((id) => id.toString() === req.params["id"])) {
-      return next(new HttpError(403));
+      return next(new HttpError(404));
     }
 
     Study.findById(req.params["id"])
       .populate<{ batteries: ICustomizedBattery[] }>("batteries")
       .then((study) => {
-        if (!study) return next(new HttpError(404));
         res.json(study);
       })
       .catch(next);
@@ -70,16 +69,29 @@ router.post("/new", isAuthenticated, async (req, res, next) => {
 router.put("/:id", isAuthenticated, async (req, res, next) => {
   try {
     const user = req.user as HydratedDocument<IUser>;
-    if (!user.studies.some((id) => id.toString() === req.params["id"])) {
-      return next(new HttpError(403));
+    const studyId = req.params["id"];
+    if (!user.studies.some((id) => id.toString() === studyId)) {
+      return next(new HttpError(404));
     }
 
-    const study = await Study.findOneAndUpdate(
-      { _id: req.params["id"] },
-      req.body,
-      { new: true }
-    );
-    res.json(study);
+    const studyFromUser = user.studies.find((id) => id.toString() === studyId);
+
+    const studyFromDB = await Study.findById(studyId);
+
+    if (studyFromDB && !studyFromUser) {
+      return next(new HttpError(403));
+    } else if (!studyFromDB && !studyFromUser) {
+      const newStudy = await Study.create({});
+      await user.updateOne({ $push: { studies: newStudy._id } });
+      res.status(201).json(newStudy);
+    } else {
+      const study = await Study.findOneAndUpdate(
+        { _id: req.params["id"] },
+        req.body,
+        { new: true }
+      );
+      res.json(study);
+    }
   } catch (e) {
     next();
   }
@@ -94,18 +106,10 @@ router.put(
       if (!study) {
         return next(new HttpError(404));
       }
-      //do we need to check if custom task id is included in the study's batteries?
-      if (
-        !study.batteries.some(
-          (taskId) => taskId.toString() === req.params["taskId"]
-        )
-      ) {
-        return next(new HttpError(403));
-      }
 
       const user = req.user as HydratedDocument<IUser>;
       if (!user.studies.some((id) => id.toString() === req.params["studyId"])) {
-        return next(new HttpError(403));
+        return next(new HttpError(404));
       }
 
       const task = await CustomizedBattery.findOneAndUpdate(
@@ -117,7 +121,6 @@ router.put(
         }
       );
 
-      //should the custom task already be in the study's batteries?
       const taskObjectId = task._id;
       if (!study.batteries.some((id) => id.equals(taskObjectId))) {
         await study.updateOne({ $push: { batteries: taskObjectId } });
