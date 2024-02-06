@@ -28,8 +28,8 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      sameSite: "none",
-      secure: true,
+      sameSite: process.env.SECURE === "true" ? "none" : "lax",
+      secure: process.env.SECURE === "true",
       maxAge: 8 * 60 * 60 * 1000,
       httpOnly: true,
     },

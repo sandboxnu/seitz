@@ -7,6 +7,7 @@
     "dev": "vite",
     "dev:electron": "cap open @capacitor-community/electron",
     "build": "vue-tsc && vite build && cap copy @capacitor-community/electron",
+    "build:dev": "vue-tsc && vite build --mode development && cap copy @capacitor-community/electron",
     "preview": "vite preview"
   },
   "dependencies": {

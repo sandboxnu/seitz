@@ -17,14 +17,20 @@ mongo.once("open", () => {
   console.log("Database connected!");
 });
 
-const httpsServer = https.createServer(
-  {
-    key: fs.readFileSync("ssl/seitz.key"),
-    cert: fs.readFileSync("ssl/seitz.crt"),
-  },
-  app
-);
+if (process.env.SECURE === "true") {
+  const httpsServer = https.createServer(
+    {
+      key: fs.readFileSync("ssl/seitz.key"),
+      cert: fs.readFileSync("ssl/seitz.crt"),
+    },
+    app
+  );
 
-httpsServer.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
-});
+  httpsServer.listen(port, () => {
+    console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
+  });
+} else {
+  app.listen(port, () => {
+    console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+  });
+}
