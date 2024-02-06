@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { Study, IStudy, IUser, User } from "../models";
+import { Study, IStudy, IUser } from "../models";
 import HttpError from "../types/errors";
 import isAuthenticated from "../middleware/auth";
 import { HydratedDocument } from "mongoose";
