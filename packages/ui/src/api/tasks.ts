@@ -118,6 +118,11 @@ async function uploadBattery(data: object) {
   return await axiosInstance.post(`/admin/battery`, data);
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+async function editBattery(id: string, data: Record<string, any>) {
+  return await axiosInstance.post(`/admin/battery/${id}`, data);
+}
+
 export default {
   getAllTasks,
   getTask,
@@ -125,4 +130,5 @@ export default {
   saveTask,
   deleteTask,
   uploadBattery,
+  editBattery,
 };

@@ -83,6 +83,25 @@ router.post("/battery", isAdmin, async (req, res, next) => {
     next(e);
   }
 });
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
+router.post("/battery/:id", isAdmin, async (req, res, next) => {
+  try {
+    const updates = req.body as Record<string, any>;
+    const id = req.params.id;
+    const battery = await Battery.findById(id);
+    if (!battery) {
+      res.status(404).send("Battery not found");
+      return;
+    }
+    for (const [key, value] of Object.entries(updates)) {
+      // TODO: how to handle updates?
+      await Battery.updateOne({ _id: id }, { $set: { [key]: value } });
+    }
+    res.status(200).json(battery);
+  } catch (e) {
+    next(e);
+  }
+});
+
+/* eslint-enable @typescript-eslint/no-explicit-any */
 export default router;
