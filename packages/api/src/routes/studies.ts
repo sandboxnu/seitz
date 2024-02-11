@@ -39,13 +39,13 @@ router.delete("/:id", isAuthenticated, async (req, res, next) => {
 router.get("/:id", isAuthenticated, (req, res, next) => {
   try {
     const user = req.user as HydratedDocument<IUser>;
-    if (!user.studies.some((id) => id.toString() === req.params["id"])) {
-      return next(new HttpError(404));
-    }
 
     Study.findById(req.params["id"])
       .populate<{ batteries: ICustomizedBattery[] }>("batteries")
       .then((study) => {
+        if (study?.owner !== user) {
+          return next(new HttpError(404));
+        }
         res.json(study);
       })
       .catch(next);
@@ -70,17 +70,14 @@ router.put("/:id", isAuthenticated, async (req, res, next) => {
   try {
     const user = req.user as HydratedDocument<IUser>;
     const studyId = req.params["id"];
-    if (!user.studies.some((id) => id.toString() === studyId)) {
-      return next(new HttpError(404));
-    }
-
     const studyFromUser = user.studies.find((id) => id.toString() === studyId);
-
     const studyFromDB = await Study.findById(studyId);
 
-    if (studyFromDB && !studyFromUser) {
+    if (!studyFromUser) {
+      return next(new HttpError(404));
+    } else if (studyFromDB && studyFromDB.owner !== user) {
       return next(new HttpError(403));
-    } else if (!studyFromDB && !studyFromUser) {
+    } else if (!studyFromDB) {
       const newStudy = await Study.create({});
       await user.updateOne({ $push: { studies: newStudy._id } });
       res.status(201).json(newStudy);
@@ -103,12 +100,8 @@ router.put(
   async (req, res, next) => {
     try {
       const study = await Study.findOne({ _id: req.params["studyId"] });
-      if (!study) {
-        return next(new HttpError(404));
-      }
-
       const user = req.user as HydratedDocument<IUser>;
-      if (!user.studies.some((id) => id.toString() === req.params["studyId"])) {
+      if (!study || study.owner !== user) {
         return next(new HttpError(404));
       }
 
