@@ -93,10 +93,11 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
         });
         taskBank.value = studyData.batteries.map((b) => b._id);
         sessionData.value = {};
-        studyData.sessions.forEach((s) => {
+        studyData.variants[0].sessions.forEach((s) => {
+          // TODO: map per variant later on
           sessionData.value[s._id] = s;
         });
-        sessions.value = studyData.sessions.map((s) => s._id);
+        sessions.value = studyData.variants[0].sessions.map((s) => s._id); // TODO: map per variant later on
         isStudyLoading.value = false;
         serverCode.value = studyData.serverCode;
       })
@@ -194,8 +195,13 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
       name: name.value ?? "",
       description: description.value ?? "",
       batteries: taskBank.value.map((id) => taskData.value[id]), // TODO: fix this
-      sessions: sessions.value.map((id) => sessionData.value[id]),
       serverCode: serverCode.value,
+      variants: [
+        {
+          name: name.value ?? "",
+          sessions: sessions.value.map((id) => sessionData.value[id]),
+        },
+      ],
     });
   }
 

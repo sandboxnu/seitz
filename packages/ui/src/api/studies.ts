@@ -31,6 +31,11 @@ export interface ISession {
   tasks: ITaskInstance[];
 }
 
+export interface IStudyVariant {
+  name: string;
+  sessions: ISession[];
+}
+
 export interface ICustomizedBattery {
   _id: string;
   battery: string;
@@ -42,8 +47,8 @@ export interface GetStudyResponse {
   name: string;
   description: string;
   batteries: ICustomizedBattery[];
-  sessions: ISession[];
   serverCode: string;
+  variants: IStudyVariant[];
 }
 async function getStudies() {
   const response = await axiosInstance.get<GetStudyResponse[]>("/studies/");
