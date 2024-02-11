@@ -1,4 +1,7 @@
 import { Schema, Types, model } from "mongoose";
+import ShortUniqueId from "short-unique-id";
+
+const uid = new ShortUniqueId();
 
 export interface ITaskInstance {
   task: Types.ObjectId;
@@ -15,6 +18,7 @@ export interface IStudy {
   description: string;
   batteries: Types.ObjectId[];
   sessions: ISession[];
+  serverCode: string;
 }
 
 const taskInstanceSchema = new Schema<ITaskInstance>({
@@ -36,6 +40,13 @@ const studySchema = new Schema<IStudy>({
   description: { type: String, default: "" },
   batteries: [{ type: Schema.Types.ObjectId, ref: "CustomizedBattery" }],
   sessions: [sessionSchema],
+  serverCode: { type: String, unique: true },
 });
 
+studySchema.pre("save", async function (next) {
+  if (!this.serverCode) {
+    this.serverCode = uid.rnd(5);
+  }
+  next();
+});
 export const Study = model<IStudy>("Study", studySchema);
