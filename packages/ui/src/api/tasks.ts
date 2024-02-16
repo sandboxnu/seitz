@@ -32,7 +32,8 @@ interface ICheckboxOption extends IGenericOption<boolean> {
   type: "checkbox";
 }
 
-interface IOptionGroup {
+export interface IOptionGroup {
+  _id: string;
   type: "group";
   name: string;
   options: IOption[];

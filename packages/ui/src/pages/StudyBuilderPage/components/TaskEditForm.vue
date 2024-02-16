@@ -2,9 +2,10 @@
 import { storeToRefs } from "pinia";
 import { useTaskEditingStore } from "@/stores/taskEditing";
 import AppButton from "@/components/ui/AppButton.vue";
+import TaskEditFormSection from "./TaskEditFormSection.vue";
 
 const store = useTaskEditingStore();
-const { isLoading, isError, name, battery, formValues } = storeToRefs(store);
+const { isLoading, isError, name, battery } = storeToRefs(store);
 </script>
 
 <template>
@@ -30,65 +31,10 @@ const { isLoading, isError, name, battery, formValues } = storeToRefs(store);
       </div>
     </template>
     <template v-else>
-      <ElForm
-        class="flex-1 flex flex-col gap-4 overflow-y-auto h-full p-6 pt-0"
-      >
-        <div
-          v-for="stage in battery.stages"
-          :key="stage._id"
-          class="border border-gray-400 rounded-xl p-5"
-        >
-          <h2 class="text-base font-bold">
-            {{ stage.stageLabel }}
-          </h2>
-          <div v-for="option in stage.options" :key="option._id">
-            <template v-if="option.type == 'dropdown'">
-              <ElFormItem :label="option.name" class="block">
-                <ElSelect
-                  v-model="formValues[option._id]"
-                  placeholder="select option"
-                >
-                  <ElOption
-                    v-for="(dropdownOption, index) in option.options"
-                    :key="index"
-                    :label="dropdownOption"
-                    :value="index"
-                  />
-                </ElSelect>
-              </ElFormItem>
-            </template>
-            <template v-else-if="option.type == 'number'">
-              <ElFormItem :label="option.name" class="block">
-                <ElInputNumber
-                  v-model="formValues[option._id]"
-                  :min="option.min"
-                  :max="option.max"
-                  :step="option.step"
-                  placeholder="0"
-                  class="mr-2"
-                />
-              </ElFormItem>
-            </template>
-            <template v-else-if="option.type == 'text'">
-              <ElFormItem :label="option.name" class="block">
-                <ElInput
-                  v-model="formValues[option._id]"
-                  type="textarea"
-                  placeholder="type here"
-                />
-              </ElFormItem>
-            </template>
-            <template v-else-if="option.type == 'checkbox'">
-              <ElFormItem>
-                <ElCheckbox
-                  v-model="formValues[option._id]"
-                  :label="option.name"
-                  size="large"
-                />
-              </ElFormItem>
-            </template>
-          </div>
-        </div>
+      <ElForm class="flex-1 flex flex-col overflow-y-auto h-full p-6 pt-0">
+        <template v-for="stage in battery.stages" :key="stage._id">
+          <TaskEditFormSection :group="stage.options" />
+        </template>
       </ElForm>
     </template>
   </div>
