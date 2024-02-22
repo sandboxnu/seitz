@@ -1,5 +1,4 @@
 import { Schema, Types, model } from "mongoose";
-import { IUser, User } from "./user";
 
 export interface ITaskInstance {
   task: Types.ObjectId;
@@ -16,7 +15,7 @@ export interface IStudy {
   description: string;
   batteries: Types.ObjectId[];
   sessions: ISession[];
-  owner: IUser;
+  owner: Types.ObjectId;
 }
 
 const taskInstanceSchema = new Schema<ITaskInstance>({
@@ -38,7 +37,7 @@ const studySchema = new Schema<IStudy>({
   description: { type: String, default: "" },
   batteries: [{ type: Schema.Types.ObjectId, ref: "CustomizedBattery" }],
   sessions: [sessionSchema],
-  owner: { type: User, required: true },
+  owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
 });
 
 export const Study = model<IStudy>("Study", studySchema);

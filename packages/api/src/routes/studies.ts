@@ -43,7 +43,7 @@ router.get("/:id", isAuthenticated, (req, res, next) => {
     Study.findById(req.params["id"])
       .populate<{ batteries: ICustomizedBattery[] }>("batteries")
       .then((study) => {
-        if (study?.owner !== user) {
+        if (study?.owner.toString() !== user._id.toString()) {
           return next(new HttpError(404));
         }
         res.json(study);
@@ -57,7 +57,7 @@ router.get("/:id", isAuthenticated, (req, res, next) => {
 router.post("/new", isAuthenticated, async (req, res, next) => {
   try {
     const user = req.user as HydratedDocument<IUser>;
-    const study = await Study.create({});
+    const study = await Study.create({ owner: user._id });
 
     await user.updateOne({ $push: { studies: study._id } });
     res.status(201).json(study);
@@ -66,34 +66,26 @@ router.post("/new", isAuthenticated, async (req, res, next) => {
   }
 });
 
+// Updates existing study, assumes that it exists
 router.put("/:id", isAuthenticated, async (req, res, next) => {
   try {
     const user = req.user as HydratedDocument<IUser>;
-    const studyId = req.params["id"];
-    const studyFromUser = user.studies.find((id) => id.toString() === studyId);
-    const studyFromDB = await Study.findById(studyId);
 
-    if (!studyFromUser) {
-      return next(new HttpError(404));
-    } else if (studyFromDB && studyFromDB.owner !== user) {
-      return next(new HttpError(403));
-    } else if (!studyFromDB) {
-      const newStudy = await Study.create({});
-      await user.updateOne({ $push: { studies: newStudy._id } });
-      res.status(201).json(newStudy);
-    } else {
-      const study = await Study.findOneAndUpdate(
-        { _id: req.params["id"] },
-        req.body,
-        { new: true }
-      );
-      res.json(study);
+    const study = await Study.findOneAndUpdate(
+      { _id: req.params["id"], owner: user._id },
+      req.body,
+      { new: true }
+    );
+    if (!study) {
+      next(new HttpError(404));
     }
+    res.json(study);
   } catch (e) {
-    next();
+    next(e);
   }
 });
 
+// For updating and copying a task
 router.put(
   "/:studyId/tasks/:taskId",
   isAuthenticated,
@@ -101,26 +93,35 @@ router.put(
     try {
       const study = await Study.findOne({ _id: req.params["studyId"] });
       const user = req.user as HydratedDocument<IUser>;
-      if (!study || study.owner !== user) {
+      if (!study || study.owner.toString() !== user._id.toString()) {
         return next(new HttpError(404));
       }
 
-      const task = await CustomizedBattery.findOneAndUpdate(
-        { _id: req.params["taskId"] },
-        req.body,
-        {
-          upsert: true,
-          new: true,
+      const existing = await CustomizedBattery.findById(req.params["taskId"]);
+      if (existing) {
+        if (
+          !study.batteries.some((id) => id.toString() === req.params["taskId"])
+        ) {
+          return next(new HttpError(403));
         }
-      );
-
-      const taskObjectId = task._id;
-      if (!study.batteries.some((id) => id.equals(taskObjectId))) {
-        await study.updateOne({ $push: { batteries: taskObjectId } });
+        const task = await CustomizedBattery.findByIdAndUpdate(
+          existing._id,
+          { ...req.body, _id: existing._id },
+          {
+            new: true,
+          }
+        );
+        res.json(task);
+      } else {
+        const task = await CustomizedBattery.create({
+          ...req.body,
+          _id: req.params["taskId"],
+        });
+        await study.updateOne({ $push: { batteries: task._id } });
+        res.json(task);
       }
-      res.json(task);
     } catch (e) {
-      next();
+      next(e);
     }
   }
 );

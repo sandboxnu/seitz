@@ -8,7 +8,7 @@ import {
 import HttpError from "../types/errors";
 import isAuthenticated from "../middleware/auth";
 import { HydratedDocument } from "mongoose";
-import { IStudy, Study, IUser } from "@/models";
+import { IStudy, Study, IUser } from "../models";
 
 const router = Router();
 
@@ -43,45 +43,47 @@ router.get("/custom/:id", isAuthenticated, async (req, res, next) => {
     .catch(next);
 });
 
-router.post("/:id/custom", isAuthenticated, (req, res, next) => {
-  const user = req.user as HydratedDocument<IUser>;
-  const studyId = req.query.studyId;
-  const study = user.studies.find((id) => id.toString() === studyId);
+router.post("/:id/custom", isAuthenticated, async (req, res, next) => {
+  try {
+    const user = req.user as HydratedDocument<IUser>;
+    const studyId = req.query.studyId;
 
-  if (!study) {
-    return next(new HttpError(404));
-  }
+    if (!user.studies.some((id) => id.toString() === studyId)) {
+      return next(new HttpError(404));
+    }
 
-  Battery.findById(req.params.id)
-    .populate<{ stages: IBatteryStage[] }>("stages")
-    .then((battery) => {
-      if (!battery) return next(new HttpError(404));
-      const values: IOptionValue[] = [];
-      battery.stages.forEach((stage) => {
-        stage.options.forEach((option) => {
-          values.push({
-            option: option._id!,
-            value: option.default,
-          });
+    const battery = await Battery.findById(req.params.id).populate<{
+      stages: IBatteryStage[];
+    }>("stages");
+
+    if (!battery) return next(new HttpError(404));
+    const values: IOptionValue[] = [];
+    battery.stages.forEach((stage) => {
+      stage.options.forEach((option) => {
+        values.push({
+          option: option._id!,
+          value: option.default,
         });
       });
-      CustomizedBattery.create({
-        battery: battery._id,
-        name: req.body.name,
-        values,
-      })
-        .then((customBattery) => {
-          Study.findByIdAndUpdate(
-            { _id: studyId },
-            {
-              $push: { batteries: customBattery._id },
-            }
-          ).catch(next);
-          res.status(201).json(customBattery);
-        })
-        .catch(next);
-    })
-    .catch(next);
+    });
+
+    const customBattery = await CustomizedBattery.create({
+      battery: battery._id,
+      name: req.body.name,
+      values,
+    });
+
+    await Study.findByIdAndUpdate(
+      { _id: studyId },
+      {
+        $push: { batteries: customBattery._id },
+      }
+    );
+
+    res.status(201).json(customBattery);
+  } catch (e) {
+    next(e);
+  }
 });
 
 export default router;
