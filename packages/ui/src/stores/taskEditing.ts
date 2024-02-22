@@ -28,7 +28,7 @@ export const useTaskEditingStore = defineStore("taskEditing", () => {
       isSaveAs,
       ...taskDTO
     }: { taskId: string; isSaveAs: boolean } & EditTaskDTO) => {
-      return tasksAPI.saveTask(taskId, taskDTO);
+      return tasksAPI.saveTask(studyBuilderStore.studyId, taskId, taskDTO);
     },
     onSuccess: ({ data }, { taskId, isSaveAs }) => {
       ElNotification({

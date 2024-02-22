@@ -15,6 +15,7 @@ export interface IStudy {
   description: string;
   batteries: Types.ObjectId[];
   sessions: ISession[];
+  owner: Types.ObjectId;
 }
 
 const taskInstanceSchema = new Schema<ITaskInstance>({
@@ -36,6 +37,7 @@ const studySchema = new Schema<IStudy>({
   description: { type: String, default: "" },
   batteries: [{ type: Schema.Types.ObjectId, ref: "CustomizedBattery" }],
   sessions: [sessionSchema],
+  owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
 });
 
 export const Study = model<IStudy>("Study", studySchema);

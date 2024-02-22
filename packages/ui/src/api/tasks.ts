@@ -103,9 +103,13 @@ async function createCustomTask(
   return result.data;
 }
 
-async function saveTask(id: string, taskData: EditTaskDTO) {
+async function saveTask(
+  studyId: string,
+  taskId: string,
+  taskData: EditTaskDTO
+) {
   return await axiosInstance.put<GetCustomTaskResponse>(
-    `/tasks/custom/${id}`,
+    `/studies/${studyId}/tasks/${taskId}`,
     taskData
   );
 }
