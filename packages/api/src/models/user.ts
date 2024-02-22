@@ -10,7 +10,7 @@ export interface IUser {
   studies: Types.ObjectId[];
 }
 
-export const userSchema = new Schema<IUser>({
+const userSchema = new Schema<IUser>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   isAdmin: { type: Boolean, required: true, default: false },
