@@ -8,6 +8,7 @@ import {
   IOption,
 } from "../models/battery";
 import { HydratedDocument } from "mongoose";
+import * as crypto from "crypto";
 
 const router = Router();
 
@@ -73,6 +74,7 @@ router.post("/battery", isAdmin, async (req, res, next) => {
       description: desc,
       imageUrl: imageUrl,
       stages: newStages.map((s) => s._id),
+      deleted: false,
     };
 
     const data = await Battery.create(bat);

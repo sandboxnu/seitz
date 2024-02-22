@@ -44,6 +44,7 @@ export interface IBattery {
   description: string;
   imageUrl: string;
   stages: Types.ObjectId[];
+  deleted: boolean;
 }
 
 const optionSchema = new Schema<IOption>(
@@ -106,6 +107,7 @@ export const batterySchema = new Schema<IBattery>({
   description: String,
   imageUrl: { type: String, required: true },
   stages: [{ type: Schema.Types.ObjectId, ref: "BatteryStage" }],
+  deleted: { type: Boolean, default: false },
 });
 
 export const Battery = model<IBattery>("Battery", batterySchema);
