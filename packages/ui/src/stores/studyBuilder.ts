@@ -62,6 +62,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const taskBank = ref<string[]>([]);
   const sessionData = ref<Record<string, ISession>>({});
   const sessions = ref<string[]>([]);
+  const serverCode = ref<string>("");
 
   function initialize() {
     if (route.name !== "study") return;
@@ -74,6 +75,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     taskBank.value = [];
     sessionData.value = {};
     sessions.value = [];
+    serverCode.value = "";
 
     queryClient
       .fetchQuery({
@@ -96,6 +98,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
         });
         sessions.value = studyData.sessions.map((s) => s._id);
         isStudyLoading.value = false;
+        serverCode.value = studyData.serverCode;
       })
       .catch((err: AxiosError<Error>) => {
         router.push("/");
@@ -192,6 +195,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
       description: description.value ?? "",
       batteries: taskBank.value.map((id) => taskData.value[id]), // TODO: fix this
       sessions: sessions.value.map((id) => sessionData.value[id]),
+      serverCode: serverCode.value,
     });
   }
 
@@ -207,6 +211,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     taskData,
     sessions,
     sessionData,
+    serverCode,
     addSession,
     saveStudyStore,
     handleChange,
