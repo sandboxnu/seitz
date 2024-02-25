@@ -2,6 +2,7 @@ import { Schema, Types, model } from "mongoose";
 import ShortUniqueId from "short-unique-id";
 
 const uid = new ShortUniqueId();
+const serverCodeLength = 5;
 
 export interface ITaskInstance {
   task: Types.ObjectId;
@@ -45,7 +46,12 @@ const studySchema = new Schema<IStudy>({
 
 studySchema.pre("save", async function (next) {
   if (!this.serverCode) {
-    this.serverCode = uid.rnd(5);
+    this.serverCode = uid.rnd(serverCodeLength);
+
+    const study = await Study.findOne({ serverCode: this.serverCode });
+    if (study) {
+      this.serverCode = uid.rnd(serverCodeLength);
+    }
   }
   next();
 });

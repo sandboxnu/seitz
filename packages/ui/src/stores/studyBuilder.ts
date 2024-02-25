@@ -195,7 +195,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
       description: description.value ?? "",
       batteries: taskBank.value.map((id) => taskData.value[id]), // TODO: fix this
       sessions: sessions.value.map((id) => sessionData.value[id]),
-      serverCode: serverCode.value!,
+      serverCode: serverCode.value,
     });
   }
 
