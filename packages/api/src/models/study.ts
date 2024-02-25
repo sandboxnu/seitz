@@ -19,6 +19,7 @@ export interface IStudy {
   description: string;
   batteries: Types.ObjectId[];
   sessions: ISession[];
+  owner: Types.ObjectId;
   serverCode: string;
 }
 
@@ -41,6 +42,7 @@ const studySchema = new Schema<IStudy>({
   description: { type: String, default: "" },
   batteries: [{ type: Schema.Types.ObjectId, ref: "CustomizedBattery" }],
   sessions: [sessionSchema],
+  owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
   serverCode: { type: String, unique: true },
 });
 
