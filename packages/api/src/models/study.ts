@@ -1,7 +1,7 @@
 import { Schema, Types, model } from "mongoose";
 import ShortUniqueId from "short-unique-id";
 
-const uid = new ShortUniqueId();
+const uid = new ShortUniqueId({ dictionary: "alphanum_lower" });
 const serverCodeLength = 5;
 
 export interface ITaskInstance {
