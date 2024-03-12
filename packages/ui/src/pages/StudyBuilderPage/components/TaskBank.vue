@@ -18,7 +18,7 @@ const libraryVisible = ref(false);
 </script>
 
 <template>
-  <div class="flex p-6">
+  <div class="flex p-6 bg-white">
     <div class="flex flex-col">
       <h1 class="text-2xl mb-2">Tasks</h1>
       <ElSkeleton animated :loading="studyBuilderStore.isStudyLoading">

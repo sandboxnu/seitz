@@ -30,7 +30,7 @@ const draggableProps = {
             <h1 class="text-4xl">
               <input
                 v-model="studyBuilderStore.name"
-                class="w-full"
+                class="w-full bg-neutral-200"
                 type="text"
                 placeholder="Untitled Study"
               />
@@ -38,7 +38,7 @@ const draggableProps = {
             <h2 class="text-2xl my-2">
               <input
                 v-model="studyBuilderStore.description"
-                class="w-full"
+                class="w-full bg-neutral-200"
                 type="text"
                 placeholder="Add a description"
               />
@@ -59,7 +59,7 @@ const draggableProps = {
       v-loading="studyBuilderStore.isStudyLoading"
       class="grow border-2 border-black rounded-xl overflow-x-hidden"
     >
-      <div class="w-full h-full flex flex-row overflow-x-auto">
+      <div class="w-full h-full flex flex-row overflow-x-auto bg-white">
         <TransitionGroup>
           <Draggable
             key="draggable"
