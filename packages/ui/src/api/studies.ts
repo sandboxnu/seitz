@@ -43,6 +43,7 @@ export interface GetStudyResponse {
   description: string;
   batteries: ICustomizedBattery[];
   sessions: ISession[];
+  serverCode: string;
 }
 async function getStudies() {
   const response = await axiosInstance.get<GetStudyResponse[]>("/studies/");

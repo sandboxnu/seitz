@@ -7,7 +7,7 @@ const studyBuilderStore = useStudyBuilderStore();
 const copied = ref(false);
 
 function copyCode() {
-  navigator.clipboard.writeText(studyBuilderStore.studyId).then(() => {
+  navigator.clipboard.writeText(studyBuilderStore.serverCode).then(() => {
     copied.value = true;
     setTimeout(() => {
       copied.value = false;
@@ -30,7 +30,7 @@ function copyCode() {
         copied ? 'bg-gray-300 border-gray-500' : 'bg-gray-200 border-gray-300',
       ]"
     >
-      <span class="truncate">{{ studyBuilderStore.studyId }}</span>
+      <span class="truncate">{{ studyBuilderStore.serverCode }}</span>
       <FontAwesomeIcon :icon="['far', 'copy']" />
     </div>
   </div>
