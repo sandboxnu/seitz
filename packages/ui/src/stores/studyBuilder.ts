@@ -5,24 +5,30 @@ import mongoose from "mongoose";
 import studiesAPI from "@/api/studies";
 import tasksAPI from "@/api/tasks";
 import type {
-  GetStudyResponse,
+  PUTStudy,
   ICustomizedBattery,
   ISession,
   ITaskInstance,
-} from "@/api/studies";
+  DTO,
+  WithId,
+} from "@seitz/shared";
 import type { ChangeEvent } from "@/types/ChangeEvent";
 import { useRoute, useRouter } from "vue-router";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { AxiosError } from "axios";
 import { ElNotification } from "element-plus";
 import { GetTaskResponse } from "@/api/tasks";
+import { useAuthStore } from "./auth";
 
 export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const route = useRoute();
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  const authStore = useAuthStore();
+
   const { mutate } = useMutation({
-    mutationFn(studyData: GetStudyResponse) {
+    mutationFn(studyData: PUTStudy) {
       return studiesAPI.saveStudy(studyData._id, studyData);
     },
     onMutate() {
@@ -58,9 +64,9 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const isStudySaving = ref(false);
   const name = ref<string>();
   const description = ref<string>();
-  const taskData = ref<Record<string, ICustomizedBattery>>({});
+  const taskData = ref<Record<string, DTO<WithId<ICustomizedBattery>>>>({});
   const taskBank = ref<string[]>([]);
-  const sessionData = ref<Record<string, ISession>>({});
+  const sessionData = ref<Record<string, DTO<WithId<ISession>>>>({});
   const sessions = ref<string[]>([]);
 
   function initialize() {
@@ -153,11 +159,11 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
 
   function handleChange(
     sessionId: string,
-    event: ChangeEvent<string | ITaskInstance, ITaskInstance>
+    event: ChangeEvent<string | DTO<ITaskInstance>, DTO<ITaskInstance>>
   ) {
     const session = sessionData.value[sessionId];
 
-    function taskAdded(taskIndex: number, element: ITaskInstance) {
+    function taskAdded(taskIndex: number, element: DTO<ITaskInstance>) {
       session.tasks.splice(taskIndex, 0, element);
     }
 
@@ -185,13 +191,15 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   }
 
   function saveStudyStore() {
-    if (isStudyLoading.value || isStudySaving.value) return;
+    if (isStudyLoading.value || isStudySaving.value || !authStore.currentUser)
+      return;
     mutate({
       _id: studyId.value!,
       name: name.value ?? "",
       description: description.value ?? "",
       batteries: taskBank.value.map((id) => taskData.value[id]), // TODO: fix this
       sessions: sessions.value.map((id) => sessionData.value[id]),
+      owner: authStore.currentUser._id,
     });
   }
 

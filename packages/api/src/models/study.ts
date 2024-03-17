@@ -1,22 +1,5 @@
-import { Schema, Types, model } from "mongoose";
-
-export interface ITaskInstance {
-  task: Types.ObjectId;
-  quantity: number;
-}
-
-export interface ISession {
-  name: string;
-  tasks: ITaskInstance[];
-}
-
-export interface IStudy {
-  name: string;
-  description: string;
-  batteries: Types.ObjectId[];
-  sessions: ISession[];
-  owner: Types.ObjectId;
-}
+import { Model, Schema, Types, model } from "mongoose";
+import type { ISession, IStudy, ITaskInstance } from "@seitz/shared";
 
 const taskInstanceSchema = new Schema<ITaskInstance>({
   task: {
@@ -32,7 +15,12 @@ const sessionSchema = new Schema<ISession>({
   tasks: [taskInstanceSchema],
 });
 
-const studySchema = new Schema<IStudy>({
+interface StudyDocumentProps {
+  sessions: Types.DocumentArray<ISession>;
+}
+type StudyModelType = Model<IStudy, unknown, StudyDocumentProps>;
+
+const studySchema = new Schema<IStudy, StudyModelType>({
   name: { type: String, default: "" },
   description: { type: String, default: "" },
   batteries: [{ type: Schema.Types.ObjectId, ref: "CustomizedBattery" }],
@@ -40,4 +28,4 @@ const studySchema = new Schema<IStudy>({
   owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
 });
 
-export const Study = model<IStudy>("Study", studySchema);
+export const Study = model<IStudy, StudyModelType>("Study", studySchema);

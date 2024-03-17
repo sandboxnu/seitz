@@ -1,15 +1,16 @@
 import { Router } from "express";
-import {
-  Battery,
-  CustomizedBattery,
-  IBatteryStage,
-  IOptionValue,
-} from "../models/battery";
+
+import { Battery, CustomizedBattery, Study } from "../models";
 import HttpError from "../types/errors";
-import isAdmin from "../middleware/admin";
-import isAuthenticated from "../middleware/auth";
-import { HydratedDocument } from "mongoose";
-import { IStudy, Study, IUser } from "../models";
+import { isAdmin, isAuthenticated } from "../middleware/auth";
+
+import type { HydratedDocument } from "mongoose";
+import type {
+  CreateOptionValue,
+  IBatteryStage,
+  IStudy,
+  IUser,
+} from "@seitz/shared";
 
 const router = Router();
 
@@ -58,7 +59,7 @@ router.post("/:id/custom", isAuthenticated, async (req, res, next) => {
     }>("stages");
 
     if (!battery) return next(new HttpError(404));
-    const values: IOptionValue[] = [];
+    const values: CreateOptionValue[] = [];
     battery.stages.forEach((stage) => {
       stage.options.forEach((option) => {
         values.push({

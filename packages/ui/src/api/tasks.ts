@@ -54,6 +54,7 @@ export interface GetSingularTaskResponse extends GetTaskResponse {
 }
 
 interface IOptionValue {
+  _id: string;
   option: string;
   value: unknown;
 }

@@ -21,8 +21,8 @@ const { data, refetch } = useQuery({
 
 const { mutate, isLoading } = useMutation({
   mutationFn: () => studiesAPI.createStudy(),
-  onSuccess: (createdStudy) => {
-    router.push({ name: "study", params: { id: createdStudy._id } });
+  onSuccess: (createdStudyId) => {
+    router.push({ name: "study", params: { id: createdStudyId } });
   },
 });
 

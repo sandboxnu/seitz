@@ -1,14 +1,14 @@
 import { Router } from "express";
-import isAdmin from "../middleware/admin";
-import {
-  Battery,
-  BatteryStage,
-  IBattery,
-  IBatteryStage,
-  IOption,
-} from "../models/battery";
-import { HydratedDocument } from "mongoose";
+import { Types } from "mongoose";
 import * as crypto from "crypto";
+
+import { Battery, BatteryStage } from "../models";
+import { isAdmin } from "../middleware/auth";
+import type {
+  CreateBattery,
+  CreateBatteryStage,
+  CreateOption,
+} from "@seitz/shared";
 
 const router = Router();
 
@@ -27,9 +27,9 @@ router.post("/battery", isAdmin, async (req, res, next) => {
     const name = json["Name"];
     const desc = json["Description"];
     const imageUrl = `https://picsum.photos/300/300?${crypto.randomUUID()}`;
-    const stages: IBatteryStage[] = json["Stages"].map((s: any) => {
-      const options: IOption[] = Object.entries(s).reduce(
-        (acc: IOption[], item: any) => {
+    const stages: CreateBatteryStage[] = json["Stages"].map((s) => {
+      const options = Object.entries(s).reduce(
+        (acc: CreateOption[], item: [string, any]) => {
           const optionName = item[0];
           const optionValue = item[1];
           if (
@@ -37,7 +37,7 @@ router.post("/battery", isAdmin, async (req, res, next) => {
             typeof optionValue === "object"
           )
             return acc;
-          const option: IOption = {
+          const option: CreateOption = {
             name: optionName,
             default: optionValue,
             type:
@@ -60,20 +60,23 @@ router.post("/battery", isAdmin, async (req, res, next) => {
       };
     });
 
-    const newStages: HydratedDocument<IBatteryStage>[] = [];
+    const stageIds: Types.ObjectId[] = [];
 
     for (const stage of stages) {
       const existing = await BatteryStage.findOne({ type: stage.type });
-      if (!existing) {
-        newStages.push(await BatteryStage.create(stage));
+      if (existing) {
+        stageIds.push(existing._id);
+      } else {
+        const newStage = await BatteryStage.create(stage);
+        stageIds.push(newStage._id);
       }
     }
 
-    const bat: IBattery = {
+    const bat: CreateBattery = {
       name: name,
       description: desc,
       imageUrl: imageUrl,
-      stages: newStages.map((s) => s._id),
+      stages: stageIds,
       deleted: false,
     };
 
