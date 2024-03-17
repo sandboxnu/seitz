@@ -50,6 +50,8 @@ export interface GetTaskResponse {
 }
 
 export interface GetSingularTaskResponse extends GetTaskResponse {
+  name: string;
+  description: string;
   stages: IBatteryStage[];
 }
 
@@ -88,6 +90,13 @@ async function getTask(id: string) {
   return result.data;
 }
 
+async function getBattery(id: string) {
+  const result = await axiosInstance.get<GetSingularTaskResponse>(
+    `tasks/${id}`
+  );
+  return result.data;
+}
+
 async function createCustomTask(
   batteryId: string,
   name: string,
@@ -120,12 +129,13 @@ async function uploadBattery(data: object) {
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 async function editBattery(id: string, data: Record<string, any>) {
-  return await axiosInstance.post(`/admin/battery/${id}`, data);
+  return await axiosInstance.put(`/admin/battery/${id}`, data);
 }
 
 export default {
   getAllTasks,
   getTask,
+  getBattery,
   createCustomTask,
   saveTask,
   deleteTask,

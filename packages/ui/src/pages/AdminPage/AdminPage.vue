@@ -5,13 +5,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import taskAPI from "@/api/tasks";
 import AppButton from "@/components/ui/AppButton.vue";
 import { ElNotification } from "element-plus";
-import { useTaskEditingStore } from "@/stores/taskEditing";
 import AppEditModal from "@/components/ui/AppEditModal.vue";
+import BatteryEditForm from "./components/BatteryEditForm.vue";
+import { useBatteryEditingStore } from "../../stores/admin";
 
 const router = useRouter();
 const authStore = useAuthStore();
 const queryClient = useQueryClient();
-const taskEditingStore = useTaskEditingStore();
+const batteryEditingStore = useBatteryEditingStore();
 
 if (!authStore.currentUser?.isAdmin) {
   router.push("/");
@@ -83,19 +84,17 @@ function handleFileUpload(event: Event) {
   <div v-for="task in data" :key="task._id" class="border border-black p-4">
     <h2 class="text-xl">{{ task.name }}</h2>
     <p>{{ task.description }}</p>
-    <AppButton @click="taskEditingStore.editingTaskId = task._id"
-      >Edit</AppButton
-    >
+    <AppButton @click="batteryEditingStore.select(task._id)">Edit</AppButton>
     <AppButton @click="deleteMutation.mutate(task._id)">
       Delete Me! 😲
     </AppButton>
   </div>
   <AppEditModal
-    :visible="taskEditingStore.editingTaskId !== undefined"
-    header="Edit Task"
+    :visible="batteryEditingStore.editingBatteryId !== undefined"
+    header="Edit Battery"
     sub-header="Customize your task's default values"
-    @cancel="taskEditingStore.editingTaskId = undefined"
-    @done="taskEditingStore.editingTaskId = undefined"
+    @cancel="batteryEditingStore.editingBatteryId = undefined"
+    @done="batteryEditingStore.editingBatteryId = undefined"
   >
     <BatteryEditForm />
   </AppEditModal>

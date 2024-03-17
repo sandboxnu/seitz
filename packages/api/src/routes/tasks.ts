@@ -17,6 +17,13 @@ router.get("/", async (req, res, next) => {
     .catch(next);
 });
 
+router.get("/:id", async (req, res, next) => {
+  Battery.findById(req.params.id)
+    .populate("stages")
+    .then((b) => res.json(b))
+    .catch(next);
+});
+
 router.get("/custom/:id", (req, res, next) => {
   CustomizedBattery.findById(req.params.id)
     .populate({

@@ -1,15 +1,17 @@
-import { useMutation } from "@tanstack/vue-query";
+import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import taskAPI from "@/api/tasks";
+import taskAPI, { GetSingularTaskResponse } from "@/api/tasks";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const useBatteryEditingStore = defineStore("batteryEditing", () => {
   const editingBatteryId = ref<string>();
 
-  const formValues = ref<Record<string, any>>({});
-  const isLoading = ref(true);
+  const isLoading = ref(false);
   const isError = ref(false);
+  const batteryData = ref<GetSingularTaskResponse>();
+
+  const queryClient = useQueryClient();
 
   const saveMutation = useMutation({
     mutationFn: ({
@@ -25,15 +27,31 @@ export const useBatteryEditingStore = defineStore("batteryEditing", () => {
 
     saveMutation.mutate({
       batteryId: editingBatteryId.value,
-      ...formValues.value,
+      ...batteryData.value,
     });
+  }
+
+  function select(batteryId: string) {
+    isLoading.value = true;
+    editingBatteryId.value = batteryId;
+    queryClient
+      .fetchQuery(["battery", batteryId], () => taskAPI.getBattery(batteryId))
+      .then((data) => {
+        batteryData.value = data;
+        isLoading.value = false;
+      })
+      .catch(() => {
+        isError.value = true;
+        isLoading.value = false;
+      });
   }
 
   return {
     isLoading,
     isError,
     editingBatteryId,
-    formValues,
     save,
+    batteryData,
+    select,
   };
 });
