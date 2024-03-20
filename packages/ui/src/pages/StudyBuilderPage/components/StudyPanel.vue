@@ -30,7 +30,7 @@ const draggableProps = {
             <h1 class="text-4xl">
               <input
                 v-model="studyBuilderStore.name"
-                class="w-full bg-neutral-200"
+                class="w-full bg-neutral-50"
                 type="text"
                 placeholder="Untitled Study"
               />
@@ -38,7 +38,7 @@ const draggableProps = {
             <h2 class="text-2xl my-2">
               <input
                 v-model="studyBuilderStore.description"
-                class="w-full bg-neutral-200"
+                class="w-full bg-neutral-50"
                 type="text"
                 placeholder="Add a description"
               />
