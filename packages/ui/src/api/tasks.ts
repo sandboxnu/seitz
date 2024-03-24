@@ -32,13 +32,25 @@ interface ICheckboxOption extends IGenericOption<boolean> {
   type: "checkbox";
 }
 
-type IOption = INumberOption | ITextOption | IDropdownOption | ICheckboxOption;
+export interface IOptionGroup {
+  _id: string;
+  type: "group";
+  name: string;
+  options: IOption[];
+}
+
+type IOption =
+  | INumberOption
+  | ITextOption
+  | IDropdownOption
+  | ICheckboxOption
+  | IOptionGroup;
 
 interface IBatteryStage {
   _id: string;
   type: string;
   stageLabel: string;
-  options: IOption[];
+  options: IOptionGroup;
 }
 
 export interface GetTaskResponse {

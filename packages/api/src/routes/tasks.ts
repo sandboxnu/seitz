@@ -3,6 +3,7 @@ import {
   Battery,
   CustomizedBattery,
   IBatteryStage,
+  IOptionGroup,
   IOptionValue,
 } from "../models/battery";
 import HttpError from "../types/errors";
@@ -44,6 +45,19 @@ router.get("/custom/:id", isAuthenticated, async (req, res, next) => {
     .catch(next);
 });
 
+function createAllOptions(group: IOptionGroup, values: IOptionValue[]) {
+  group.options.forEach((option) => {
+    if (option.type == "group") {
+      createAllOptions(option, values);
+    } else {
+      values.push({
+        option: option._id!,
+        value: option.default,
+      });
+    }
+  });
+}
+
 router.post("/:id/custom", isAuthenticated, async (req, res, next) => {
   try {
     const user = req.user as HydratedDocument<IUser>;
@@ -60,12 +74,7 @@ router.post("/:id/custom", isAuthenticated, async (req, res, next) => {
     if (!battery) return next(new HttpError(404));
     const values: IOptionValue[] = [];
     battery.stages.forEach((stage) => {
-      stage.options.forEach((option) => {
-        values.push({
-          option: option._id!,
-          value: option.default,
-        });
-      });
+      createAllOptions(stage.options, values);
     });
 
     const customBattery = await CustomizedBattery.create({
