@@ -13,14 +13,18 @@ export interface ISession {
   name: string;
   tasks: ITaskInstance[];
 }
+export interface IStudyVariant {
+  name: string;
+  sessions: ISession[];
+}
 
 export interface IStudy {
   name: string;
   description: string;
   batteries: Types.ObjectId[];
-  sessions: ISession[];
   owner: Types.ObjectId;
   serverCode: string;
+  variants: IStudyVariant[];
 }
 
 const taskInstanceSchema = new Schema<ITaskInstance>({
@@ -37,13 +41,18 @@ const sessionSchema = new Schema<ISession>({
   tasks: [taskInstanceSchema],
 });
 
+const variantSchema = new Schema<IStudyVariant>({
+  name: { type: String, default: "" },
+  sessions: [sessionSchema],
+});
+
 const studySchema = new Schema<IStudy>({
   name: { type: String, default: "" },
   description: { type: String, default: "" },
   batteries: [{ type: Schema.Types.ObjectId, ref: "CustomizedBattery" }],
-  sessions: [sessionSchema],
   owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
   serverCode: { type: String, unique: true },
+  variants: { type: [variantSchema], default: [{ name: "", sessions: [] }] },
 });
 
 studySchema.pre("save", async function (next) {
