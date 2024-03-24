@@ -1,4 +1,6 @@
+import * as crypto from "crypto";
 import { Router } from "express";
+import { HydratedDocument } from "mongoose";
 import isAdmin from "../middleware/admin";
 import {
   Battery,
@@ -7,9 +9,6 @@ import {
   IBatteryStage,
   IOption,
 } from "../models/battery";
-import { HydratedDocument } from "mongoose";
-import * as crypto from "crypto";
-
 const router = Router();
 
 router.get("/stages", isAdmin, (req, res, next) => {
@@ -56,7 +55,11 @@ router.post("/battery", isAdmin, async (req, res, next) => {
       return {
         stageLabel: s["StageLabel"],
         type: s["Type"],
-        options,
+        options: {
+          type: "group",
+          name: "",
+          options,
+        },
       };
     });
 
