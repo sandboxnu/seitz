@@ -8,6 +8,8 @@ export interface IUser {
   isAdmin: boolean;
   verifyPassword(password: string): Promise<boolean>;
   studies: Types.ObjectId[];
+  token: string;
+  verified: boolean;
 }
 
 const userSchema = new Schema<IUser>({
@@ -15,6 +17,8 @@ const userSchema = new Schema<IUser>({
   password: { type: String, required: true },
   isAdmin: { type: Boolean, required: true, default: false },
   studies: [{ type: Schema.Types.ObjectId, ref: "Study" }],
+  token: { type: String },
+  verified: { type: Boolean, required: true, default: false },
 });
 
 userSchema.methods.verifyPassword = function (password: string) {
