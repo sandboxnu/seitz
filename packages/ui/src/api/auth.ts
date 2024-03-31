@@ -1,24 +1,19 @@
 import axios from "axios";
 
-import type { DTO, IUser, WithId } from "@seitz/shared";
+import type { DTO, IUser, LoginDTO, SignupDTO } from "@seitz/shared";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
 });
 
-export interface LogInDto {
-  email: string;
-  password: string;
-}
+type GETUserResponse = DTO<Omit<IUser, "password" | "verifyPassword">>;
 
-type GETUserResponse = DTO<WithId<Omit<IUser, "password" | "verifyPassword">>>;
-
-async function logIn(credentials: LogInDto) {
+async function logIn(credentials: LoginDTO) {
   await axiosInstance.post("auth/login", credentials);
 }
 
-async function signUp(credentials: LogInDto) {
+async function signUp(credentials: SignupDTO) {
   await axiosInstance.post("/auth/signup", credentials);
 }
 

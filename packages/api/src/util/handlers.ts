@@ -2,13 +2,12 @@ import type { Request, RequestHandler } from "express";
 import type { HydratedDocument } from "mongoose";
 import type { IUser } from "@seitz/shared";
 
-export type Handler<T> = (req: Request) => Promise<[number, T] | [number]>;
+export type APIResponse<T> = Promise<[number, T] | [number]>;
+export type Handler<T> = (req: Request) => APIResponse<T>;
 export type AuthHandler<T> = (
   req: Request,
   user: HydratedDocument<IUser>
 ) => Promise<[number, T] | [number]>;
-
-export type APIResponse<T> = Promise<[number, T] | [number]>;
 
 export function route<T>(handler: Handler<T>): RequestHandler {
   return async (req, res, next) => {

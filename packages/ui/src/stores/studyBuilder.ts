@@ -10,14 +10,13 @@ import type {
   ISession,
   ITaskInstance,
   DTO,
-  WithId,
+  GETTasks,
 } from "@seitz/shared";
 import type { ChangeEvent } from "@/types/ChangeEvent";
 import { useRoute, useRouter } from "vue-router";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { AxiosError } from "axios";
 import { ElNotification } from "element-plus";
-import { GetTaskResponse } from "@/api/tasks";
 import { useAuthStore } from "./auth";
 
 export const useStudyBuilderStore = defineStore("studyBuilder", () => {
@@ -64,9 +63,9 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const isStudySaving = ref(false);
   const name = ref<string>();
   const description = ref<string>();
-  const taskData = ref<Record<string, DTO<WithId<ICustomizedBattery>>>>({});
+  const taskData = ref<Record<string, DTO<ICustomizedBattery>>>({});
   const taskBank = ref<string[]>([]);
-  const sessionData = ref<Record<string, DTO<WithId<ISession>>>>({});
+  const sessionData = ref<Record<string, DTO<ISession>>>({});
   const sessions = ref<string[]>([]);
   const variantId = ref<string>("");
   const serverCode = ref<string>("");
@@ -132,7 +131,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
       tasksAPI.createCustomTask(data.batteryId, data.name, studyId.value),
   });
 
-  function addTaskInstance(task: GetTaskResponse) {
+  function addTaskInstance(task: DTO<GETTasks>[0]) {
     let existingCount = 0;
     for (const taskId of taskBank.value) {
       if (taskData.value[taskId].battery === task._id) existingCount += 1;
