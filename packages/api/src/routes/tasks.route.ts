@@ -1,16 +1,16 @@
 import { Router } from "express";
-import {
-  Battery,
-  CustomizedBattery,
-  IBatteryStage,
-  IOptionGroup,
-  IOptionValue,
-} from "../models/battery";
+
+import { Battery, CustomizedBattery, Study } from "../models";
 import HttpError from "../types/errors";
-import isAdmin from "../middleware/admin";
-import isAuthenticated from "../middleware/auth";
-import { HydratedDocument } from "mongoose";
-import { IStudy, Study, IUser } from "../models";
+import { isAdmin, isAuthenticated } from "../middleware/auth";
+
+import type { HydratedDocument } from "mongoose";
+import type {
+  CreateOptionValue,
+  IBatteryStage,
+  IStudy,
+  IUser,
+} from "@seitz/shared";
 
 const router = Router();
 
@@ -45,7 +45,10 @@ router.get("/custom/:id", isAuthenticated, async (req, res, next) => {
     .catch(next);
 });
 
-function createAllOptions(group: IOptionGroup, values: IOptionValue[]) {
+function createAllOptions(
+  group: IBatteryStage["options"],
+  values: CreateOptionValue[]
+) {
   group.options.forEach((option) => {
     if (option.type == "group") {
       createAllOptions(option, values);
@@ -72,7 +75,7 @@ router.post("/:id/custom", isAuthenticated, async (req, res, next) => {
     }>("stages");
 
     if (!battery) return next(new HttpError(404));
-    const values: IOptionValue[] = [];
+    const values: CreateOptionValue[] = [];
     battery.stages.forEach((stage) => {
       createAllOptions(stage.options, values);
     });

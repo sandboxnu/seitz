@@ -1,5 +1,7 @@
-import { useAuthStore } from "@/stores/auth";
 import axios from "axios";
+import { useAuthStore } from "@/stores/auth";
+
+import type { DTO, GETStudies, GETStudy, PUTStudy } from "@seitz/shared";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -19,49 +21,18 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-export interface ITaskInstance {
-  _id: string;
-  task: string;
-  quantity: number;
-}
-
-export interface ISession {
-  _id: string;
-  name: string;
-  tasks: ITaskInstance[];
-}
-
-export interface IStudyVariant {
-  name: string;
-  sessions: ISession[];
-}
-
-export interface ICustomizedBattery {
-  _id: string;
-  battery: string;
-  name: string;
-}
-
-export interface GetStudyResponse {
-  _id: string;
-  name: string;
-  description: string;
-  batteries: ICustomizedBattery[];
-  serverCode: string;
-  variants: IStudyVariant[];
-}
 async function getStudies() {
-  const response = await axiosInstance.get<GetStudyResponse[]>("/studies/");
+  const response = await axiosInstance.get<DTO<GETStudies>>("/studies/");
   return response.data;
 }
 
 async function getStudy(id: string) {
-  const result = await axiosInstance.get<GetStudyResponse>(`studies/${id}`);
+  const result = await axiosInstance.get<DTO<GETStudy>>(`studies/${id}`);
   return result.data;
 }
 
 async function createStudy() {
-  const response = await axiosInstance.post<GetStudyResponse>("/studies/new");
+  const response = await axiosInstance.post<DTO<string>>("/studies/new");
   return response.data;
 }
 
@@ -69,7 +40,7 @@ async function deleteStudy(id: string) {
   await axiosInstance.delete(`/studies/${id}`);
 }
 
-async function saveStudy(id: string, studyData: GetStudyResponse) {
+async function saveStudy(id: string, studyData: DTO<PUTStudy>) {
   await axiosInstance.put(`/studies/${id}`, studyData);
 }
 

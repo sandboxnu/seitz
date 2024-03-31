@@ -1,14 +1,15 @@
 import * as crypto from "crypto";
 import { Router } from "express";
 import { Types } from "mongoose";
-import isAdmin from "../middleware/admin";
-import {
-  Battery,
-  BatteryStage,
-  IBattery,
-  IBatteryStage,
-  IOption,
-} from "../models/battery";
+
+import { Battery, BatteryStage } from "../models";
+import { isAdmin } from "../middleware/auth";
+import type {
+  CreateBattery,
+  CreateBatteryStage,
+  CreateOption,
+} from "@seitz/shared";
+
 const router = Router();
 
 router.get("/stages", isAdmin, (req, res, next) => {
@@ -18,15 +19,15 @@ router.get("/stages", isAdmin, (req, res, next) => {
 });
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-function parseOptions(s: any): IOption[] {
-  return Object.entries(s).reduce((acc: IOption[], item: any) => {
+function parseOptions(s: any): CreateOption[] {
+  return Object.entries(s).reduce((acc: CreateOption[], item: any) => {
     const optionName = item[0];
     const optionValue = item[1];
     // FIXME: Might need stage precursor later ;)
     if (["Type", "StageLabel", "Stage Precursor"].includes(optionName))
       return acc;
 
-    let option: IOption;
+    let option: CreateOption;
 
     if (typeof optionValue === "object") {
       const groupOptions = parseOptions(optionValue);
@@ -62,8 +63,8 @@ router.post("/battery", isAdmin, async (req, res, next) => {
     const name = json["Name"];
     const desc = json["Description"];
     const imageUrl = `https://picsum.photos/300/300?${crypto.randomUUID()}`;
-    const stages: IBatteryStage[] = json["Stages"].map((s: any) => {
-      const options: IOption[] = parseOptions(s);
+    const stages: CreateBatteryStage[] = json["Stages"].map((s: any) => {
+      const options: CreateOption[] = parseOptions(s);
 
       return {
         stageLabel: s["StageLabel"],
@@ -88,7 +89,7 @@ router.post("/battery", isAdmin, async (req, res, next) => {
       }
     }
 
-    const bat: IBattery = {
+    const bat: CreateBattery = {
       name: name,
       description: desc,
       imageUrl: imageUrl,
