@@ -18,6 +18,19 @@ router.get(
   authRoute((req, user) => tasksService.getCustomizedTask(user, req.params.id))
 );
 
+router.post(
+  "/:id/custom",
+  isAuthenticated,
+  authRoute((req, user) =>
+    tasksService.createCustomizedTask(
+      user,
+      req.query.studyId as string,
+      req.params.id,
+      req.body.name
+    )
+  )
+);
+
 router.delete(
   "/:id",
   isAdmin,
