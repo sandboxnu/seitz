@@ -2,6 +2,7 @@
 import { storeToRefs } from "pinia";
 import { useBatteryEditingStore } from "../../../stores/admin";
 import AppButton from "../../../components/ui/AppButton.vue";
+import BatteryEditFormSection from "./BatteryEditFormSection.vue";
 
 const store = useBatteryEditingStore();
 const { isLoading, isError, batteryData } = storeToRefs(store);
@@ -22,57 +23,18 @@ const { isLoading, isError, batteryData } = storeToRefs(store);
           <el-input v-model="batteryData.description" />
         </el-form-item>
       </el-form>
-      <div
-        v-for="stage in batteryData.stages"
-        :key="stage._id"
-        class="border border-gray-400 rounded-xl p-5"
-      >
-        <h2 class="text-base font-bold">{{ stage.stageLabel }}</h2>
-        <div v-for="option in stage.options" :key="option._id">
-          <template v-if="option.type == 'dropdown'">
-            <ElFormItem :label="option.name" class="block">
-              <ElSelect v-model="option.default" placeholder="select option">
-                <ElOption
-                  v-for="(dropdownOption, index) in option.options"
-                  :key="index"
-                  :label="dropdownOption"
-                  :value="index"
-                />
-              </ElSelect>
-            </ElFormItem>
-          </template>
-          <template v-else-if="option.type == 'number'">
-            <ElFormItem :label="option.name" class="block">
-              <ElInputNumber
-                v-model="option.default"
-                :min="option.min"
-                :max="option.max"
-                :step="option.step"
-                placeholder="0"
-                class="mr-2"
-              />
-            </ElFormItem>
-          </template>
-          <template v-else-if="option.type == 'text'">
-            <ElFormItem :label="option.name" class="block">
-              <ElInput
-                v-model="option.default"
-                type="textarea"
-                placeholder="type here"
-              />
-            </ElFormItem>
-          </template>
-          <template v-else-if="option.type == 'checkbox'">
-            <ElFormItem>
-              <ElCheckbox
-                v-model="option.default"
-                :label="option.name"
-                size="large"
-              />
-            </ElFormItem>
-          </template>
+      <template v-if="batteryData.stages.length == 0">
+        <div class="flex w-full h-full items-center justify-center">
+          <ElEmpty description="No options to customize" />
         </div>
-      </div>
+      </template>
+      <template v-else>
+        <ElForm class="flex-1 flex flex-col overflow-y-auto h-full p-6 pt-0">
+          <template v-for="stage in batteryData.stages" :key="stage._id">
+            <BatteryEditFormSection :group="stage.options" />
+          </template>
+        </ElForm>
+      </template>
     </div>
   </div>
 </template>

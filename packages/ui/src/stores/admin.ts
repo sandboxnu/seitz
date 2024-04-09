@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import taskAPI, { GetSingularTaskResponse } from "@/api/tasks";
+import { ElNotification } from "element-plus";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const useBatteryEditingStore = defineStore("batteryEditing", () => {
@@ -19,6 +20,13 @@ export const useBatteryEditingStore = defineStore("batteryEditing", () => {
       ...batteryDTO
     }: { batteryId: string } & Record<string, any>) => {
       return taskAPI.editBattery(batteryId, batteryDTO);
+    },
+    onSuccess: () => {
+      ElNotification({
+        title: "Saved!",
+        type: "success",
+      });
+      queryClient.invalidateQueries(["tasks"]);
     },
   });
 

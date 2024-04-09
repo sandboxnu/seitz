@@ -1,28 +1,15 @@
 import * as crypto from "crypto";
 import { Router } from "express";
-import { Types } from "mongoose";
 import isAdmin from "../middleware/admin";
-import {
-  Battery,
-  BatteryStage,
-  IBattery,
-  IBatteryStage,
-  IOption,
-} from "../models/battery";
+import { Battery, IBattery, IBatteryStage, IOption } from "../models/battery";
 const router = Router();
-
-router.get("/stages", isAdmin, (req, res, next) => {
-  BatteryStage.find()
-    .then((stages) => res.json(stages))
-    .catch(next);
-});
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 function parseOptions(s: any): IOption[] {
   return Object.entries(s).reduce((acc: IOption[], item: any) => {
     const optionName = item[0];
     const optionValue = item[1];
-    // FIXME: Might need stage precursor later ;)
+    // FIXME: Might need stage precursor later
     if (["Type", "StageLabel", "Stage Precursor"].includes(optionName))
       return acc;
 
@@ -76,23 +63,11 @@ router.post("/battery", isAdmin, async (req, res, next) => {
       };
     });
 
-    const stageIds: Types.ObjectId[] = [];
-
-    for (const stage of stages) {
-      const existing = await BatteryStage.findOne({ type: stage.type });
-      if (!existing) {
-        const newStage = await BatteryStage.create(stage);
-        stageIds.push(newStage._id);
-      } else {
-        stageIds.push(existing._id);
-      }
-    }
-
     const bat: IBattery = {
       name: name,
       description: desc,
       imageUrl: imageUrl,
-      stages: stageIds,
+      stages: stages,
       deleted: false,
     };
 
@@ -107,7 +82,6 @@ router.put("/battery/:id", isAdmin, async (req, res, next) => {
   try {
     const updates = req.body as Record<string, any>;
     const id = req.params.id;
-    console.log(updates, id);
     const battery = await Battery.findById(id);
     if (!battery) {
       res.status(404).send("Battery not found");
