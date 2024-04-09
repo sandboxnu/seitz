@@ -31,13 +31,24 @@ interface ICheckboxOption extends IGenericOption<boolean> {
   type: "checkbox";
 }
 
-type IOption = INumberOption | ITextOption | IDropdownOption | ICheckboxOption;
+interface IOptionGroup {
+  type: "group";
+  name: string;
+  options: IOption[];
+}
+
+type IOption =
+  | INumberOption
+  | ITextOption
+  | IDropdownOption
+  | ICheckboxOption
+  | IOptionGroup;
 
 interface GetStageResponse {
   _id: string;
   type: string;
   stageLabel: string;
-  options: IOption[];
+  options: IOptionGroup;
 }
 
 async function getStages() {

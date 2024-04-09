@@ -1,4 +1,4 @@
-import { Schema, Types, model } from "mongoose";
+import { model, Schema, Types } from "mongoose";
 
 export interface IGenericOption<T> {
   _id?: Types.ObjectId;
@@ -27,16 +27,24 @@ export interface ICheckboxOption extends IGenericOption<boolean> {
   type: "checkbox";
 }
 
+export interface IOptionGroup {
+  _id?: Types.ObjectId;
+  type: "group";
+  name: string;
+  options: IOption[];
+}
+
 export type IOption =
   | INumberOption
   | ITextOption
   | IDropdownOption
-  | ICheckboxOption;
+  | ICheckboxOption
+  | IOptionGroup;
 
 export interface IBatteryStage {
   type: string;
   stageLabel: string;
-  options: IOption[];
+  options: IOptionGroup;
 }
 
 export interface IBattery {
@@ -54,13 +62,18 @@ const optionSchema = new Schema<IOption>(
   { discriminatorKey: "type" }
 );
 
-const batteryStageSchema = new Schema<IBatteryStage>({
-  type: { type: String, required: true },
-  stageLabel: String,
+const optionGroupSchema = new Schema<IOptionGroup>({
+  name: { type: String, required: true },
   options: [optionSchema],
 });
 
-const optArray = batteryStageSchema.path<Schema.Types.DocumentArray>("options");
+const batteryStageSchema = new Schema<IBatteryStage>({
+  type: { type: String, required: true },
+  stageLabel: String,
+  options: optionGroupSchema,
+});
+
+const optArray = optionGroupSchema.path<Schema.Types.DocumentArray>("options");
 
 const numberOptionSchema = new Schema<INumberOption>({
   default: { type: Number, required: true },
@@ -87,6 +100,7 @@ export const NumberOption = optArray.discriminator(
   "number",
   numberOptionSchema
 );
+
 export const TextOption = optArray.discriminator("text", textOptionSchema);
 export const DropdownOption = optArray.discriminator(
   "dropdown",
@@ -96,6 +110,8 @@ export const CheckboxOption = optArray.discriminator(
   "checkbox",
   checkboxOptionSchema
 );
+
+export const OptionGroup = optArray.discriminator("group", optionGroupSchema);
 
 export const BatteryStage = model<IBatteryStage>(
   "BatteryStage",
