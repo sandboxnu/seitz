@@ -69,9 +69,10 @@ const draggableProps = {
             group="sessions"
             item-key="_id"
           >
-            <template #item="{ element: sessionId }">
+            <template #item="{ element: sessionId, index }">
               <SessionCard
                 :session-id="sessionId"
+                :index="index + 1"
                 draggable
                 class="w-72 m-2 shrink-0"
               />

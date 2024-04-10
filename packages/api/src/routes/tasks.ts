@@ -86,7 +86,7 @@ router.post("/:id/custom", isAuthenticated, async (req, res, next) => {
       }
     );
 
-    res.status(201).json(customBattery);
+    res.status(201).json({ ...customBattery, battery });
   } catch (e) {
     next(e);
   }

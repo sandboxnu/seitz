@@ -11,7 +11,7 @@ const taskEditingStore = useTaskEditingStore();
 <template>
   <div
     :class="[
-      'rounded-lg p-2 border border-black flex items-center gap-2',
+      'flex items-center w-214 p-2 gap-2 rounded-lg border border-gray-300 bg-white',
       { 'cursor-pointer': draggable },
     ]"
     @click="taskEditingStore.select(taskId)"
@@ -21,8 +21,22 @@ const taskEditingStore = useTaskEditingStore();
       :icon="['fas', 'grip-vertical']"
       class="handle"
     />
+    <ElImage
+      :src="studyBuilderStore.taskData[taskId].battery.imageUrl"
+      fit="cover"
+      class="h-9 w-9"
+    />
     <div class="truncate">
-      {{ studyBuilderStore.taskData[taskId].name }}
+      <p class="text-brown-dark font-lato text-xs">
+        {{ studyBuilderStore.taskData[taskId].battery.name }}
+      </p>
+      <p
+        class="overflow-hidden text-black text-ellipsis font-lato text-base font-semibold"
+      >
+        {{ studyBuilderStore.taskData[taskId].name }}
+      </p>
     </div>
+    <div class="grow"></div>
+    <FontAwesomeIcon :icon="['fas', 'xmark']" />
   </div>
 </template>

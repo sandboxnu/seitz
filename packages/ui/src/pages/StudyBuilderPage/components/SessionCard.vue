@@ -9,6 +9,7 @@ import { computed } from "vue";
 const props = defineProps<{
   draggable: boolean;
   sessionId: string;
+  index: number;
 }>();
 
 const studyBuilderStore = useStudyBuilderStore();
@@ -34,12 +35,19 @@ const draggableProps = {
       :icon="['fas', 'grip-horizontal']"
       class="handle cursor-pointer pr-1"
     />
-    <input
-      v-model="session.name"
-      type="text"
-      class="text-2xl mb-2 w-full rounded bg-transparent"
-      placeholder="Untitled Session"
-    />
+    <div class="flex items-center">
+      <div
+        class="w-5 h-5 flex-shrink-0 rounded-md border border-gray-300 bg-gray-100"
+      >
+        {{ index }}
+      </div>
+      <input
+        v-model="session.name"
+        type="text"
+        class="text-2xl mb-2 w-full rounded bg-transparent"
+        placeholder="Untitled Session"
+      />
+    </div>
     <TransitionGroup>
       <Draggable
         key="draggable"
