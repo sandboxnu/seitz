@@ -70,7 +70,7 @@ router.post("/battery", isAdmin, async (req, res, next) => {
         type: s["Type"],
         options: {
           type: "group",
-          name: s["StageLabel"],
+          name: s["StageLabel"] ?? s["Type"],
           options,
         },
       };
