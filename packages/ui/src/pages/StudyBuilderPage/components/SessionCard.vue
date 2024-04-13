@@ -30,14 +30,20 @@ const draggableProps = {
   <div
     class="flex flex-col p-6 border rounded-xl border-black overflow-y-hidden"
   >
-    <FontAwesomeIcon
+    <ElImage
+      v-if="draggable"
+      src="/sessions/grip-horizontal.png"
+      fit="cover"
+      class="handle cursor-pointer pr-1"
+    />
+    <!-- <FontAwesomeIcon
       v-if="draggable"
       :icon="['fas', 'grip-horizontal']"
       class="handle cursor-pointer pr-1"
-    />
+    /> -->
     <div class="flex items-center">
       <div
-        class="w-5 h-5 flex-shrink-0 rounded-md border border-gray-300 bg-gray-100"
+        class="w-6 h-6 flex items-center justify-center rounded-md border border-gray-300 bg-gray-100 text-neutral-500 font-lato text-lg font-bold"
       >
         {{ index }}
       </div>
