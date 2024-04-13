@@ -30,18 +30,10 @@ const draggableProps = {
   <div
     class="flex flex-col p-6 border rounded-xl border-black overflow-y-hidden"
   >
-    <ElImage
-      v-if="draggable"
-      src="/sessions/grip-horizontal.png"
-      fit="cover"
-      class="handle cursor-pointer pr-1"
-    />
-    <!-- <FontAwesomeIcon
-      v-if="draggable"
-      :icon="['fas', 'grip-horizontal']"
-      class="handle cursor-pointer pr-1"
-    /> -->
-    <div class="flex items-center">
+    <ElIcon v-if="draggable" class="handle cursor-pointer self-center">
+      <ElImage src="/sessions/horizontal-grip.png" fit="cover" />
+    </ElIcon>
+    <div class="flex items-center gap-1 mb-2">
       <div
         class="w-6 h-6 flex items-center justify-center rounded-md border border-gray-300 bg-gray-100 text-neutral-500 font-lato text-lg font-bold"
       >
@@ -50,7 +42,7 @@ const draggableProps = {
       <input
         v-model="session.name"
         type="text"
-        class="text-2xl mb-2 w-full rounded bg-transparent"
+        class="text-2xl w-full rounded bg-transparent"
         placeholder="Untitled Session"
       />
     </div>
