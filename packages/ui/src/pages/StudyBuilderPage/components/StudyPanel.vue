@@ -18,7 +18,7 @@ const draggableProps = {
 </script>
 
 <template>
-  <div class="flex flex-col border border-black overflow-x-hidden p-5">
+  <div class="flex flex-col overflow-x-hidden p-5">
     <div class="flex flex-row items-center gap-2 mb-2">
       <div class="flex-1">
         <ElSkeleton animated :loading="studyBuilderStore.isStudyLoading">

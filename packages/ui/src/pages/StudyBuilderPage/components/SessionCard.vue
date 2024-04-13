@@ -28,11 +28,14 @@ const draggableProps = {
 
 <template>
   <div
-    class="flex flex-col px-6 pb-5 border rounded-xl border-black overflow-y-hidden"
+    class="flex flex-col px-6 pb-5 border rounded-3xl border-neutral-300 overflow-y-hidden"
   >
-    <div v-if="draggable" class="handle cursor-pointer self-center">
-      <ElImage src="/icons/grip-horizontal.svg" fit="cover" />
-    </div>
+    <ElImage
+      v-if="draggable"
+      src="/icons/grip-horizontal.svg"
+      fit="cover"
+      class="handle cursor-pointer self-center mt-2 h-2.5"
+    />
     <div class="flex items-center gap-2.5 mt-3 mb-4">
       <div
         class="px-1.5 flex items-center justify-center rounded-[4px] border-[1.5px] border-neutral-300 bg-neutral-100 text-neutral-500 font-bold text-sm"
@@ -42,7 +45,7 @@ const draggableProps = {
       <input
         v-model="session.name"
         type="text"
-        class="text-2xl w-full rounded bg-transparent"
+        class="text-2xl w-full rounded bg-transparent text-neutral-600"
         placeholder="Untitled Session"
       />
     </div>

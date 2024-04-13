@@ -16,11 +16,11 @@ const taskEditingStore = useTaskEditingStore();
     ]"
     @click="taskEditingStore.select(taskId)"
   >
-    <ElImage src="/icons/grip-vertical.svg" fit="cover" />
+    <ElImage class="shrink-0" src="/icons/grip-vertical.svg" fit="cover" />
     <ElImage
       :src="studyBuilderStore.taskData[taskId].battery.imageUrl"
       fit="cover"
-      class="h-9 w-9 rounded-lg"
+      class="h-9 w-9 rounded-lg shrink-0"
     />
     <div class="truncate">
       <p class="text-neutral-500 text-[10px] font-semibold">
@@ -33,6 +33,6 @@ const taskEditingStore = useTaskEditingStore();
       </p>
     </div>
     <div class="grow"></div>
-    <ElImage src="/icons/close.svg" fit="cover" />
+    <ElImage class="shrink-0" src="/icons/close.svg" fit="cover" />
   </div>
 </template>
