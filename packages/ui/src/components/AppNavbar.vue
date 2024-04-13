@@ -29,13 +29,13 @@ function logOut() {
     active-text-color="white"
   >
     <ElImage
-      v-if="!isCollapsed"
+      v-if="!isCollapsed && authStore.currentUser"
       src="/icons/ep_d-arrow-left.svg"
       class="h-5 w-5 mt-[22px] mr-3.5 self-end cursor-pointer"
       @click="isCollapsed = true"
     />
     <ElImage
-      v-else
+      v-else-if="authStore.currentUser"
       src="/icons/ep_d-arrow-right.svg"
       class="h-5 w-5 mt-[22px] self-center cursor-pointer"
       @click="isCollapsed = false"
