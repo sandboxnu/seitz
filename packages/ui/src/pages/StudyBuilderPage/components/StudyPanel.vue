@@ -74,7 +74,7 @@ const draggableProps = {
                 :session-id="sessionId"
                 :index="index + 1"
                 draggable
-                class="w-72 m-2 shrink-0"
+                class="w-[264px] m-2 shrink-0"
               />
             </template>
           </Draggable>

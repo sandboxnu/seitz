@@ -28,14 +28,14 @@ const draggableProps = {
 
 <template>
   <div
-    class="flex flex-col p-6 border rounded-xl border-black overflow-y-hidden"
+    class="flex flex-col px-6 pb-5 border rounded-xl border-black overflow-y-hidden"
   >
-    <ElIcon v-if="draggable" class="handle cursor-pointer self-center">
-      <ElImage src="/sessions/horizontal-grip.png" fit="cover" />
-    </ElIcon>
-    <div class="flex items-center gap-1 mb-2">
+    <div v-if="draggable" class="handle cursor-pointer self-center">
+      <ElImage src="/icons/grip-horizontal.svg" fit="cover" />
+    </div>
+    <div class="flex items-center gap-2.5 mt-3 mb-4">
       <div
-        class="w-6 h-6 flex items-center justify-center rounded-md border border-gray-300 bg-gray-100 text-neutral-500 font-lato text-lg font-bold"
+        class="px-1.5 flex items-center justify-center rounded-[4px] border-[1.5px] border-neutral-300 bg-neutral-100 text-neutral-500 font-bold text-sm"
       >
         {{ index }}
       </div>
