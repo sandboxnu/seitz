@@ -1,17 +1,21 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
-const isCollapsed = ref(false);
+const collapsePressed = ref(false);
 
 function logOut() {
   authStore.logOut();
   router.push("/login");
 }
+
+const isCollapsed = computed(() => {
+  return collapsePressed.value && !!authStore.currentUser;
+});
 </script>
 
 <template>
@@ -32,13 +36,13 @@ function logOut() {
       v-if="!isCollapsed && authStore.currentUser"
       src="/icons/ep_d-arrow-left.svg"
       class="h-5 w-5 mt-[22px] mr-3.5 self-end cursor-pointer"
-      @click="isCollapsed = true"
+      @click="collapsePressed = true"
     />
     <ElImage
       v-else-if="authStore.currentUser"
       src="/icons/ep_d-arrow-right.svg"
       class="h-5 w-5 mt-[22px] self-center cursor-pointer"
-      @click="isCollapsed = false"
+      @click="collapsePressed = false"
     />
     <ElMenuItem class="flex flex-row items-center gap-3">
       <ElImage src="/icons/home.svg" />
