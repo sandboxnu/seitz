@@ -36,9 +36,18 @@ export interface IStudyVariant {
   sessions: ISession[];
 }
 
+interface IBattery {
+  _id: string;
+  name: string;
+  description: string;
+  imageUrl: string;
+  stages: string[];
+  deleted: boolean;
+}
+
 export interface ICustomizedBattery {
   _id: string;
-  battery: string;
+  battery: IBattery;
   name: string;
 }
 
