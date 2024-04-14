@@ -2,7 +2,6 @@ import { Router } from "express";
 import {
   Battery,
   CustomizedBattery,
-  IBatteryStage,
   IOptionGroup,
   IOptionValue,
 } from "../models/battery";
@@ -20,6 +19,12 @@ router.get("/", isAuthenticated, async (req, res, next) => {
     .catch(next);
 });
 
+router.get("/:id", async (req, res, next) => {
+  Battery.findById(req.params.id)
+    .then((b) => res.json(b))
+    .catch(next);
+});
+
 router.get("/custom/:id", isAuthenticated, async (req, res, next) => {
   const user = req.user as HydratedDocument<IUser>;
   const myStudies = (await user.populate<{ studies: IStudy[] }>("studies"))
@@ -32,15 +37,8 @@ router.get("/custom/:id", isAuthenticated, async (req, res, next) => {
   ) {
     return next(new HttpError(404));
   }
-
   CustomizedBattery.findById(req.params.id)
-    .populate({
-      path: "battery",
-      populate: {
-        path: "stages",
-        model: "BatteryStage",
-      },
-    })
+    .populate("battery")
     .then((customBattery) => res.json(customBattery))
     .catch(next);
 });
@@ -67,9 +65,7 @@ router.post("/:id/custom", isAuthenticated, async (req, res, next) => {
       return next(new HttpError(404));
     }
 
-    const battery = await Battery.findById(req.params.id).populate<{
-      stages: IBatteryStage[];
-    }>("stages");
+    const battery = await Battery.findById(req.params.id);
 
     if (!battery) return next(new HttpError(404));
     const values: IOptionValue[] = [];
