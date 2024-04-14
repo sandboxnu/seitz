@@ -54,7 +54,7 @@ const draggableProps = {
         key="draggable"
         v-model="tasks"
         v-bind="draggableProps"
-        class="flex-1 overflow-y-auto"
+        class="flex-1 flex flex-col gap-2 overflow-y-auto"
         :group="{ name: 'session', put: ['taskbar', 'session'] }"
         item-key="_id"
         @change="(event) => studyBuilderStore.handleChange(sessionId, event)"
