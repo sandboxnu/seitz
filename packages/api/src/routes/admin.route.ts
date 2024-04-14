@@ -3,12 +3,12 @@ import { Router } from "express";
 
 import { Battery, User } from "../models";
 import { isAdmin } from "../middleware/auth";
+import HttpError from "../types/errors";
 import type {
   CreateBattery,
   CreateBatteryStage,
   CreateOption,
 } from "@seitz/shared";
-import HttpError from "@/types/errors";
 
 const router = Router();
 

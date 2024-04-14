@@ -4,20 +4,21 @@ import mongoose from "mongoose";
 
 import studiesAPI from "@/api/studies";
 import tasksAPI from "@/api/tasks";
-import type {
-  PUTStudy,
-  ICustomizedBattery,
-  ISession,
-  ITaskInstance,
-  DTO,
-  GETTasks,
-} from "@seitz/shared";
-import type { ChangeEvent } from "@/types/ChangeEvent";
 import { useRoute, useRouter } from "vue-router";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { AxiosError } from "axios";
 import { ElNotification } from "element-plus";
 import { useAuthStore } from "./auth";
+
+import type { ChangeEvent } from "@/types/ChangeEvent";
+import type {
+  PUTStudy,
+  ISession,
+  ITaskInstance,
+  DTO,
+  GETTasks,
+  GETCustomizedTask,
+} from "@seitz/shared";
 
 export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const route = useRoute();
@@ -63,7 +64,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const isStudySaving = ref(false);
   const name = ref<string>();
   const description = ref<string>();
-  const taskData = ref<Record<string, DTO<ICustomizedBattery>>>({});
+  const taskData = ref<Record<string, DTO<GETCustomizedTask>>>({});
   const taskBank = ref<string[]>([]);
   const sessionData = ref<Record<string, DTO<ISession>>>({});
   const sessions = ref<string[]>([]);

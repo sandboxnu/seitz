@@ -1,6 +1,7 @@
-import { DTO } from "../util";
+import type { DTO } from "../util";
 
-import type { ICustomizedBattery, IStudy } from "../models";
+import type { IStudy } from "../models";
+import type { GETCustomizedTask } from "./tasks";
 
 type ListStudy = Pick<IStudy, "_id" | "name" | "description">;
 
@@ -8,7 +9,7 @@ export type GETStudy = Pick<
   IStudy,
   "_id" | "name" | "description" | "owner" | "serverCode" | "variants"
 > & {
-  batteries: ICustomizedBattery[];
+  batteries: GETCustomizedTask[];
 };
 
 export type GETStudies = ListStudy[];
@@ -19,6 +20,6 @@ export type PUTStudy = DTO<
     IStudy,
     "_id" | "name" | "description" | "owner" | "serverCode" | "variants"
   > & {
-    batteries: ICustomizedBattery[];
+    batteries: GETCustomizedTask[];
   }
 >;

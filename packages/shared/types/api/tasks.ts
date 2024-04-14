@@ -1,13 +1,11 @@
-import type { IBattery, IBatteryStage, ICustomizedBattery } from "../models";
+import type { IBattery, ICustomizedBattery } from "../models";
 
 type ListTask = Pick<IBattery, "_id" | "name" | "description" | "imageUrl">;
 
 export type GETTask = Pick<
   IBattery,
-  "_id" | "name" | "description" | "imageUrl"
-> & {
-  stages: IBatteryStage[];
-};
+  "_id" | "name" | "description" | "imageUrl" | "stages"
+>;
 
 export type GETTasks = ListTask[];
 

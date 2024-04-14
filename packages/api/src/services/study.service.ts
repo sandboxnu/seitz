@@ -8,7 +8,6 @@ import type {
   GETStudies,
   GETStudy,
   IBattery,
-  ICustomizedBattery,
   IStudy,
   IUser,
   PUTStudy,
@@ -49,7 +48,7 @@ export const getStudy = async (
     _id: studyId,
     owner: user._id,
   }).populate<{
-    batteries: HydratedDocument<ICustomizedBattery>[];
+    batteries: GETCustomizedTask[];
   }>({
     path: "batteries",
     populate: {
