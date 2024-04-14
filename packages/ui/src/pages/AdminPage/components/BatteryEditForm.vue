@@ -4,20 +4,25 @@ import { storeToRefs } from "pinia";
 import { useBatteryEditingStore } from "../../../stores/admin";
 import AppButton from "../../../components/ui/AppButton.vue";
 import BatteryEditFormSection from "./BatteryEditFormSection.vue";
+import { useMutation, useQueryClient } from "@tanstack/vue-query";
+import taskAPI from "@/api/tasks";
+import { ElNotification } from "element-plus";
 
 const store = useBatteryEditingStore();
 const { isLoading, isError, batteryData } = storeToRefs(store);
+const queryClient = useQueryClient();
 
-// const deleteMutation = useMutation(taskAPI.deleteTask, {
-//   onSuccess: () => {
-//     queryClient.invalidateQueries(["tasks"]);
-//     ElNotification({
-//       title: "Success",
-//       message: "Battery deleted successfully",
-//       type: "success",
-//     });
-//   },
-// });
+const deleteMutation = useMutation(taskAPI.deleteTask, {
+  onSuccess: () => {
+    queryClient.invalidateQueries(["tasks"]);
+    ElNotification({
+      title: "Success",
+      message: "Battery deleted successfully",
+      type: "success",
+    });
+    store.deselect();
+  },
+});
 const nameInput = ref<HTMLInputElement>();
 const editingName = ref(false);
 </script>
@@ -43,7 +48,9 @@ const editingName = ref(false);
         />
       </div>
       <div class="grow"></div>
-      <AppButton>Delete Template</AppButton>
+      <AppButton @click="deleteMutation.mutate(batteryData._id)">
+        Delete Template
+      </AppButton>
     </div>
     <div class="flex-1 flex overflow-auto">
       <div class="xl:basis-72 basis-56 flex flex-col gap-9">
