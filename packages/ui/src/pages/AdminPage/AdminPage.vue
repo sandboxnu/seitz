@@ -16,11 +16,11 @@ if (!authStore.currentUser?.isAdmin) {
 <template>
   <div class="flex h-screen items-stretch">
     <AdminTaskLibrary class="flex-none" />
-    <ElCard
+    <div
       v-if="batteryEditingStore.editingBatteryId !== undefined"
-      class="flex-1 mx-6 my-8 rounded-2xl min-w-[600px] overflow-y-auto"
+      class="flex-1 mx-6 my-8 p-8 rounded-2xl min-w-[600px] bg-white shadow-xl overflow-y-hidden"
     >
       <BatteryEditForm />
-    </ElCard>
+    </div>
   </div>
 </template>
