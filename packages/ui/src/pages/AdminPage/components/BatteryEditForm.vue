@@ -62,7 +62,7 @@ const { isLoading, isError, batteryData } = storeToRefs(store);
       <AppButton @click="store.editingBatteryId = undefined">
         Cancel
       </AppButton>
-      <AppButton class="ml-[42.5rem]"> Preview Template </AppButton>
+      <AppButton class="ml-[39rem]"> Preview Template </AppButton>
       <AppButton @click="store.save"> Save Template </AppButton>
     </div>
   </div>
