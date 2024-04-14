@@ -22,7 +22,7 @@ const taskEditingStore = useTaskEditingStore();
       fit="cover"
       class="h-9 w-9 rounded-lg shrink-0"
     />
-    <div class="truncate">
+    <div class="grow truncate">
       <p class="text-neutral-500 text-[10px] font-semibold">
         {{ studyBuilderStore.taskData[taskId].battery.name }}
       </p>
@@ -32,7 +32,6 @@ const taskEditingStore = useTaskEditingStore();
         {{ studyBuilderStore.taskData[taskId].name }}
       </p>
     </div>
-    <div class="grow"></div>
     <ElImage class="shrink-0" src="/icons/close.svg" fit="cover" />
   </div>
 </template>
