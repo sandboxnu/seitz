@@ -6,16 +6,38 @@ import BatteryEditFormSection from "./BatteryEditFormSection.vue";
 
 const store = useBatteryEditingStore();
 const { isLoading, isError, batteryData } = storeToRefs(store);
+
+// const deleteMutation = useMutation(taskAPI.deleteTask, {
+//   onSuccess: () => {
+//     queryClient.invalidateQueries(["tasks"]);
+//     ElNotification({
+//       title: "Success",
+//       message: "Battery deleted successfully",
+//       type: "success",
+//     });
+//   },
+// });
 </script>
 
 <template>
   <template v-if="!isLoading && isError">Error</template>
   <div v-if="batteryData" class="h-full flex flex-col">
-    <div class="flex justify-end">
-      <AppButton @click="store.save"> Save </AppButton>
+    <div class="flex p-2">
+      <div class="flex basis-5/6">
+        <h1 class="text-xl font-bold">{{ batteryData.name }}</h1>
+        <ElImage src="/mdi_pencil.svg" class="pl-2 pt-1 h-6" />
+      </div>
+      <div class="basis-1/6">
+        <AppButton> Delete Template </AppButton>
+      </div>
     </div>
     <div class="flex-1">
-      <el-form :model="batteryData" label-width="120px" class="p-6">
+      <el-form
+        :model="batteryData"
+        label-width="120px"
+        label-position="left"
+        class="p-6"
+      >
         <el-form-item label="Name" prop="name">
           <el-input v-model="batteryData.name" />
         </el-form-item>
@@ -35,6 +57,13 @@ const { isLoading, isError, batteryData } = storeToRefs(store);
           </template>
         </ElForm>
       </template>
+    </div>
+    <div class="flex p-2">
+      <AppButton @click="store.editingBatteryId = undefined">
+        Cancel
+      </AppButton>
+      <AppButton class="ml-[42.5rem]"> Preview Template </AppButton>
+      <AppButton @click="store.save"> Save Template </AppButton>
     </div>
   </div>
 </template>

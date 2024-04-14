@@ -60,43 +60,47 @@ function handleFileUpload(event: Event) {
 }
 </script>
 <template>
-  <h1 class="text-xl px-4 py-2">Task Template Library</h1>
-  <div
-    class="px-4 py-2 mx-4 my-2 text-black w-36 border border-black rounded-xl font-bold"
-  >
-    <input
-      id="upload-file"
-      type="file"
-      name="upload-file"
-      accept=".json"
-      hidden
-      @change="handleFileUpload"
-    />
-    <label for="upload-file" refs="upload-file" class="flex cursor-pointer">
-      <ElImage src="/material-symbols_upload.svg" />
-      Upload File</label
-    >
-  </div>
-  <div v-for="task in data" :key="task._id">
+  <el-card class="w-1/4 p-2 rounded-r-2xl h-fit">
+    <h1 class="text-xl font-bold">Task Template Library</h1>
     <div
-      class="flex flex-wrap border border-black rounded-xl w-96 p-4 my-2 mx-4"
+      class="flex py-2 mt-4 mb-6 ml-20 justify-center text-black w-36 border border-black rounded-xl font-bold"
     >
-      <ElImage
-        :src="task.imageUrl"
-        class="w-24 mr-4 rounded-lg cursor-pointer"
-        @click="batteryEditingStore.select(task._id)"
+      <input
+        id="upload-file"
+        type="file"
+        name="upload-file"
+        accept=".json"
+        hidden
+        @change="handleFileUpload"
       />
-      <div class="cursor-pointer" @click="batteryEditingStore.select(task._id)">
-        <h2>{{ task.name }}</h2>
-        <p class="text-xs w-56">{{ task.description }}</p>
-      </div>
-      <ElImage
-        src="/pepicons-pencil_dots-y.svg"
-        class="pb-16 pl-2 cursor-pointer"
-      />
-      <!-- <AppButton @click="deleteMutation.mutate(task._id)">
+      <label for="upload-file" refs="upload-file" class="flex cursor-pointer">
+        <ElImage src="/material-symbols_upload.svg" />
+        Upload File</label
+      >
+    </div>
+    <div v-for="task in data" :key="task._id">
+      <div class="flex border border-black rounded-xl p-4 my-4">
+        <ElImage
+          :src="task.imageUrl"
+          fit="cover"
+          class="w-24 h-24 mr-4 rounded-lg cursor-pointer"
+          @click="batteryEditingStore.select(task._id)"
+        />
+        <div
+          class="w-44 overflow-hidden break-words cursor-pointer"
+          @click="batteryEditingStore.select(task._id)"
+        >
+          <h2 class="font-bold">{{ task.name }}</h2>
+          <p class="text-xs">{{ task.description }}</p>
+        </div>
+        <ElImage
+          src="/pepicons-pencil_dots-y.svg"
+          class="h-5 pl-2 cursor-pointer"
+        />
+        <!-- <AppButton @click="deleteMutation.mutate(task._id)">
           Delete Me! 😲
         </AppButton> -->
+      </div>
     </div>
-  </div>
+  </el-card>
 </template>

@@ -2,7 +2,6 @@
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import AdminTaskLibrary from "./components/AdminTaskLibrary.vue";
-import AppEditModal from "@/components/ui/AppEditModal.vue";
 import BatteryEditForm from "./components/BatteryEditForm.vue";
 import { useBatteryEditingStore } from "../../stores/admin";
 
@@ -15,14 +14,15 @@ if (!authStore.currentUser?.isAdmin) {
 }
 </script>
 <template>
-  <AdminTaskLibrary></AdminTaskLibrary>
-  <AppEditModal
-    :visible="batteryEditingStore.editingBatteryId !== undefined"
-    header="Edit Battery"
-    sub-header="Customize your task's default values"
-    @cancel="batteryEditingStore.editingBatteryId = undefined"
-    @done="batteryEditingStore.editingBatteryId = undefined"
-  >
-    <BatteryEditForm />
-  </AppEditModal>
+  <el-scrollbar>
+    <div class="flex">
+      <AdminTaskLibrary />
+      <ElCard
+        class="w-3/4 mx-6 my-8 rounded-2xl h-fit"
+        v-if="batteryEditingStore.editingBatteryId !== undefined"
+      >
+        <BatteryEditForm />
+      </ElCard>
+    </div>
+  </el-scrollbar>
 </template>
