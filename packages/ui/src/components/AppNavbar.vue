@@ -54,17 +54,17 @@ const isCollapsed = computed(() => {
         <template v-if="!isCollapsed">My Studies</template>
       </ElMenuItem>
       <ElMenuItem class="flex flex-row items-center gap-3">
-        <ElImage src="/icons/ep_user-filled.svg" />
+        <ElImage src="/icons/person.svg" />
         <template v-if="!isCollapsed">Profile</template>
       </ElMenuItem>
       <template v-if="authStore.currentUser.isAdmin">
-        <ElImage src="/icons/Line 29.svg" class="mx-6 my-9" />
+        <ElImage src="/icons/horiz-line.svg" class="mx-6 my-9" />
         <ElMenuItem index="/admin" class="flex flex-row items-center gap-3">
-          <ElImage src="/icons/Vector.svg" />
+          <ElImage src="/icons/pencil.svg" />
           <template v-if="!isCollapsed">Task Templates</template>
         </ElMenuItem>
         <ElMenuItem class="flex flex-row items-center gap-3">
-          <ElImage src="/icons/bi_people-fill.svg" />
+          <ElImage src="/icons/people.svg" />
           <template v-if="!isCollapsed">Users</template>
         </ElMenuItem>
       </template>
@@ -74,7 +74,7 @@ const isCollapsed = computed(() => {
         :onclick="logOut"
         class="flex flex-row items-center gap-3"
       >
-        <ElImage src="/icons/ep_back.svg" />
+        <ElImage src="/icons/logout.svg" />
         <template v-if="!isCollapsed">
           Log Out, {{ authStore.currentUser.email }}
         </template>

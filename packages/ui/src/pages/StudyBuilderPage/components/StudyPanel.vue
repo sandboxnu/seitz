@@ -3,7 +3,6 @@ import { useStudyBuilderStore } from "@/stores/studyBuilder";
 import AppButton from "@/components/ui/AppButton.vue";
 import SessionCard from "./SessionCard.vue";
 import Draggable from "vuedraggable";
-import SessionAdd from "./SessionAdd.vue";
 import StudyServerCode from "./StudyServerCode.vue";
 
 const studyBuilderStore = useStudyBuilderStore();
@@ -57,7 +56,7 @@ const draggableProps = {
     </div>
     <div
       v-loading="studyBuilderStore.isStudyLoading"
-      class="grow border-2 border-black rounded-xl overflow-x-hidden"
+      class="grow bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
     >
       <div class="w-full h-full flex flex-row overflow-x-auto bg-white">
         <TransitionGroup>
@@ -79,7 +78,12 @@ const draggableProps = {
             </template>
           </Draggable>
         </TransitionGroup>
-        <SessionAdd @add-session="studyBuilderStore.addSession" />
+        <div
+          class="h-[30px] w-[30px] rounded-3xl bg-primary-300 border-primary-400 self-center cursor-pointer flex items-center justify-center"
+          @click="studyBuilderStore.addSession"
+        >
+          <ElImage src="/icons/plus.svg" />
+        </div>
       </div>
     </div>
   </div>

@@ -23,7 +23,7 @@ const libraryVisible = ref(false);
   >
     <div class="flex flex-col w-[216px]">
       <div class="flex mb-5 items-center">
-        <h1 class="text-2xl">Task Bank</h1>
+        <h1 class="text-2xl font-bold">Task Bank</h1>
         <div class="grow"></div>
         <AppButton v-if="!libraryVisible" @click="libraryVisible = true">
           Add
@@ -70,7 +70,7 @@ const libraryVisible = ref(false);
           <div
             class="grow overflow-y-hidden bg-neutral-50 border border-neutral-300 rounded-2xl p-5 flex flex-col"
           >
-            <p class="text-xl text-black font-bold">Task Library</p>
+            <p class="text-2xl text-black font-bold">Task Library</p>
             <div class="overflow-y-auto pt-5 w-full flex justify-center">
               <TaskLibrary />
             </div>
