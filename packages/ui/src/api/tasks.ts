@@ -72,9 +72,18 @@ interface IOptionValue {
   value: unknown;
 }
 
+interface IBattery {
+  _id: string;
+  name: string;
+  description: string;
+  imageUrl: string;
+  stages: string[];
+  deleted: boolean;
+}
+
 interface GetCustomTaskResponse {
   _id: string;
-  battery: string;
+  battery: IBattery;
   name: string;
   values: IOptionValue[];
 }

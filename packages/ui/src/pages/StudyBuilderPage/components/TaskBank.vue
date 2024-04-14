@@ -18,9 +18,17 @@ const libraryVisible = ref(false);
 </script>
 
 <template>
-  <div class="flex p-6 bg-white">
-    <div class="flex flex-col">
-      <h1 class="text-2xl mb-2">Tasks</h1>
+  <div
+    class="bg-neutral-10 fixed flex items-stretch h-full border border-neutral-300 rounded-l-2xl px-6 py-8 shadow-2xl right-0"
+  >
+    <div class="flex flex-col w-[216px]">
+      <div class="flex mb-5 items-center">
+        <h1 class="text-2xl font-bold">Task Bank</h1>
+        <div class="grow"></div>
+        <AppButton v-if="!libraryVisible" @click="libraryVisible = true">
+          Add
+        </AppButton>
+      </div>
       <ElSkeleton animated :loading="studyBuilderStore.isStudyLoading">
         <template #template>
           <div class="w-60">
@@ -40,19 +48,11 @@ const libraryVisible = ref(false);
               v-bind="draggableProps"
               :group="{ name: 'taskbar', pull: 'clone', put: false }"
               item-key="_id"
-              class="flex-1 flex flex-col items-center w-60 overflow-y-auto"
+              class="flex-1 flex flex-col gap-2 overflow-y-auto"
               :sort="false"
             >
               <template #item="{ element: taskId }">
-                <TaskCard draggable :task-id="taskId" class="mb-2 w-full" />
-              </template>
-              <template #footer>
-                <AppButton
-                  v-if="!libraryVisible"
-                  @click="libraryVisible = true"
-                >
-                  Add Task
-                </AppButton>
+                <TaskCard draggable :task-id="taskId" />
               </template>
             </Draggable>
           </TransitionGroup>
@@ -60,20 +60,17 @@ const libraryVisible = ref(false);
       </ElSkeleton>
     </div>
     <Transition name="slide">
-      <div v-if="libraryVisible" class="flex-none flex justify-end">
-        <div class="w-[764px] flex justify-end">
+      <div v-if="libraryVisible" class="h-full">
+        <div class="w-[732px] h-full flex flex-col gap-3 ml-8">
+          <div class="self-end">
+            <AppButton @click="libraryVisible = false">
+              Finish Adding Tasks
+            </AppButton>
+          </div>
           <div
-            class="flex-none w-[740px] overflow-y-hidden border-2 border-black rounded-3xl pt-5 flex flex-col"
+            class="grow overflow-y-hidden bg-neutral-50 border border-neutral-300 rounded-2xl p-5 flex flex-col"
           >
-            <div
-              class="self-stretch flex items-center gap-5 mx-5 px-5 py-3 border-b border-neutral-300"
-            >
-              <div class="flex-1">
-                <p class="text-xl text-black font-bold">Task Library</p>
-                <p class="font-light">Select tasks to add to your task bank</p>
-              </div>
-              <AppButton @click="libraryVisible = false">Done</AppButton>
-            </div>
+            <p class="text-2xl text-black font-bold">Task Library</p>
             <div class="overflow-y-auto pt-5 w-full flex justify-center">
               <TaskLibrary />
             </div>
@@ -82,6 +79,7 @@ const libraryVisible = ref(false);
       </div>
     </Transition>
   </div>
+  <div class="w-[216px] mx-6"></div>
 </template>
 
 <style scoped>
