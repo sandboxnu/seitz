@@ -56,4 +56,8 @@ async function getStages() {
   return result.data;
 }
 
-export default { getStages };
+async function promoteUserToAdmin(email: string) {
+  return await axiosInstance.post("admin/promote", { email });
+}
+
+export default { getStages, promoteUserToAdmin };

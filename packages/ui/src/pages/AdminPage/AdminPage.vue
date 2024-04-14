@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import taskAPI from "@/api/tasks";
+import adminAPI from "@/api/admin";
 import AppButton from "@/components/ui/AppButton.vue";
 import { ElNotification } from "element-plus";
 import AppEditModal from "@/components/ui/AppEditModal.vue";
@@ -13,6 +15,8 @@ const router = useRouter();
 const authStore = useAuthStore();
 const queryClient = useQueryClient();
 const batteryEditingStore = useBatteryEditingStore();
+
+const name = ref("");
 
 if (!authStore.currentUser?.isAdmin) {
   router.push("/");
@@ -28,6 +32,8 @@ const deleteMutation = useMutation(taskAPI.deleteTask, {
     });
   },
 });
+
+const promoteUser = useMutation(adminAPI.promoteUserToAdmin, {});
 
 const uploadMutation = useMutation(taskAPI.uploadBattery, {
   onSuccess: () => {
@@ -98,4 +104,12 @@ function handleFileUpload(event: Event) {
   >
     <BatteryEditForm />
   </AppEditModal>
+  <div class="mt-3">
+    <h1 class="text-2xl">Promote User to Admin</h1>
+    <ElFormItem label="Email">
+      <ElInput v-model="name" />
+    </ElFormItem>
+
+    <AppButton @click="promoteUser.mutate(name)">Promote</AppButton>
+  </div>
 </template>

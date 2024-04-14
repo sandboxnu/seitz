@@ -2,7 +2,24 @@ import * as crypto from "crypto";
 import { Router } from "express";
 import isAdmin from "../middleware/admin";
 import { Battery, IBattery, IBatteryStage, IOption } from "../models/battery";
+import { User } from "../models";
+import HttpError from "../types/errors";
+
 const router = Router();
+
+router.post("/promote", isAdmin, async (req, res, next) => {
+  try {
+    const filter = { email: req.body.email };
+    const update = { isAdmin: true };
+    const user = await User.findOneAndUpdate(filter, update);
+    if (!user) {
+      throw new HttpError(404);
+    }
+    res.sendStatus(200);
+  } catch (e) {
+    next(e);
+  }
+});
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 function parseOptions(s: any): IOption[] {
