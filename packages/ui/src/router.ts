@@ -5,6 +5,7 @@ import AuthSignupForm from "./components/AuthSignupForm.vue";
 import MyStudiesPage from "./pages/MyStudiesPage/MyStudiesPage.vue";
 import AdminPage from "./pages/AdminPage/AdminPage.vue";
 import StudyBuilderPage from "./pages/StudyBuilderPage/StudyBuilderPage.vue";
+import AdminUsersPage from "./pages/AdminUsersPage/AdminUsersPage.vue";
 
 const routes: RouteRecordRaw[] = [
   { path: "/", name: "home", redirect: "/studies" },
@@ -13,6 +14,7 @@ const routes: RouteRecordRaw[] = [
   { path: "/signup", name: "signup", component: AuthSignupForm },
   { path: "/studies", name: "studies", component: MyStudiesPage },
   { path: "/admin", name: "admin", component: AdminPage },
+  { path: "/admin/users", name: "adminUsers", component: AdminUsersPage },
   { path: "/study/:id", name: "study", component: StudyBuilderPage },
 ];
 

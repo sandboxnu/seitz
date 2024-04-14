@@ -21,7 +21,7 @@ const { isLoading, isError, batteryData } = storeToRefs(store);
 
 <template>
   <template v-if="!isLoading && isError">Error</template>
-  <div v-if="batteryData" class="h-full flex flex-col">
+  <div v-if="batteryData" class="flex flex-col">
     <div class="flex p-2">
       <div class="flex basis-5/6">
         <h1 class="text-xl font-bold">{{ batteryData.name }}</h1>

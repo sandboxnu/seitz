@@ -60,47 +60,61 @@ function handleFileUpload(event: Event) {
 }
 </script>
 <template>
-  <el-card class="w-1/4 p-2 rounded-r-2xl h-fit">
-    <h1 class="text-xl font-bold">Task Template Library</h1>
-    <div
-      class="flex py-2 mt-4 mb-6 ml-20 justify-center text-black w-36 border border-black rounded-xl font-bold"
-    >
-      <input
-        id="upload-file"
-        type="file"
-        name="upload-file"
-        accept=".json"
-        hidden
-        @change="handleFileUpload"
-      />
-      <label for="upload-file" refs="upload-file" class="flex cursor-pointer">
-        <ElImage src="/material-symbols_upload.svg" />
-        Upload File</label
+  <div class="w-[380px] px-8 py-9 rounded-r-2xl h-full bg-white shadow-2xl">
+    <div class="flex flex-col gap-8 h-full">
+      <h1 class="text-xl font-bold">Task Template Library</h1>
+      <div
+        class="flex py-2 ml-20 justify-center text-black w-36 border border-black rounded-xl font-bold"
       >
-    </div>
-    <div v-for="task in data" :key="task._id">
-      <div class="flex border border-black rounded-xl p-4 my-4">
-        <ElImage
-          :src="task.imageUrl"
-          fit="cover"
-          class="w-24 h-24 mr-4 rounded-lg cursor-pointer"
-          @click="batteryEditingStore.select(task._id)"
+        <input
+          id="upload-file"
+          type="file"
+          name="upload-file"
+          accept=".json"
+          hidden
+          @change="handleFileUpload"
         />
-        <div
-          class="w-44 overflow-hidden break-words cursor-pointer"
-          @click="batteryEditingStore.select(task._id)"
+        <label for="upload-file" refs="upload-file" class="flex cursor-pointer">
+          <ElImage src="/material-symbols_upload.svg" />
+          Upload File</label
         >
-          <h2 class="font-bold">{{ task.name }}</h2>
-          <p class="text-xs">{{ task.description }}</p>
-        </div>
-        <ElImage
-          src="/pepicons-pencil_dots-y.svg"
-          class="h-5 pl-2 cursor-pointer"
-        />
-        <!-- <AppButton @click="deleteMutation.mutate(task._id)">
-          Delete Me! 😲
-        </AppButton> -->
       </div>
+      <ElScrollbar>
+        <div class="flex-1 flex flex-col gap-4">
+          <div v-for="task in data" :key="task._id">
+            <div
+              :class="[
+                'flex gap-5 p-4 border rounded-2xl cursor-pointer',
+                batteryEditingStore.editingBatteryId === task._id
+                  ? 'bg-neutral-100 border-neutral-400'
+                  : 'bg-neutral-10 border-neutral-300',
+              ]"
+              @click="batteryEditingStore.select(task._id)"
+            >
+              <ElImage
+                :src="task.imageUrl"
+                fit="cover"
+                class="flex-none h-24 w-24 rounded-[10px] overflow-hidden"
+              />
+              <div class="flex-1 flex flex-col gap-3 overflow-hidden">
+                <div class="flex">
+                  <div class="text-sm text-neutral-600 truncate font-bold">
+                    {{ task.name }}
+                  </div>
+                  <div class="grow"></div>
+                  <ElImage
+                    src="/pepicons-pencil_dots-y.svg"
+                    class="h-5 pl-2 cursor-pointer"
+                  />
+                </div>
+                <div class="text-xs text-neutral-600 font-medium line-clamp-4">
+                  {{ task.description }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ElScrollbar>
     </div>
-  </el-card>
+  </div>
 </template>
