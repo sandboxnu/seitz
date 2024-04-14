@@ -4,7 +4,6 @@ import {
   GETTasks,
   IBattery,
   IBatteryStage,
-  ICustomizedBattery,
   IStudy,
   IUser,
 } from "@seitz/shared";
@@ -15,6 +14,12 @@ import HttpError from "../types/errors";
 
 export const getTaskLibrary = async (): APIResponse<GETTasks> => {
   return [200, await Battery.find({ deleted: false })];
+};
+
+export const getTaskById = async (taskId: string): APIResponse<IBattery> => {
+  const task = await Battery.findById(taskId);
+  if (!task) throw new HttpError(404);
+  return [200, task];
 };
 
 export const getCustomizedTask = async (
@@ -31,14 +36,8 @@ export const getCustomizedTask = async (
   }
 
   const customizedTask = await CustomizedBattery.findById(customId).populate<{
-    battery: IBattery & { stages: IBatteryStage[] };
-  }>({
-    path: "battery",
-    populate: {
-      path: "stages",
-      model: "BatteryStage",
-    },
-  });
+    battery: IBattery;
+  }>("battery");
   if (!customizedTask) throw new HttpError(404);
   return [200, customizedTask];
 };
@@ -64,14 +63,12 @@ export const createCustomizedTask = async (
   studyId: string,
   batteryId: string,
   customName: string
-): APIResponse<ICustomizedBattery> => {
+): APIResponse<GETCustomizedTask> => {
   if (!user.studies.some((id) => id.toString() === studyId)) {
     throw new HttpError(404);
   }
 
-  const battery = await Battery.findById(batteryId).populate<{
-    stages: IBatteryStage[];
-  }>("stages");
+  const battery = await Battery.findById(batteryId);
 
   if (!battery) throw new HttpError(404);
   const values: CreateOptionValue[] = [];
@@ -91,8 +88,10 @@ export const createCustomizedTask = async (
       $push: { batteries: customBattery._id },
     }
   );
-
-  return [201, customBattery];
+  const populated = await customBattery.populate<{ battery: IBattery }>(
+    "battery"
+  );
+  return [201, populated];
 };
 
 export const deleteTask = async (batteryId: string): APIResponse<void> => {

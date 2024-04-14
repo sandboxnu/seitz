@@ -64,11 +64,13 @@ export interface CreateBattery {
   name: string;
   description: string;
   imageUrl: string;
-  stages: Types.ObjectId[];
+  stages: CreateBatteryStage[];
   deleted?: boolean;
 }
 
-export type IBattery = Required<CreateBattery>;
+export interface IBattery extends Required<CreateBattery> {
+  stages: IBatteryStage[];
+}
 
 export interface CreateOptionValue {
   _id?: Types.ObjectId;

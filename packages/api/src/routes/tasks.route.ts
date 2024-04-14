@@ -13,6 +13,11 @@ router.get(
 );
 
 router.get(
+  "/:id",
+  route((req) => tasksService.getTaskById(req.params.id))
+);
+
+router.get(
   "/custom/:id",
   isAuthenticated,
   authRoute((req, user) => tasksService.getCustomizedTask(user, req.params.id))

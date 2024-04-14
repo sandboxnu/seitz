@@ -5,7 +5,7 @@ import type {
   DTO,
   GETCustomizedTask,
   GETTasks,
-  ICustomizedBattery,
+  IBattery,
 } from "@seitz/shared";
 
 const axiosInstance = axios.create({
@@ -25,12 +25,17 @@ async function getTask(id: string) {
   return result.data;
 }
 
+async function getBattery(id: string) {
+  const result = await axiosInstance.get<DTO<IBattery>>(`tasks/${id}`);
+  return result.data;
+}
+
 async function createCustomTask(
   batteryId: string,
   name: string,
   studyId: string
 ) {
-  const result = await axiosInstance.post<DTO<ICustomizedBattery>>(
+  const result = await axiosInstance.post<DTO<GETCustomizedTask>>(
     `tasks/${batteryId}/custom`,
     {
       name,
@@ -45,7 +50,7 @@ async function saveTask(
   taskId: string,
   taskData: DTO<CreateCustomizedBattery>
 ) {
-  return await axiosInstance.put<DTO<ICustomizedBattery>>(
+  return await axiosInstance.put<DTO<GETCustomizedTask>>(
     `/studies/${studyId}/tasks/${taskId}`,
     taskData
   );
@@ -59,11 +64,18 @@ async function uploadBattery(data: object) {
   return await axiosInstance.post(`/admin/battery`, data);
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+async function editBattery(id: string, data: Record<string, any>) {
+  return await axiosInstance.put(`/admin/battery/${id}`, data);
+}
+
 export default {
   getAllTasks,
   getTask,
+  getBattery,
   createCustomTask,
   saveTask,
   deleteTask,
   uploadBattery,
+  editBattery,
 };

@@ -134,7 +134,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   function addTaskInstance(task: DTO<GETTasks>[0]) {
     let existingCount = 0;
     for (const taskId of taskBank.value) {
-      if (taskData.value[taskId].battery === task._id) existingCount += 1;
+      if (taskData.value[taskId].battery._id === task._id) existingCount += 1;
     }
     createCustomTaskMutation.mutate(
       {

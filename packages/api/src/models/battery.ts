@@ -70,16 +70,11 @@ export const CheckboxOption = optArray.discriminator(
 
 export const OptionGroup = optArray.discriminator("group", optionGroupSchema);
 
-export const BatteryStage = model<IBatteryStage>(
-  "BatteryStage",
-  batteryStageSchema
-);
-
 export const batterySchema = new Schema<IBattery>({
   name: { type: String, required: true },
   description: String,
   imageUrl: { type: String, required: true },
-  stages: [{ type: Schema.Types.ObjectId, ref: "BatteryStage" }],
+  stages: [batteryStageSchema],
   deleted: { type: Boolean, default: false },
 });
 

@@ -1,21 +1,29 @@
 import * as crypto from "crypto";
 import { Router } from "express";
-import { Types } from "mongoose";
 
-import { Battery, BatteryStage } from "../models";
+import { Battery, User } from "../models";
 import { isAdmin } from "../middleware/auth";
 import type {
   CreateBattery,
   CreateBatteryStage,
   CreateOption,
 } from "@seitz/shared";
+import HttpError from "@/types/errors";
 
 const router = Router();
 
-router.get("/stages", isAdmin, (req, res, next) => {
-  BatteryStage.find()
-    .then((stages) => res.json(stages))
-    .catch(next);
+router.post("/promote", isAdmin, async (req, res, next) => {
+  try {
+    const filter = { email: req.body.email };
+    const update = { isAdmin: true };
+    const user = await User.findOneAndUpdate(filter, update);
+    if (!user) {
+      throw new HttpError(404);
+    }
+    res.sendStatus(200);
+  } catch (e) {
+    next(e);
+  }
 });
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -23,7 +31,7 @@ function parseOptions(s: any): CreateOption[] {
   return Object.entries(s).reduce((acc: CreateOption[], item: any) => {
     const optionName = item[0];
     const optionValue = item[1];
-    // FIXME: Might need stage precursor later ;)
+    // FIXME: Might need stage precursor later
     if (["Type", "StageLabel", "Stage Precursor"].includes(optionName))
       return acc;
 
@@ -71,29 +79,17 @@ router.post("/battery", isAdmin, async (req, res, next) => {
         type: s["Type"],
         options: {
           type: "group",
-          name: s["StageLabel"],
+          name: s["StageLabel"] ?? s["Type"],
           options,
         },
       };
     });
 
-    const stageIds: Types.ObjectId[] = [];
-
-    for (const stage of stages) {
-      const existing = await BatteryStage.findOne({ type: stage.type });
-      if (!existing) {
-        const newStage = await BatteryStage.create(stage);
-        stageIds.push(newStage._id);
-      } else {
-        stageIds.push(existing._id);
-      }
-    }
-
     const bat: CreateBattery = {
       name: name,
       description: desc,
       imageUrl: imageUrl,
-      stages: stageIds,
+      stages: stages,
       deleted: false,
     };
 
@@ -103,6 +99,24 @@ router.post("/battery", isAdmin, async (req, res, next) => {
     next(e);
   }
 });
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
+router.put("/battery/:id", isAdmin, async (req, res, next) => {
+  try {
+    const updates = req.body as Record<string, any>;
+    const id = req.params.id;
+    const battery = await Battery.findById(id);
+    if (!battery) {
+      res.status(404).send("Battery not found");
+      return;
+    }
+    const newBattery = await Battery.updateOne({ _id: id }, updates, {
+      new: true,
+    });
+    res.status(200).json(newBattery);
+  } catch (e) {
+    next(e);
+  }
+});
+
+/* eslint-enable @typescript-eslint/no-explicit-any */
 export default router;

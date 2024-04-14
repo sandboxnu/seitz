@@ -4,8 +4,10 @@ import { CustomizedBattery, Study } from "../models";
 import type { HydratedDocument, Types } from "mongoose";
 import type {
   CreateCustomizedBattery,
+  GETCustomizedTask,
   GETStudies,
   GETStudy,
+  IBattery,
   ICustomizedBattery,
   IStudy,
   IUser,
@@ -48,7 +50,13 @@ export const getStudy = async (
     owner: user._id,
   }).populate<{
     batteries: HydratedDocument<ICustomizedBattery>[];
-  }>("batteries");
+  }>({
+    path: "batteries",
+    populate: {
+      path: "battery",
+      model: "Battery",
+    },
+  });
 
   if (!study) {
     throw new HttpError(404);
@@ -89,7 +97,7 @@ export const putTask = async (
   studyId: string,
   taskId: string,
   taskData: CreateCustomizedBattery
-): APIResponse<ICustomizedBattery> => {
+): APIResponse<GETCustomizedTask> => {
   const study = await Study.findOne({ _id: studyId });
   if (!study || study.owner.toString() !== user._id.toString()) {
     throw new HttpError(404);
@@ -108,13 +116,15 @@ export const putTask = async (
       }
     );
     if (!task) throw new HttpError(404); // Shouldn't happen
-    return [201, task];
+    const populated = await task.populate<{ battery: IBattery }>("battery");
+    return [201, populated];
   } else {
     const task = await CustomizedBattery.create({
       taskData,
       _id: taskId,
     });
     await study.updateOne({ $push: { batteries: task._id } });
-    return [200, task];
+    const populated = await task.populate<{ battery: IBattery }>("battery");
+    return [200, populated];
   }
 };
