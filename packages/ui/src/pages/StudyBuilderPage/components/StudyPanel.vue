@@ -18,7 +18,7 @@ const draggableProps = {
 
 <template>
   <div class="flex flex-col overflow-x-hidden p-5">
-    <div class="flex flex-row items-center gap-2 mb-2">
+    <div class="flex items-center gap-2 mb-2">
       <div class="flex-1">
         <ElSkeleton animated :loading="studyBuilderStore.isStudyLoading">
           <template #template>
@@ -26,22 +26,20 @@ const draggableProps = {
             <ElSkeletonItem variant="text" class="h-8 mt-2 mb-1 w-3/4" />
           </template>
           <template #default>
-            <h1 class="text-4xl">
+            <div class="flex gap-3 flex-col">
               <input
                 v-model="studyBuilderStore.name"
-                class="w-full bg-neutral-50"
+                class="w-full bg-transparent text-neutral-600 font-bold text-4xl"
                 type="text"
                 placeholder="Untitled Study"
               />
-            </h1>
-            <h2 class="text-2xl my-2">
               <input
                 v-model="studyBuilderStore.description"
-                class="w-full bg-neutral-50"
+                class="w-full bg-transparent text-neutral-600 font-medium text-lg"
                 type="text"
                 placeholder="Add a description"
               />
-            </h2>
+            </div>
           </template>
         </ElSkeleton>
       </div>
@@ -56,15 +54,15 @@ const draggableProps = {
     </div>
     <div
       v-loading="studyBuilderStore.isStudyLoading"
-      class="grow bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
+      class="grow p-6 bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
     >
-      <div class="w-full h-full flex flex-row overflow-x-auto bg-white">
+      <div class="w-full h-full flex gap-6 overflow-x-auto bg-white">
         <TransitionGroup>
           <Draggable
             key="draggable"
             v-model="studyBuilderStore.sessions"
             v-bind="draggableProps"
-            class="flex"
+            class="flex gap-6"
             group="sessions"
             item-key="_id"
           >
@@ -73,7 +71,7 @@ const draggableProps = {
                 :session-id="sessionId"
                 :index="index + 1"
                 draggable
-                class="w-[264px] m-2 shrink-0"
+                class="w-[264px] shrink-0"
               />
             </template>
           </Draggable>

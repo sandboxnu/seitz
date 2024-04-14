@@ -21,14 +21,13 @@ const isCollapsed = computed(() => {
 <template>
   <ElMenu
     :class="[
-      'border-b-0 flex flex-col h-full shrink-0',
+      'border-b-0 flex flex-col h-full shrink-0 bg-neutral-600',
       isCollapsed ? 'w-16' : 'w-44',
     ]"
     :default-active="route.path"
     mode="vertical"
     :router="true"
     :ellipsis="false"
-    background-color="black"
     text-color="white"
     active-text-color="white"
   >
@@ -44,26 +43,26 @@ const isCollapsed = computed(() => {
       class="h-5 w-5 mt-[22px] self-center cursor-pointer"
       @click="collapsePressed = false"
     />
-    <ElMenuItem class="flex flex-row items-center gap-3">
+    <ElMenuItem class="flex items-center gap-3">
       <ElImage src="/icons/home.svg" />
       <template v-if="!isCollapsed">Home</template>
     </ElMenuItem>
     <template v-if="authStore.currentUser">
-      <ElMenuItem index="/studies" class="flex flex-row items-center gap-3">
+      <ElMenuItem index="/studies" class="flex items-center gap-3">
         <ElImage src="/icons/ep_notebook.svg" />
         <template v-if="!isCollapsed">My Studies</template>
       </ElMenuItem>
-      <ElMenuItem class="flex flex-row items-center gap-3">
+      <ElMenuItem class="flex items-center gap-3">
         <ElImage src="/icons/person.svg" />
         <template v-if="!isCollapsed">Profile</template>
       </ElMenuItem>
       <template v-if="authStore.currentUser.isAdmin">
         <ElImage src="/icons/horiz-line.svg" class="mx-6 my-9" />
-        <ElMenuItem index="/admin" class="flex flex-row items-center gap-3">
+        <ElMenuItem index="/admin" class="flex items-center gap-3">
           <ElImage src="/icons/pencil.svg" />
           <template v-if="!isCollapsed">Task Templates</template>
         </ElMenuItem>
-        <ElMenuItem class="flex flex-row items-center gap-3">
+        <ElMenuItem class="flex items-center gap-3">
           <ElImage src="/icons/people.svg" />
           <template v-if="!isCollapsed">Users</template>
         </ElMenuItem>
@@ -72,7 +71,7 @@ const isCollapsed = computed(() => {
       <ElMenuItem
         index="/logout"
         :onclick="logOut"
-        class="flex flex-row items-center gap-3"
+        class="flex items-center gap-3"
       >
         <ElImage src="/icons/logout.svg" />
         <template v-if="!isCollapsed">
