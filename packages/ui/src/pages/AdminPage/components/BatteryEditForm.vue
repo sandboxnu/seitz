@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useBatteryEditingStore } from "../../../stores/admin";
 import AppButton from "../../../components/ui/AppButton.vue";
@@ -17,6 +18,8 @@ const { isLoading, isError, batteryData } = storeToRefs(store);
 //     });
 //   },
 // });
+const nameInput = ref<HTMLInputElement>();
+const editingName = ref(false);
 </script>
 
 <template>
@@ -24,8 +27,20 @@ const { isLoading, isError, batteryData } = storeToRefs(store);
   <div v-if="batteryData" class="h-full flex flex-col gap-8">
     <div class="flex-none flex">
       <div class="flex-none flex items-center gap-2">
-        <h1 class="text-xl font-bold">{{ batteryData.name }}</h1>
-        <ElImage src="/mdi_pencil.svg" class="h-6" />
+        <input
+          ref="nameInput"
+          v-model="batteryData.name"
+          class="text-xl font-bold rounded"
+          type="text"
+          @focus="editingName = true"
+          @blur="editingName = false"
+        />
+        <ElImage
+          v-if="!editingName"
+          src="/mdi_pencil.svg"
+          class="h-6 cursor-pointer"
+          @click="nameInput?.focus()"
+        />
       </div>
       <div class="grow"></div>
       <AppButton>Delete Template</AppButton>
@@ -37,23 +52,19 @@ const { isLoading, isError, batteryData } = storeToRefs(store);
           fit="cover"
           class="self-center flex-none h-full w-full max-h-[200px] max-w-[200px] rounded-[10px] overflow-hidden"
         />
-        <el-form
-          :model="batteryData"
-          label-width="120px"
-          label-position="top"
-          class="flex flex-col gap-9"
-        >
-          <el-form-item label="Name" prop="name">
-            <el-input v-model="batteryData.name" />
-          </el-form-item>
-          <el-form-item label="Description" prop="description">
-            <el-input
+        <div class="flex flex-col gap-9 p-1">
+          <div>
+            <label for="description" class="font-bold text-neutral-600"
+              >Description</label
+            >
+            <textarea
+              id="description"
               v-model="batteryData.description"
-              type="textarea"
-              :autosize="{ minRows: 6, maxRows: 10 }"
-            />
-          </el-form-item>
-        </el-form>
+              class="mt-3 border border-neutral-300 rounded-2xl resize-none py-2.5 px-4 w-full"
+              rows="10"
+            ></textarea>
+          </div>
+        </div>
       </div>
       <div class="flex-1 flex flex-col">
         <template v-if="batteryData.stages.length == 0">
