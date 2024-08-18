@@ -2,6 +2,7 @@ import { UpdateWriteOpResult } from "mongoose";
 import { User, Battery } from "../models";
 import HttpError from "../types/errors";
 import { APIResponse } from "../util/handlers";
+import * as crypto from "crypto";
 import type {
   CreateBattery,
   CreateBatteryStage,
@@ -11,18 +12,17 @@ import type {
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-export const promoteToAdmin = async (req: any): APIResponse<void> => {
-  const filter = { email: req.body.email };
+export const promoteToAdmin = async (filter: any): APIResponse<void> => {
   const update = { isAdmin: true };
-  const user = await User.findOneAndUpdate(filter, update);
+  const user = await User.findOneAndUpdate({ email: filter }, update);
   if (!user) {
     throw new HttpError(404);
   }
   return [200];
 };
 
-export const createBattery = async (req: any): APIResponse<IBattery> => {
-  const json = req.body as Record<string, any> & {
+export const createBattery = async (json: any): APIResponse<IBattery> => {
+  json = json as Record<string, any> & {
     Stages: Record<string, any>[];
   };
   const name = json["Name"];
@@ -55,10 +55,10 @@ export const createBattery = async (req: any): APIResponse<IBattery> => {
 };
 
 export const editBattery = async (
-  req: any
+  updates: any,
+  id: any
 ): APIResponse<UpdateWriteOpResult> => {
-  const updates = req.body as Record<string, any>;
-  const id = req.params.id;
+  updates = updates as Record<string, any>;
   const battery = await Battery.findById(id);
   if (!battery) {
     return [404];

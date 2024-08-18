@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import { isAuthenticated } from "../middleware/auth";
 import { authRoute } from "../util/handlers";
 import * as authService from "../services/auth.service";
