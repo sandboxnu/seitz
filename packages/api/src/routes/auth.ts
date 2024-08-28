@@ -55,14 +55,9 @@ router.post("/signup", (req, res, next) => {
           subject: "Brain Game Center: Verify Your Email",
           html: `<p>Welcome to Brain Game Center! Please verify your email by clicking this <a href="${URL}">link</a>.</p>`,
         };
-        sgMail
-          .send(msg)
-          .then(() => {
-            console.log("Email sent");
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+        sgMail.send(msg).catch((error) => {
+          console.error(error);
+        });
 
         req.login(user, (err) => {
           if (!err) res.sendStatus(201);
@@ -111,7 +106,7 @@ router.get("/verify/:token", async (req, res) => {
     user.verified = true;
     user.token = "";
     await user.save();
-    res.status(200).send("Verified!");
+    res.status(200).send("Your email has been verified!");
   } catch (err) {
     res.status(500).send("Could not verify: " + err);
   }

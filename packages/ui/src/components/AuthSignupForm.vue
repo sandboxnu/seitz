@@ -22,6 +22,12 @@ const { mutate } = useMutation<void, AxiosError<Error>, LogInDto>({
       authStore.currentUser = user;
       router.push("/");
     });
+    ElNotification({
+      title: "Success",
+      message:
+        "Please check your email to verify your account (check spam folder)",
+      type: "success",
+    });
   },
   onError: (err) => {
     ElNotification({
