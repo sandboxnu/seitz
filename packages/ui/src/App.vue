@@ -3,9 +3,11 @@ import AppNavbar from "./components/AppNavbar.vue";
 </script>
 
 <template>
-  <div class="flex flex-col h-screen bg-neutral-50">
+  <div class="flex h-screen bg-neutral-50">
     <AppNavbar />
-    <RouterView />
+    <div class="flex flex-col w-full h-screen overflow-y-auto">
+      <RouterView />
+    </div>
   </div>
 </template>
 

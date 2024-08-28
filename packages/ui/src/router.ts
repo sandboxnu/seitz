@@ -3,7 +3,7 @@ import CarPage from "./pages/CarPage/CarPage.vue";
 import AuthLoginForm from "./components/AuthLoginForm.vue";
 import AuthSignupForm from "./components/AuthSignupForm.vue";
 import MyStudiesPage from "./pages/MyStudiesPage/MyStudiesPage.vue";
-import AdminPage from "./pages/AdminPage.vue";
+import AdminPage from "./pages/AdminPage/AdminPage.vue";
 import StudyBuilderPage from "./pages/StudyBuilderPage/StudyBuilderPage.vue";
 
 const routes: RouteRecordRaw[] = [

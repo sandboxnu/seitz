@@ -41,7 +41,13 @@ router.get("/:id", isAuthenticated, (req, res, next) => {
     const user = req.user as HydratedDocument<IUser>;
 
     Study.findById(req.params["id"])
-      .populate<{ batteries: ICustomizedBattery[] }>("batteries")
+      .populate<{ batteries: ICustomizedBattery[] }>({
+        path: "batteries",
+        populate: {
+          path: "battery",
+          model: "Battery",
+        },
+      })
       .then((study) => {
         if (study?.owner.toString() !== user._id.toString()) {
           return next(new HttpError(404));
@@ -111,14 +117,14 @@ router.put(
             new: true,
           }
         );
-        res.json(task);
+        res.json(await task?.populate("battery"));
       } else {
         const task = await CustomizedBattery.create({
           ...req.body,
           _id: req.params["taskId"],
         });
         await study.updateOne({ $push: { batteries: task._id } });
-        res.json(task);
+        res.json(await task.populate("battery"));
       }
     } catch (e) {
       next(e);

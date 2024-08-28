@@ -34,13 +34,13 @@ const studyBuilderStore = useStudyBuilderStore();
         </div>
       </template>
       <template #default>
-        <div class="grid grid-cols-4 gap-3">
+        <div class="grid grid-cols-2 gap-3">
           <div v-for="task in data" :key="task._id">
             <TaskLibraryItem
               :name="task.name"
               :description="task.description"
               :image-url="task.imageUrl"
-              @flip="studyBuilderStore.addTaskInstance(task)"
+              @add="studyBuilderStore.addTaskInstance(task)"
             />
           </div>
         </div>

@@ -1,30 +1,35 @@
 <script setup lang="ts">
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-
 defineProps<{
   name: string;
   description: string;
   imageUrl: string;
 }>();
-defineEmits(["flip"]);
+defineEmits(["add"]);
 </script>
 
 <template>
-  <div class="w-40">
-    <div
-      class="relative w-full h-40 rounded-3xl border-black overflow-hidden border cursor-pointer"
-      @click="$emit('flip')"
-    >
-      <ElImage :src="imageUrl" fit="cover" class="h-full w-full" />
+  <div
+    class="p-4 bg-neutral-10 border border-neutral-300 rounded-2xl flex gap-5"
+  >
+    <ElImage
+      :src="imageUrl"
+      fit="cover"
+      class="flex-none h-24 w-24 rounded-[10px] overflow-hidden"
+    />
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <div class="text-sm text-neutral-600 truncate font-bold">
+        {{ name }}
+      </div>
+      <div class="text-xs text-neutral-600 font-medium line-clamp-3">
+        {{ description }}
+      </div>
+      <div class="grow"></div>
       <div
-        class="absolute w-full h-full top-0 left-0 hover:bg-white/40 active:bg-white/60"
-      ></div>
-      <div
-        class="absolute right-3 bottom-3 rounded-full h-6 w-6 bg-black text-white flex justify-center items-center"
+        class="text-sm text-primary-300 self-end font-bold cursor-pointer"
+        @click="$emit('add')"
       >
-        <FontAwesomeIcon :icon="['fas', 'plus']" />
+        + Add to bank
       </div>
     </div>
-    <div class="text-base text-black truncate">{{ name }}</div>
   </div>
 </template>
