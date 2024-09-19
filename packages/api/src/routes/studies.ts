@@ -132,4 +132,10 @@ router.put(
   }
 );
 
+router.get("/variant", async (req, res, next) => {
+  const { serverCode } = req.query;
+  const study = await Study.findOne({ variants: { serverCode } });
+  const variant = study?.variants.find((v) => v.serverCode === serverCode);
+});
+
 export default router;

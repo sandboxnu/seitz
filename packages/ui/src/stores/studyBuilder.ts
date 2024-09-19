@@ -62,7 +62,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const taskBank = ref<string[]>([]);
   const sessionData = ref<Record<string, ISession>>({});
   const sessions = ref<string[]>([]);
-  const serverCode = ref<string>("");
+  // const serverCode = ref<string>("");
 
   function initialize() {
     if (route.name !== "study") return;
@@ -75,7 +75,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     taskBank.value = [];
     sessionData.value = {};
     sessions.value = [];
-    serverCode.value = "";
+    // serverCode.value = "";
 
     queryClient
       .fetchQuery({
@@ -99,7 +99,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
         });
         sessions.value = studyData.variants[0].sessions.map((s) => s._id); // TODO: map per variant later on
         isStudyLoading.value = false;
-        serverCode.value = studyData.serverCode;
+        // serverCode.value = studyData.serverCode;
       })
       .catch((err: AxiosError<Error>) => {
         router.push("/");
@@ -188,22 +188,22 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     }
   }
 
-  function saveStudyStore() {
-    if (isStudyLoading.value || isStudySaving.value) return;
-    mutate({
-      _id: studyId.value!,
-      name: name.value ?? "",
-      description: description.value ?? "",
-      batteries: taskBank.value.map((id) => taskData.value[id]), // TODO: fix this
-      serverCode: serverCode.value,
-      variants: [
-        {
-          name: name.value ?? "",
-          sessions: sessions.value.map((id) => sessionData.value[id]),
-        },
-      ],
-    });
-  }
+  // function saveStudyStore() {
+  //   if (isStudyLoading.value || isStudySaving.value) return;
+  //   mutate({
+  //     _id: studyId.value!,
+  //     name: name.value ?? "",
+  //     description: description.value ?? "",
+  //     batteries: taskBank.value.map((id) => taskData.value[id]), // TODO: fix this
+  //     // serverCode: serverCode.value,
+  //     // variants: [
+  //     //   {
+  //     //     name: name.value ?? "",
+  //     //     sessions: sessions.value.map((id) => sessionData.value[id]),
+  //     //   },
+  //     // ],
+  //   });
+  // }
 
   watch(() => route.params.id, initialize, { immediate: true });
 
@@ -217,9 +217,9 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     taskData,
     sessions,
     sessionData,
-    serverCode,
+    // serverCode,
     addSession,
-    saveStudyStore,
+    // saveStudyStore,
     handleChange,
     addTaskInstance,
   };

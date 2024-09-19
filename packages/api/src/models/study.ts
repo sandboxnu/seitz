@@ -16,6 +16,7 @@ export interface ISession {
 export interface IStudyVariant {
   name: string;
   sessions: ISession[];
+  serverCode: string;
 }
 
 export interface IStudy {
@@ -23,7 +24,6 @@ export interface IStudy {
   description: string;
   batteries: Types.ObjectId[];
   owner: Types.ObjectId;
-  serverCode: string;
   variants: IStudyVariant[];
 }
 
@@ -44,6 +44,7 @@ const sessionSchema = new Schema<ISession>({
 const variantSchema = new Schema<IStudyVariant>({
   name: { type: String, default: "" },
   sessions: [sessionSchema],
+  serverCode: { type: String, unique: true },
 });
 
 const studySchema = new Schema<IStudy>({
@@ -51,11 +52,13 @@ const studySchema = new Schema<IStudy>({
   description: { type: String, default: "" },
   batteries: [{ type: Schema.Types.ObjectId, ref: "CustomizedBattery" }],
   owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  serverCode: { type: String, unique: true },
-  variants: { type: [variantSchema], default: [{ name: "", sessions: [] }] },
+  variants: {
+    type: [variantSchema],
+    default: [{ name: "", sessions: [], serverCode: "" }],
+  },
 });
 
-studySchema.pre("save", async function (next) {
+variantSchema.pre("save", async function (next) {
   if (!this.serverCode) {
     this.serverCode = uid.rnd(serverCodeLength);
 

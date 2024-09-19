@@ -34,6 +34,7 @@ export interface ISession {
 export interface IStudyVariant {
   name: string;
   sessions: ISession[];
+  serverCode: string;
 }
 
 interface IBattery {
@@ -56,7 +57,6 @@ export interface GetStudyResponse {
   name: string;
   description: string;
   batteries: ICustomizedBattery[];
-  serverCode: string;
   variants: IStudyVariant[];
 }
 async function getStudies() {
