@@ -132,10 +132,29 @@ router.put(
   }
 );
 
-router.get("/variant", async (req, res, next) => {
+router.get("/variant", async (req, res /*next*/) => {
   const { serverCode } = req.query;
-  const study = await Study.findOne({ variants: { serverCode } });
+
+  const study = await Study.findOne({ variants: { serverCode } }).populate({
+    path: "variants.sessions.tasks.task", // Populate tasks within sessions
+  });
   const variant = study?.variants.find((v) => v.serverCode === serverCode);
+  if (!variant) {
+    res.status(400).send("Variant does not exist");
+    return;
+  }
+  // const body = {
+  //   variant: {
+  //     name: variant.name,
+  //     sessions: variant.sessions.map(s => {
+  //       name: s.name,
+  //       tasks: s.tasks.map( t => {
+  //         name: t.
+  //         // need to get task data that's been populated
+  //       })
+  //     }),
+  //   },
+  // };
 });
 
 export default router;
