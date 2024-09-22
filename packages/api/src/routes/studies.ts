@@ -127,6 +127,11 @@ router.put(
         res.json(await task.populate("battery"));
       }
     } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const g: any = e as any;
+      console.log("Error", g.stack);
+      console.log("Error", g.name);
+      console.log("Error", g.message);
       next(e);
     }
   }

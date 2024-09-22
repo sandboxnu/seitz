@@ -38,6 +38,7 @@ router.get("/custom/:id", isAuthenticated, async (req, res, next) => {
     return next(new HttpError(404));
   }
   CustomizedBattery.findById(req.params.id)
+    .lean()
     .populate("battery")
     .then((customBattery) => res.json(customBattery))
     .catch(next);
@@ -65,7 +66,7 @@ router.post("/:id/custom", isAuthenticated, async (req, res, next) => {
       return next(new HttpError(404));
     }
 
-    const battery = await Battery.findById(req.params.id);
+    const battery = await Battery.findById(req.params.id).lean();
 
     if (!battery) return next(new HttpError(404));
     const values: IOptionValue[] = [];
