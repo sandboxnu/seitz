@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import https from "https";
+import fs from "fs";
 
 import app from "./app";
 
@@ -15,6 +17,20 @@ mongo.once("open", () => {
   console.log("Database connected!");
 });
 
-app.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
-});
+if (process.env.SECURE === "true") {
+  const httpsServer = https.createServer(
+    {
+      key: fs.readFileSync("ssl/seitz.key"),
+      cert: fs.readFileSync("ssl/seitz.crt"),
+    },
+    app
+  );
+
+  httpsServer.listen(port, () => {
+    console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
+  });
+} else {
+  app.listen(port, () => {
+    console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+  });
+}
