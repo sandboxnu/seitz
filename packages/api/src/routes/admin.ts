@@ -4,6 +4,7 @@ import isAdmin from "../middleware/admin";
 import { Battery, IBattery, IBatteryStage, IOption } from "../models/battery";
 import { User } from "../models";
 import HttpError from "../types/errors";
+import mongoose from "mongoose";
 
 const router = Router();
 
@@ -42,6 +43,7 @@ function parseOptions(s: any): IOption[] {
       };
     } else {
       option = {
+        _id: new mongoose.Types.ObjectId(),
         name: optionName,
         default: optionValue,
         type:
