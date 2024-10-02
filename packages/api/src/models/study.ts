@@ -44,7 +44,7 @@ const sessionSchema = new Schema<ISession>({
 const variantSchema = new Schema<IStudyVariant>({
   name: { type: String, default: "" },
   sessions: [sessionSchema],
-  serverCode: { type: String, unique: true },
+  serverCode: { type: String },
 });
 
 const studySchema = new Schema<IStudy>({
@@ -59,13 +59,17 @@ const studySchema = new Schema<IStudy>({
 });
 
 variantSchema.pre("save", async function (next) {
-  if (!this.serverCode) {
+  if (!this.serverCode || this.serverCode === "") {
     this.serverCode = uid.rnd(serverCodeLength);
 
-    let study = await Study.findOne({ serverCode: this.serverCode });
+    let study = await Study.findOne({
+      "variants.serverCode": this.serverCode,
+    });
     while (study) {
       this.serverCode = uid.rnd(serverCodeLength);
-      study = await Study.findOne({ serverCode: this.serverCode });
+      study = await Study.findOne({
+        "variants.serverCode": this.serverCode,
+      });
     }
   }
   next();

@@ -27,9 +27,9 @@ router.delete("/:id", isAuthenticated, async (req, res, next) => {
     if (!study) {
       return next(new HttpError(404));
     }
-    study.deleteOne();
+    await study.deleteOne();
     user.studies.splice(studyIndex, 1);
-    user.save();
+    await user.save();
     res.sendStatus(200);
   } catch (e) {
     next(e);
@@ -132,29 +132,40 @@ router.put(
   }
 );
 
-router.get("/variant", async (req, res /*next*/) => {
+router.get("/variants/variant", async (req, res, next) => {
   const { serverCode } = req.query;
 
-  const study = await Study.findOne({ variants: { serverCode } }).populate({
-    path: "variants.sessions.tasks.task", // Populate tasks within sessions
-  });
-  const variant = study?.variants.find((v) => v.serverCode === serverCode);
-  if (!variant) {
-    res.status(400).send("Variant does not exist");
-    return;
+  if (!serverCode) {
+    return res.status(400).send("Missing serverCode in query parameters");
   }
-  // const body = {
-  //   variant: {
-  //     name: variant.name,
-  //     sessions: variant.sessions.map(s => {
-  //       name: s.name,
-  //       tasks: s.tasks.map( t => {
-  //         name: t.
-  //         // need to get task data that's been populated
-  //       })
-  //     }),
-  //   },
-  // };
+
+  try {
+    const study = await Study.findOne({
+      "variants.serverCode": serverCode,
+    }).populate({
+      path: "variants.sessions.tasks.task",
+      populate: { path: "battery" }, // Populate the battery field inside the CustomizedBattery
+    });
+
+    if (!study) {
+      return res
+        .status(404)
+        .send(`No study found containing the serverCode ${serverCode}`);
+    }
+
+    // Find the specific variant with the matching serverCode
+    const variant = study.variants.find((v) => v.serverCode === serverCode);
+
+    if (!variant) {
+      return res
+        .status(404)
+        .send(`Variant with the serverCode ${serverCode} not found`);
+    }
+
+    return res.json(variant);
+  } catch (error) {
+    next(error);
+  }
 });
 
 export default router;
