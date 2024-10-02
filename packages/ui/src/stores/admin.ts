@@ -54,6 +54,10 @@ export const useBatteryEditingStore = defineStore("batteryEditing", () => {
       });
   }
 
+  function deselect() {
+    editingBatteryId.value = undefined;
+  }
+
   return {
     isLoading,
     isError,
@@ -61,5 +65,6 @@ export const useBatteryEditingStore = defineStore("batteryEditing", () => {
     save,
     batteryData,
     select,
+    deselect,
   };
 });
