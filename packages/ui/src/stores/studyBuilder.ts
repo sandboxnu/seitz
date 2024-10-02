@@ -99,7 +99,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
         });
         sessions.value = studyData.variants[0].sessions.map((s) => s._id); // TODO: map per variant later on
         isStudyLoading.value = false;
-        serverCode.value = studyData.serverCode;
+        serverCode.value = studyData.variants[0].serverCode;
       })
       .catch((err: AxiosError<Error>) => {
         router.push("/");
@@ -195,11 +195,11 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
       name: name.value ?? "",
       description: description.value ?? "",
       batteries: taskBank.value.map((id) => taskData.value[id]), // TODO: fix this
-      serverCode: serverCode.value,
       variants: [
         {
           name: name.value ?? "",
           sessions: sessions.value.map((id) => sessionData.value[id]),
+          serverCode: serverCode.value,
         },
       ],
     });

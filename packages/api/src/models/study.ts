@@ -16,6 +16,7 @@ export interface ISession {
 export interface IStudyVariant {
   name: string;
   sessions: ISession[];
+  serverCode: string;
 }
 
 export interface IStudy {
@@ -23,7 +24,6 @@ export interface IStudy {
   description: string;
   batteries: Types.ObjectId[];
   owner: Types.ObjectId;
-  serverCode: string;
   variants: IStudyVariant[];
 }
 
@@ -44,6 +44,7 @@ const sessionSchema = new Schema<ISession>({
 const variantSchema = new Schema<IStudyVariant>({
   name: { type: String, default: "" },
   sessions: [sessionSchema],
+  serverCode: { type: String },
 });
 
 const studySchema = new Schema<IStudy>({
@@ -51,18 +52,24 @@ const studySchema = new Schema<IStudy>({
   description: { type: String, default: "" },
   batteries: [{ type: Schema.Types.ObjectId, ref: "CustomizedBattery" }],
   owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  serverCode: { type: String, unique: true },
-  variants: { type: [variantSchema], default: [{ name: "", sessions: [] }] },
+  variants: {
+    type: [variantSchema],
+    default: [{ name: "", sessions: [], serverCode: "" }],
+  },
 });
 
-studySchema.pre("save", async function (next) {
-  if (!this.serverCode) {
+variantSchema.pre("save", async function (next) {
+  if (!this.serverCode || this.serverCode === "") {
     this.serverCode = uid.rnd(serverCodeLength);
 
-    let study = await Study.findOne({ serverCode: this.serverCode });
+    let study = await Study.findOne({
+      "variants.serverCode": this.serverCode,
+    });
     while (study) {
       this.serverCode = uid.rnd(serverCodeLength);
-      study = await Study.findOne({ serverCode: this.serverCode });
+      study = await Study.findOne({
+        "variants.serverCode": this.serverCode,
+      });
     }
   }
   next();
