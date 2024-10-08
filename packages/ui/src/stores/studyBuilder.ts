@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { ref, watch } from "vue";
 import mongoose from "mongoose";
 
-import studiesAPI from "@/api/studies";
+import studiesAPI, { IStudyVariant } from "@/api/studies";
 import tasksAPI from "@/api/tasks";
 import type {
   GetStudyResponse,
@@ -54,10 +54,13 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   }
 
   const studyId = ref<string>("");
+  const currentVariantId = ref<string>("");
   const isStudyLoading = ref(false);
   const isStudySaving = ref(false);
-  const name = ref<string>();
+  const studyName = ref<string>();
   const description = ref<string>();
+  const variantName = ref<string>();
+  const variants = ref<IStudyVariant[]>([]);
   const taskData = ref<Record<string, ICustomizedBattery>>({});
   const taskBank = ref<string[]>([]);
   const sessionData = ref<Record<string, ISession>>({});
@@ -69,7 +72,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
 
     studyId.value = routeStudyId();
     isStudyLoading.value = true;
-    name.value = undefined;
+    studyName.value = undefined;
     description.value = undefined;
     taskData.value = {};
     taskBank.value = [];
@@ -85,21 +88,24 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
         },
       })
       .then((studyData) => {
-        name.value = studyData.name;
+        studyName.value = studyData.name;
         description.value = studyData.description;
+        variants.value = studyData.variants;
+        sessionData.value = {};
+
+        if (!currentVariantId.value && variants.value.length > 0) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          currentVariantId.value = (variants.value[0] as any)._id;
+          variantName.value = variants.value[0].name;
+          loadVariant(currentVariantId.value);
+        }
+
         taskData.value = {};
         studyData.batteries.forEach((b) => {
           taskData.value[b._id] = b;
         });
         taskBank.value = studyData.batteries.map((b) => b._id);
-        sessionData.value = {};
-        studyData.variants[0].sessions.forEach((s) => {
-          // TODO: map per variant later on
-          sessionData.value[s._id] = s;
-        });
-        sessions.value = studyData.variants[0].sessions.map((s) => s._id); // TODO: map per variant later on
         isStudyLoading.value = false;
-        serverCode.value = studyData.variants[0].serverCode;
       })
       .catch((err: AxiosError<Error>) => {
         router.push("/");
@@ -188,20 +194,49 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     }
   }
 
+  function switchVariant(variantId: string) {
+    if (currentVariantId.value !== variantId) {
+      currentVariantId.value = variantId;
+      const variant = loadVariant(variantId);
+      variantName.value = variant?.name;
+    }
+  }
+
+  function loadVariant(variantId: string) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const variant = variants.value.find((v: any) => v._id === variantId);
+    if (variant) {
+      variant.sessions.forEach((s) => {
+        sessionData.value[s._id] = s;
+      });
+      sessions.value = variant.sessions.map((s) => s._id);
+      serverCode.value = variant.serverCode;
+    }
+    return variant;
+  }
+
   function saveStudyStore() {
     if (isStudyLoading.value || isStudySaving.value) return;
-    mutate({
-      _id: studyId.value!,
-      name: name.value ?? "",
-      description: description.value ?? "",
-      batteries: taskBank.value.map((id) => taskData.value[id]), // TODO: fix this
-      variants: [
-        {
-          name: name.value ?? "",
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updatedVariants = variants.value.map((v: any) => {
+      if (v._id === currentVariantId.value) {
+        return {
+          ...v,
+          name: variantName.value ?? "",
           sessions: sessions.value.map((id) => sessionData.value[id]),
           serverCode: serverCode.value,
-        },
-      ],
+        };
+      }
+      return v;
+    });
+
+    mutate({
+      _id: studyId.value!,
+      name: studyName.value ?? "",
+      description: description.value ?? "",
+      batteries: taskBank.value.map((id) => taskData.value[id]), // TODO: fix this
+      variants: updatedVariants,
     });
   }
 
@@ -209,15 +244,19 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
 
   return {
     studyId,
+    currentVariantId,
+    variantName,
+    variants,
     isStudyLoading,
     isStudySaving,
-    name,
+    name: studyName,
     description,
     taskBank,
     taskData,
     sessions,
     sessionData,
     serverCode,
+    switchVariant,
     addSession,
     saveStudyStore,
     handleChange,

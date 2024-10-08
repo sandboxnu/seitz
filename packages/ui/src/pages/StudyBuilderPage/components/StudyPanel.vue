@@ -4,8 +4,18 @@ import AppButton from "@/components/ui/AppButton.vue";
 import SessionCard from "./SessionCard.vue";
 import Draggable from "vuedraggable";
 import StudyServerCode from "./StudyServerCode.vue";
+import { ref } from "vue";
 
 const studyBuilderStore = useStudyBuilderStore();
+const currentVariantIndex = ref(0);
+
+const switchVariantByIndex = (index: number) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const variant = studyBuilderStore.variants[index] as any;
+  if (variant) {
+    studyBuilderStore.switchVariant(variant._id);
+  }
+};
 
 const draggableProps = {
   chosenClass: "bg-gray-200",
@@ -43,9 +53,32 @@ const draggableProps = {
           </template>
         </ElSkeleton>
       </div>
-      <div
-        class="flex-1 flex gap-2 items-end justify-end min-w-[200px] flex-wrap"
-      >
+    </div>
+    <div class="flex items-start justify-between gap-4 p-5">
+      <div class="flex-1">
+        <el-carousel
+          v-model="currentVariantIndex"
+          autoplay="false"
+          interval="0"
+          trigger="click"
+          height="40px"
+          @change="switchVariantByIndex"
+        >
+          <el-carousel-item
+            v-for="variant in studyBuilderStore.variants"
+            :key="(variant as any)._id"
+          >
+            <input
+              v-model="studyBuilderStore.variantName"
+              class="text-center w-full bg-transparent text-neutral-600 font-medium text-lg"
+              type="text"
+              placeholder="Untitled Variant"
+            />
+          </el-carousel-item>
+        </el-carousel>
+      </div>
+
+      <div class="flex gap-2 items-end justify-end min-w-[200px] flex-wrap">
         <StudyServerCode class="shrink grow-0 min-w-0" />
         <AppButton class="flex-none" @click="studyBuilderStore.saveStudyStore">
           Save Changes
