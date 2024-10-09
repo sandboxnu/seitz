@@ -9,5 +9,7 @@ export interface CreateUser {
 }
 
 export interface IUser extends Required<CreateUser> {
+  token: string;
+  verified: boolean;
   verifyPassword(password: string): Promise<boolean>;
 }

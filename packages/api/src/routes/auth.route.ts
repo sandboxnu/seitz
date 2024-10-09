@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import { isAuthenticated } from "../middleware/auth";
-import { authRoute } from "../util/handlers";
+import { authRoute, route } from "../util/handlers";
 import * as authService from "../services/auth.service";
 import passport from "passport";
 
@@ -25,6 +25,11 @@ router.get(
   "/user",
   isAuthenticated,
   authRoute((req) => authService.getUser(req))
+);
+
+router.get(
+  "/verify/:token",
+  route((req) => authService.verifyToken(req))
 );
 
 export default router;
