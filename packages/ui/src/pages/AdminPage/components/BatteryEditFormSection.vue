@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { IOptionGroup } from "@/api/tasks";
+import type { DTO, IBattery } from "@seitz/shared";
 
-defineProps<{ group: IOptionGroup }>();
+defineProps<{ group: DTO<IBattery>["stages"][0]["options"] }>();
 </script>
 
 <template>

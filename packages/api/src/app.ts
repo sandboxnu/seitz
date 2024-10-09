@@ -4,11 +4,13 @@ import express from "express";
 import passport from "passport";
 import session from "express-session";
 
-import exampleRoutes from "./routes/example";
-import adminRoutes from "./routes/admin";
-import authRoutes from "./routes/auth";
-import studiesRoutes from "./routes/studies";
-import tasksRoutes from "./routes/tasks";
+import {
+  adminRoutes,
+  authRoutes,
+  exampleRoutes,
+  studiesRoutes,
+  tasksRoutes,
+} from "./routes";
 import errorHandler from "./middleware/error";
 
 const app = express();

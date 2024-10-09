@@ -48,6 +48,9 @@ importers:
 
   packages/api:
     dependencies:
+      '@seitz/shared':
+        specifier: workspace:*
+        version: link:../shared
       bcrypt:
         specifier: ^5.1.1
         version: 5.1.1
@@ -119,6 +122,8 @@ importers:
         specifier: ^10.9.1
         version: 10.9.1(@types/node@20.8.4)(typescript@5.3.3)
 
+  packages/shared: {}
+
   packages/ui:
     dependencies:
       '@fortawesome/fontawesome-svg-core':
@@ -133,6 +138,9 @@ importers:
       '@fortawesome/vue-fontawesome':
         specifier: ^3.0.5
         version: 3.0.5(@fortawesome/fontawesome-svg-core@6.5.1)(vue@3.3.4)
+      '@seitz/shared':
+        specifier: workspace:*
+        version: link:../shared
       '@tanstack/vue-query':
         specifier: ^4.36.2
         version: 4.36.2(vue@3.3.4)

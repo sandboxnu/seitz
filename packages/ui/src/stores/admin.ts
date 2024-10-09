@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import taskAPI, { GetSingularTaskResponse } from "@/api/tasks";
+import taskAPI from "@/api/tasks";
 import { ElNotification } from "element-plus";
+import type { DTO, IBattery } from "@seitz/shared";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const useBatteryEditingStore = defineStore("batteryEditing", () => {
@@ -10,7 +11,7 @@ export const useBatteryEditingStore = defineStore("batteryEditing", () => {
 
   const isLoading = ref(false);
   const isError = ref(false);
-  const batteryData = ref<GetSingularTaskResponse>();
+  const batteryData = ref<DTO<IBattery>>();
 
   const queryClient = useQueryClient();
 

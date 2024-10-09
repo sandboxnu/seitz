@@ -1,13 +1,7 @@
 // Example model
 
 import { Schema, model } from "mongoose";
-
-export interface ICar {
-  make: string;
-  model: string;
-  year: number;
-  miles: number;
-}
+import type { ICar } from "@seitz/shared";
 
 const carSchema = new Schema<ICar>({
   make: { type: String, required: true },

@@ -1,31 +1,15 @@
-import { Schema, Types, model } from "mongoose";
+import { Model, Schema, Types, model } from "mongoose";
 import ShortUniqueId from "short-unique-id";
 
 const uid = new ShortUniqueId({ dictionary: "alphanum_lower" });
 const serverCodeLength = 5;
 
-export interface ITaskInstance {
-  task: Types.ObjectId;
-  quantity: number;
-}
-
-export interface ISession {
-  name: string;
-  tasks: ITaskInstance[];
-}
-export interface IStudyVariant {
-  name: string;
-  sessions: ISession[];
-}
-
-export interface IStudy {
-  name: string;
-  description: string;
-  batteries: Types.ObjectId[];
-  owner: Types.ObjectId;
-  serverCode: string;
-  variants: IStudyVariant[];
-}
+import type {
+  ISession,
+  IStudy,
+  IStudyVariant,
+  ITaskInstance,
+} from "@seitz/shared";
 
 const taskInstanceSchema = new Schema<ITaskInstance>({
   task: {
@@ -46,16 +30,27 @@ const variantSchema = new Schema<IStudyVariant>({
   sessions: [sessionSchema],
 });
 
-const studySchema = new Schema<IStudy>({
+interface StudyDocumentProps {
+  variants: Types.DocumentArray<IStudyVariant>;
+}
+type StudyModelType = Model<IStudy, unknown, StudyDocumentProps>;
+
+const studySchema = new Schema<IStudy, StudyModelType>({
   name: { type: String, default: "" },
   description: { type: String, default: "" },
   batteries: [{ type: Schema.Types.ObjectId, ref: "CustomizedBattery" }],
   owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
   serverCode: { type: String, unique: true },
-  variants: { type: [variantSchema], default: [{ name: "", sessions: [] }] },
+  variants: {
+    type: [variantSchema],
+    default: [],
+  },
 });
 
 studySchema.pre("save", async function (next) {
+  if (this.variants.length === 0) {
+    this.variants.push({ _id: new Types.ObjectId(), name: "", sessions: [] });
+  }
   if (!this.serverCode) {
     this.serverCode = uid.rnd(serverCodeLength);
 
@@ -67,4 +62,5 @@ studySchema.pre("save", async function (next) {
   }
   next();
 });
-export const Study = model<IStudy>("Study", studySchema);
+
+export const Study = model<IStudy, StudyModelType>("Study", studySchema);
