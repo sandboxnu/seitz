@@ -5,7 +5,7 @@ defineProps<{ group: DTO<IBattery>["stages"][0]["options"] }>();
 </script>
 
 <template>
-  <div class="border border-gray-400 rounded-xl p-5 my-2">
+  <div class="border border-gray-400 rounded-xl p-5">
     <h2 class="text-base font-bold">
       {{ group.name }}
     </h2>
@@ -53,7 +53,11 @@ defineProps<{ group: DTO<IBattery>["stages"][0]["options"] }>();
         </ElFormItem>
       </template>
       <template v-else-if="option.type == 'group'">
-        <TaskEditFormSection :group="option" />
+        <BatteryEditFormSection
+          v-if="option.options.length > 0"
+          :group="option"
+          class="my-2"
+        />
       </template>
     </template>
   </div>
