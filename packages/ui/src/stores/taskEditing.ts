@@ -1,4 +1,3 @@
-import { EditTaskDTO, GetSingularTaskResponse } from "@/api/tasks";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { defineStore } from "pinia";
 import { ref } from "vue";
@@ -6,6 +5,7 @@ import { useStudyBuilderStore } from "./studyBuilder";
 import tasksAPI from "@/api/tasks";
 import mongoose from "mongoose";
 import { ElNotification } from "element-plus";
+import { CreateCustomizedBattery, DTO, GETCustomizedTask } from "@seitz/shared";
 
 export const useTaskEditingStore = defineStore("taskEditing", () => {
   const queryClient = useQueryClient();
@@ -13,7 +13,7 @@ export const useTaskEditingStore = defineStore("taskEditing", () => {
 
   const editingTaskId = ref<string>();
 
-  const battery = ref<GetSingularTaskResponse>();
+  const battery = ref<DTO<GETCustomizedTask>["battery"]>();
   const isLoading = ref(true);
   const isError = ref(false);
   // TODO: Fix the typing here
@@ -27,7 +27,10 @@ export const useTaskEditingStore = defineStore("taskEditing", () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       isSaveAs,
       ...taskDTO
-    }: { taskId: string; isSaveAs: boolean } & EditTaskDTO) => {
+    }: {
+      taskId: string;
+      isSaveAs: boolean;
+    } & DTO<CreateCustomizedBattery>) => {
       return tasksAPI.saveTask(studyBuilderStore.studyId, taskId, taskDTO);
     },
     onSuccess: ({ data }, { taskId, isSaveAs }) => {
