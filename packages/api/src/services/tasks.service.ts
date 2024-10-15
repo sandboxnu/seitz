@@ -35,9 +35,12 @@ export const getCustomizedTask = async (
     throw new HttpError(404);
   }
 
-  const customizedTask = await CustomizedBattery.findById(customId).populate<{
-    battery: IBattery;
-  }>("battery");
+  const customizedTask = await CustomizedBattery.findById(customId)
+    .lean()
+    .populate<{
+      battery: IBattery;
+    }>("battery");
+
   if (!customizedTask) throw new HttpError(404);
   return [200, customizedTask];
 };
@@ -68,7 +71,7 @@ export const createCustomizedTask = async (
     throw new HttpError(404);
   }
 
-  const battery = await Battery.findById(batteryId);
+  const battery = await Battery.findById(batteryId).lean();
 
   if (!battery) throw new HttpError(404);
   const values: CreateOptionValue[] = [];
