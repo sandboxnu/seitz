@@ -1,16 +1,7 @@
-import { Schema, Types, model } from "mongoose";
+import { Schema, model } from "mongoose";
 import { ENCRYPTION_CONSTANTS as EC } from "../util/constants";
 import bcrypt from "bcrypt";
-
-export interface IUser {
-  email: string;
-  password: string;
-  isAdmin: boolean;
-  verifyPassword(password: string): Promise<boolean>;
-  studies: Types.ObjectId[];
-  token: string;
-  verified: boolean;
-}
+import type { IUser } from "@seitz/shared";
 
 const userSchema = new Schema<IUser>({
   email: { type: String, required: true, unique: true },

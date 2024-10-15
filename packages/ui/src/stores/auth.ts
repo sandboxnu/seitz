@@ -3,8 +3,8 @@ import { useStorage, StorageSerializers } from "@vueuse/core";
 import authAPI from "@/api/auth";
 
 export interface IUser {
+  _id: string;
   email: string;
-  password: string;
   isAdmin: boolean;
   studies: string[];
 }

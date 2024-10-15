@@ -62,7 +62,7 @@ const isCollapsed = computed(() => {
           <ElImage src="/icons/pencil.svg" />
           <template v-if="!isCollapsed">Task Templates</template>
         </ElMenuItem>
-        <ElMenuItem class="flex items-center gap-3">
+        <ElMenuItem index="/admin/users" class="flex items-center gap-3">
           <ElImage src="/icons/people.svg" />
           <template v-if="!isCollapsed">Users</template>
         </ElMenuItem>
