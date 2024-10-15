@@ -1,4 +1,4 @@
-import { UpdateWriteOpResult } from "mongoose";
+import mongoose, { UpdateWriteOpResult } from "mongoose";
 import { User, Battery } from "../models";
 import HttpError from "../types/errors";
 import { APIResponse } from "../util/handlers";
@@ -89,6 +89,7 @@ function parseOptions(s: any): CreateOption[] {
       };
     } else {
       option = {
+        _id: new mongoose.Types.ObjectId(),
         name: optionName,
         default: optionValue,
         type:
