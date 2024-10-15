@@ -138,7 +138,6 @@ async function saveTask(
   taskId: string,
   taskData: EditTaskDTO
 ) {
-  console.log(taskData);
   return await axiosInstance.put<GetCustomTaskResponse>(
     `/studies/${studyId}/tasks/${taskId}`,
     taskData

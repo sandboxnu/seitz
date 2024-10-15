@@ -72,6 +72,7 @@ export const useTaskEditingStore = defineStore("taskEditing", () => {
 
   function save() {
     if (!editingTaskId.value || !name.value || !battery.value) return;
+
     saveMutation.mutate({
       isSaveAs: false,
       taskId: editingTaskId.value,
