@@ -1,13 +1,13 @@
-import { Router } from "express";
-import passport from "passport";
 import { User } from "../models";
-import { Strategy as LocalStrategy } from "passport-local";
-import isAuthenticated from "../middleware/auth";
 import HttpError from "../types/errors";
+import { APIResponse } from "../util/handlers";
+import passport from "passport";
+import { Strategy as LocalStrategy } from "passport-local";
 import sgMail from "@sendgrid/mail";
 import crypto from "crypto";
+import { IUser } from "@seitz/shared";
 
-const router = Router();
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 passport.use(
   new LocalStrategy(
@@ -39,7 +39,7 @@ passport.deserializeUser((id, done) =>
     .catch(done)
 );
 
-router.post("/signup", (req, res, next) => {
+export const signUp = async (req: any, res: any, next: any): Promise<void> => {
   const { email, password } = req.body;
   if (typeof email !== "string" || typeof password !== "string") {
     next(new HttpError(400, "Must have fields email and password"));
@@ -55,11 +55,11 @@ router.post("/signup", (req, res, next) => {
           subject: "Brain Game Center: Verify Your Email",
           html: `<p>Welcome to Brain Game Center! Please verify your email by clicking this <a href="${URL}">link</a>.</p>`,
         };
-        sgMail.send(msg).catch((error) => {
+        sgMail.send(msg).catch((error: any) => {
           console.error(error);
         });
 
-        req.login(user, (err) => {
+        req.login(user, (err: any) => {
           if (!err) res.sendStatus(201);
           else next(err);
         });
@@ -72,44 +72,37 @@ router.post("/signup", (req, res, next) => {
         }
       });
   }
-});
+};
 
-router.post(
-  "/login",
-  passport.authenticate("local", { failWithError: true }),
-  (req, res) => {
-    res.sendStatus(200);
-  }
-);
+export const login = async (): APIResponse<void> => {
+  return [200];
+};
 
-router.post("/logout", isAuthenticated, (req, res, next) => {
-  req.logout((err) => {
+export const logout = async (req: any): APIResponse<void> => {
+  req.logout((err: any) => {
     if (err) {
-      next(new HttpError(500));
-    } else {
-      res.sendStatus(200);
+      throw new HttpError(500);
     }
   });
-});
+  return [200];
+};
 
-router.get("/user", isAuthenticated, (req, res) => {
-  res.json(req.user);
-});
+export const getUser = async (req: any): APIResponse<IUser> => {
+  return [200, req.user];
+};
 
-router.get("/verify/:token", async (req, res) => {
+export const verifyToken = async (req: any): APIResponse<string> => {
   const token = req.params.token;
   try {
     const user = await User.findOne({ token: token });
     if (!user) {
-      return res.status(404).send("Token not found");
+      throw new HttpError(404, "Token not found");
     }
     user.verified = true;
     user.token = "";
     await user.save();
-    res.status(200).send("Your email has been verified!");
+    return [200, "Your email has been verified!"];
   } catch (err) {
-    res.status(500).send("Could not verify: " + err);
+    throw new HttpError(500, `Could not verify:  + ${err}`);
   }
-});
-
-export default router;
+};

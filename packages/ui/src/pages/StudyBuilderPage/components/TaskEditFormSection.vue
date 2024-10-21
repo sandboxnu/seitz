@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
 import { useTaskEditingStore } from "@/stores/taskEditing";
-import type { IOptionGroup } from "@/api/tasks";
+import type { DTO, GETCustomizedTask } from "@seitz/shared";
 
-defineProps<{ group: IOptionGroup }>();
+defineProps<{
+  group: DTO<GETCustomizedTask>["battery"]["stages"][0]["options"];
+}>();
 const store = useTaskEditingStore();
 const { formValues } = storeToRefs(store);
 </script>

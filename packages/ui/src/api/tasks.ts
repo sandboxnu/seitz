@@ -1,120 +1,32 @@
 import axios from "axios";
 
+import type {
+  CreateCustomizedBattery,
+  DTO,
+  GETCustomizedTask,
+  GETTasks,
+  IBattery,
+} from "@seitz/shared";
+
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
 });
 
-interface IGenericOption<T> {
-  _id: string;
-  name: string;
-  default: T;
-}
-
-interface INumberOption extends IGenericOption<number> {
-  type: "number";
-  min?: number;
-  max?: number;
-  step?: number;
-}
-
-interface ITextOption extends IGenericOption<string> {
-  type: "text";
-  maxLength?: number;
-}
-
-interface IDropdownOption extends IGenericOption<number> {
-  type: "dropdown";
-  options: string[];
-}
-
-interface ICheckboxOption extends IGenericOption<boolean> {
-  type: "checkbox";
-}
-
-export interface IOptionGroup {
-  _id: string;
-  type: "group";
-  name: string;
-  options: IOption[];
-}
-
-type IOption =
-  | INumberOption
-  | ITextOption
-  | IDropdownOption
-  | ICheckboxOption
-  | IOptionGroup;
-
-interface IBatteryStage {
-  _id: string;
-  type: string;
-  stageLabel: string;
-  options: IOptionGroup;
-}
-
-export interface GetTaskResponse {
-  _id: string;
-  name: string;
-  description: string;
-  imageUrl: string;
-  deleted: boolean;
-}
-
-export interface GetSingularTaskResponse extends GetTaskResponse {
-  name: string;
-  description: string;
-  stages: IBatteryStage[];
-}
-
-interface IOptionValue {
-  option: string;
-  value: unknown;
-}
-
-interface IBattery {
-  _id: string;
-  name: string;
-  description: string;
-  imageUrl: string;
-  stages: string[];
-  deleted: boolean;
-}
-
-interface GetCustomTaskResponse {
-  _id: string;
-  battery: IBattery;
-  name: string;
-  values: IOptionValue[];
-}
-
-export interface GetSingleCustomTaskResponse
-  extends Omit<GetCustomTaskResponse, "battery"> {
-  battery: GetSingularTaskResponse;
-}
-
-export interface EditTaskDTO {
-  name: string;
-  battery: string;
-  values: IOptionValue[];
-}
-
 async function getAllTasks() {
-  const result = await axiosInstance.get<GetTaskResponse[]>(`tasks`);
+  const result = await axiosInstance.get<DTO<GETTasks>>(`tasks`);
   return result.data;
 }
 
 async function getTask(id: string) {
-  const result = await axiosInstance.get<GetSingleCustomTaskResponse>(
+  const result = await axiosInstance.get<DTO<GETCustomizedTask>>(
     `tasks/custom/${id}`
   );
   return result.data;
 }
 
 async function getBattery(id: string) {
-  const result = await axiosInstance.get<GetSingularTaskResponse>(
-    `tasks/${id}`
-  );
+  const result = await axiosInstance.get<DTO<IBattery>>(`tasks/${id}`);
   return result.data;
 }
 
@@ -123,7 +35,7 @@ async function createCustomTask(
   name: string,
   studyId: string
 ) {
-  const result = await axiosInstance.post<GetCustomTaskResponse>(
+  const result = await axiosInstance.post<DTO<GETCustomizedTask>>(
     `tasks/${batteryId}/custom`,
     {
       name,
@@ -136,9 +48,9 @@ async function createCustomTask(
 async function saveTask(
   studyId: string,
   taskId: string,
-  taskData: EditTaskDTO
+  taskData: DTO<CreateCustomizedBattery>
 ) {
-  return await axiosInstance.put<GetCustomTaskResponse>(
+  return await axiosInstance.put<DTO<GETCustomizedTask>>(
     `/studies/${studyId}/tasks/${taskId}`,
     taskData
   );
