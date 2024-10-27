@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { ref, watch } from "vue";
 import mongoose from "mongoose";
 
-import studiesAPI from "@/api/studies";
+import studiesAPI, { VariantFromQuery } from "@/api/studies";
 import tasksAPI from "@/api/tasks";
 import { useRoute, useRouter } from "vue-router";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
@@ -66,7 +66,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const studyName = ref<string>();
   const description = ref<string>();
   const variantName = ref<string>();
-  const variants = ref<IStudyVariant[]>([]);
+  const variants = ref<VariantFromQuery[]>([]);
   const taskData = ref<Record<string, DTO<GETCustomizedTask>>>({});
   const taskBank = ref<string[]>([]);
   const sessionData = ref<Record<string, DTO<ISession>>>({});
@@ -97,13 +97,9 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
         studyName.value = studyData.name;
         description.value = studyData.description;
         variants.value = studyData.variants;
-        sessionData.value = {};
 
-        if (!currentVariantId.value && variants.value.length > 0) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          // variantId.value = studyData.variants[0]._id;
-          currentVariantId.value = variants.value[0]._id;
-          variantName.value = variants.value[0].name;
+        if (variants.value.length > 0) {
+          currentVariantId.value = studyData.variants[0]._id;
           loadVariant(currentVariantId.value);
         }
 
@@ -112,14 +108,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
           taskData.value[b._id] = b;
         });
         taskBank.value = studyData.batteries.map((b) => b._id);
-        sessionData.value = {};
-        studyData.variants[0].sessions.forEach((s) => {
-          // TODO: map per variant later on
-          sessionData.value[s._id] = s;
-        });
-        sessions.value = studyData.variants[0].sessions.map((s) => s._id); // TODO: map per variant later on
         isStudyLoading.value = false;
-        // serverCode.value = studyData.serverCode;
       })
       .catch((err: AxiosError<Error>) => {
         router.push("/");
@@ -211,30 +200,27 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   function switchVariant(variantId: string) {
     if (currentVariantId.value !== variantId) {
       currentVariantId.value = variantId;
-      const variant = loadVariant(variantId);
-      variantName.value = variant?.name;
+      loadVariant(currentVariantId.value);
     }
   }
 
   function loadVariant(variantId: string) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const variant = variants.value.find((v: any) => v._id === variantId);
+    const variant = variants.value.find((v) => v._id === variantId);
     if (variant) {
       variant.sessions.forEach((s) => {
         sessionData.value[s._id] = s;
       });
       sessions.value = variant.sessions.map((s) => s._id);
       serverCode.value = variant.serverCode;
+      variantName.value = variant.name;
     }
-    return variant;
   }
 
   function saveStudyStore() {
     if (isStudyLoading.value || isStudySaving.value || !authStore.currentUser)
       return;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const updatedVariants = variants.value.map((v: any) => {
+    const updatedVariants = variants.value.map((v) => {
       if (v._id === currentVariantId.value) {
         return {
           ...v,
@@ -245,6 +231,8 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
       }
       return v;
     });
+
+    variants.value = updatedVariants;
 
     mutate({
       _id: studyId.value!,

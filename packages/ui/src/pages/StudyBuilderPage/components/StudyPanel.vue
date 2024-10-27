@@ -10,8 +10,7 @@ const studyBuilderStore = useStudyBuilderStore();
 const currentVariantIndex = ref(0);
 
 const switchVariantByIndex = (index: number) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const variant = studyBuilderStore.variants[index] as any;
+  const variant = studyBuilderStore.variants[index];
   if (variant) {
     studyBuilderStore.switchVariant(variant._id);
   }
@@ -66,7 +65,7 @@ const draggableProps = {
         >
           <el-carousel-item
             v-for="variant in studyBuilderStore.variants"
-            :key="(variant as any)._id"
+            :key="variant._id"
           >
             <input
               v-model="studyBuilderStore.variantName"

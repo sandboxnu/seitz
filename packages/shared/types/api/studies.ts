@@ -7,7 +7,7 @@ type ListStudy = Pick<IStudy, "_id" | "name" | "description">;
 
 export type GETStudy = Pick<
   IStudy,
-  "_id" | "name" | "description" | "owner" | "serverCode" | "variants"
+  "_id" | "name" | "description" | "owner" | "variants"
 > & {
   batteries: GETCustomizedTask[];
 };
@@ -16,10 +16,7 @@ export type GETStudies = ListStudy[];
 
 // TODO: refine this type
 export type PUTStudy = DTO<
-  Pick<
-    IStudy,
-    "_id" | "name" | "description" | "owner" | "serverCode" | "variants"
-  > & {
+  Pick<IStudy, "_id" | "name" | "description" | "owner" | "variants"> & {
     batteries: GETCustomizedTask[];
   }
 >;
