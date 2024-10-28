@@ -119,8 +119,8 @@ export const putTask = async (
     return [201, populated];
   } else {
     const task = await CustomizedBattery.create({
-      taskData,
       _id: taskId,
+      ...taskData,
     });
     await study.updateOne({ $push: { batteries: task._id } });
     const populated = await task.populate<{ battery: IBattery }>("battery");
