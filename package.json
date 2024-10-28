@@ -27,6 +27,7 @@
     "dev": "pnpm --stream -r dev"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
     "@sendgrid/mail": "^8.1.1",
     "mongoose": "^7.5.2",
     "short-unique-id": "^5.0.3"
