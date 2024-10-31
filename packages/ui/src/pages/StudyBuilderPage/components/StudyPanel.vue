@@ -5,7 +5,7 @@ import SessionCard from "./SessionCard.vue";
 import Draggable from "vuedraggable";
 import StudyServerCode from "./StudyServerCode.vue";
 import { ref } from "vue";
-import { ArrowRight, ArrowLeft, Plus } from "@element-plus/icons-vue";
+import { ArrowRight, ArrowLeft } from "@element-plus/icons-vue";
 
 const studyBuilderStore = useStudyBuilderStore();
 const currentVariantIndex = ref(0);
@@ -123,11 +123,12 @@ const draggableProps = {
           </Draggable>
         </TransitionGroup>
         <el-button
-          class="h-[30px] w-[30px] self-center cursor-pointer flex"
-          :icon="Plus"
+          class="h-[30px] w-[30px] bg-primary-300 text-white border border-primary-400 self-center cursor-pointer flex"
           circle
           @click="studyBuilderStore.addSession"
-        />
+        >
+          <font-awesome-icon :icon="['fas', 'plus']" />
+        </el-button>
       </div>
     </div>
   </div>
