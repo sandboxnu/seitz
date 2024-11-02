@@ -127,3 +127,35 @@ export const putTask = async (
     return [200, populated];
   }
 };
+
+export const getVariant = async (serverCode: string): APIResponse<object> => {
+  if (!serverCode) {
+    throw new HttpError(400, "Missing serverCode in query parameters");
+  }
+
+  const study = await Study.findOne({
+    "variants.serverCode": serverCode,
+  }).populate({
+    path: "variants.sessions.tasks.task",
+    populate: { path: "battery" }, // Populate the battery field inside the CustomizedBattery
+  });
+
+  if (!study) {
+    throw new HttpError(
+      404,
+      `No study found containing the serverCode ${serverCode}`
+    );
+  }
+
+  // Find the specific variant with the matching serverCode
+  const variant = study.variants.find((v) => v.serverCode === serverCode);
+
+  if (!variant) {
+    throw new HttpError(
+      404,
+      `Variant with the serverCode ${serverCode} not found`
+    );
+  }
+
+  return [200, variant];
+};
