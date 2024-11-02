@@ -5,7 +5,7 @@ import SessionCard from "./SessionCard.vue";
 import Draggable from "vuedraggable";
 import StudyServerCode from "./StudyServerCode.vue";
 import { ref } from "vue";
-import { ArrowRight, ArrowLeft } from "@element-plus/icons-vue";
+import { ArrowRight, ArrowLeft, Plus } from "@element-plus/icons-vue";
 
 const studyBuilderStore = useStudyBuilderStore();
 const currentVariantIndex = ref(0);
@@ -79,10 +79,12 @@ const draggableProps = {
         placeholder="Untitled Variant"
       />
       <el-button
+        v-if="currentVariantIndex < studyBuilderStore.variants.length - 1"
         :icon="ArrowRight"
         :disabled="currentVariantIndex >= studyBuilderStore.variants.length - 1"
         @click="switchVariant('next')"
       />
+      <el-button v-else :icon="Plus" />
     </div>
 
     <div
