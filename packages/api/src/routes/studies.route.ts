@@ -47,4 +47,18 @@ router.put(
   )
 );
 
+// create new variant in study
+router.post(
+  "/:studyId/variants/new",
+  isAuthenticated,
+  authRoute((req, user) => studyService.createNewVariant(user, req.params.studyId))
+);
+
+// delete variant from study
+router.delete(
+  "/:studyID/variants/:variantID",
+  isAuthenticated,
+  authRoute((req, user) => studyService.deleteVariant(user, req.params.studyId, req.params.variantID))
+);
+
 export default router;
