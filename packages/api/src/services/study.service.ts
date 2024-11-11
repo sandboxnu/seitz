@@ -127,3 +127,41 @@ export const putTask = async (
     return [200, populated];
   }
 };
+
+// for creating a new empty variant in a study
+export const createNewVariant = async (
+  user: HydratedDocument<IUser>,
+  studyId: string
+): APIResponse<IStudy> => {
+  const study = await Study.findById(studyId);
+  console.log(study);
+  if (!study || study.owner.toString() !== user._id.toString()) {
+    throw new HttpError(404);
+  }
+
+  const variantData = { name: "", sessions: []};
+  await study.updateOne({ $push: { variants: variantData } });
+
+  await study.save();
+
+  return [200, study]; // what to return, updated study or nothing?
+};
+
+// for deleting a variant from a study
+export const deleteVariant = async (
+  user: HydratedDocument<IUser>,
+  studyId: string,
+  variantID: string
+
+): APIResponse<void> => {
+  const study = await Study.findById(studyId);
+  if (!study) throw new HttpError(404);
+
+  const variantIndex = study.variants.findIndex((id) => id.toString() === variantID);
+  if (variantIndex === -1) throw new HttpError(404);
+
+  study.updateOne({ variants: variantID }, { deleted: true });
+  user.studies.splice(variantIndex, 1);
+  study.save(); // necessary?
+  return [200];
+};
