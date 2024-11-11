@@ -151,16 +151,16 @@ export const createNewVariant = async (
 export const deleteVariant = async (
   user: HydratedDocument<IUser>,
   studyId: string,
-  variantID: string
+  variantId: string
 
 ): APIResponse<void> => {
   const study = await Study.findById(studyId);
   if (!study) throw new HttpError(404);
 
-  const variantIndex = study.variants.findIndex((id) => id.toString() === variantID);
+  const variantIndex = study.variants.findIndex((id) => id.toString() === variantId);
   if (variantIndex === -1) throw new HttpError(404);
 
-  study.updateOne({ variants: variantID }, { deleted: true });
+  study.updateOne({ variants: variantId }, { deleted: true });
   user.studies.splice(variantIndex, 1);
   study.save(); // necessary?
   return [200];
