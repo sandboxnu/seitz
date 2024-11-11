@@ -56,9 +56,9 @@ router.post(
 
 // delete variant from study
 router.delete(
-  "/:studyID/variants/:variantID",
+  "/:studyId/variants/:variantId",
   isAuthenticated,
-  authRoute((req, user) => studyService.deleteVariant(user, req.params.studyId, req.params.variantID))
+  authRoute((req, user) => studyService.deleteVariant(user, req.params.studyId, req.params.variantId))
 );
 
 export default router;
