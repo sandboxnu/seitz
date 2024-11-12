@@ -133,18 +133,16 @@ export const createNewVariant = async (
   user: HydratedDocument<IUser>,
   studyId: string
 ): APIResponse<IStudy> => {
-  const study = await Study.findById(studyId);
-  console.log(study);
-  if (!study || study.owner.toString() !== user._id.toString()) {
+  const updatedStudy = await Study.findOneAndUpdate(
+    { _id: studyId, owner: user._id },
+    { $push: { variants: { name: "", sessions: [] } } }
+  );
+
+  if (!updatedStudy) {
     throw new HttpError(404);
   }
 
-  const variantData = { name: "", sessions: []};
-  await study.updateOne({ $push: { variants: variantData } });
-
-  await study.save();
-
-  return [200, study]; // what to return, updated study or nothing?
+  return [201];
 };
 
 // for deleting a variant from a study
@@ -152,16 +150,14 @@ export const deleteVariant = async (
   user: HydratedDocument<IUser>,
   studyId: string,
   variantId: string
-
 ): APIResponse<void> => {
-  const study = await Study.findById(studyId);
+  const study = await Study.findOneAndUpdate(
+    { _id: studyId, owner: user._id },
+    {
+      $pull: { variants: { _id: variantId } },
+    }
+  );
   if (!study) throw new HttpError(404);
 
-  const variantIndex = study.variants.findIndex((id) => id.toString() === variantId);
-  if (variantIndex === -1) throw new HttpError(404);
-
-  study.updateOne({ variants: variantId }, { deleted: true });
-  user.studies.splice(variantIndex, 1);
-  study.save(); // necessary?
   return [200];
 };
