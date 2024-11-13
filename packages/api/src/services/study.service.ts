@@ -9,6 +9,7 @@ import type {
   GETStudy,
   IBattery,
   IStudy,
+  IStudyVariant,
   IUser,
   PUTStudy,
 } from "@seitz/shared";
@@ -128,7 +129,9 @@ export const putTask = async (
   }
 };
 
-export const getVariant = async (serverCode: string): APIResponse<object> => {
+export const getVariant = async (
+  serverCode: string
+): APIResponse<IStudyVariant> => {
   if (!serverCode) {
     throw new HttpError(400, "Missing serverCode in query parameters");
   }
