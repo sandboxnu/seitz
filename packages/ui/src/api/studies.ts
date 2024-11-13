@@ -44,4 +44,29 @@ async function saveStudy(id: string, studyData: DTO<PUTStudy>) {
   await axiosInstance.put(`/studies/${id}`, studyData);
 }
 
-export default { getStudies, deleteStudy, getStudy, saveStudy, createStudy };
+export interface VariantFromQuery {
+  _id: string;
+  name: string;
+  sessions: SessionFromQuery[];
+  serverCode: string;
+}
+
+interface SessionFromQuery {
+  _id: string;
+  name: string;
+  tasks: TaskFromQuery[];
+}
+
+interface TaskFromQuery {
+  _id: string;
+  task: string;
+  quantity: number;
+}
+
+export default {
+  getStudies,
+  deleteStudy,
+  getStudy,
+  saveStudy,
+  createStudy,
+};

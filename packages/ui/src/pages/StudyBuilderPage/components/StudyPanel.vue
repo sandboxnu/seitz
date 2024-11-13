@@ -4,8 +4,30 @@ import AppButton from "@/components/ui/AppButton.vue";
 import SessionCard from "./SessionCard.vue";
 import Draggable from "vuedraggable";
 import StudyServerCode from "./StudyServerCode.vue";
+import { ref } from "vue";
+import { ArrowRight, ArrowLeft, Plus } from "@element-plus/icons-vue";
 
 const studyBuilderStore = useStudyBuilderStore();
+const currentVariantIndex = ref(0);
+
+const switchVariantByIndex = (index: number) => {
+  const variant = studyBuilderStore.variants[index];
+  if (variant) {
+    studyBuilderStore.switchVariant(variant._id);
+  }
+};
+
+const switchVariant = (direction: "next" | "prev") => {
+  if (
+    direction === "next" &&
+    currentVariantIndex.value < studyBuilderStore.variants.length - 1
+  ) {
+    currentVariantIndex.value++;
+  } else if (direction === "prev" && currentVariantIndex.value > 0) {
+    currentVariantIndex.value--;
+  }
+  switchVariantByIndex(currentVariantIndex.value);
+};
 
 const draggableProps = {
   chosenClass: "bg-gray-200",
@@ -43,20 +65,46 @@ const draggableProps = {
           </template>
         </ElSkeleton>
       </div>
-      <div
-        class="flex-1 flex gap-2 items-end justify-end min-w-[200px] flex-wrap"
-      >
-        <StudyServerCode class="shrink grow-0 min-w-0" />
-        <AppButton class="flex-none" @click="studyBuilderStore.saveStudyStore">
-          Save Changes
-        </AppButton>
-      </div>
     </div>
+    <div class="flex items-center justify-center w-3/6 p-2 mx-auto">
+      <el-button
+        :icon="ArrowLeft"
+        :disabled="currentVariantIndex <= 0"
+        @click="switchVariant('prev')"
+      />
+      <input
+        v-model="studyBuilderStore.variantName"
+        class="text-center w-full bg-transparent text-neutral-600 font-medium text-lg mx-5"
+        type="text"
+        placeholder="Untitled Variant"
+      />
+      <el-button
+        v-if="currentVariantIndex < studyBuilderStore.variants.length - 1"
+        :icon="ArrowRight"
+        :disabled="currentVariantIndex >= studyBuilderStore.variants.length - 1"
+        @click="switchVariant('next')"
+      />
+      <el-button v-else :icon="Plus" />
+    </div>
+
     <div
       v-loading="studyBuilderStore.isStudyLoading"
       class="grow p-6 bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
     >
-      <div class="w-full h-full flex gap-6 overflow-x-auto bg-white">
+      <div class="flex items-start items-center justify-between gap-4 pb-5">
+        <div></div>
+        <div class="flex gap-2 items-end justify-end min-w-[200px] flex-wrap">
+          <StudyServerCode class="shrink grow-0 min-w-0" />
+          <AppButton
+            class="flex-none"
+            @click="studyBuilderStore.saveStudyStore"
+          >
+            Save Changes
+          </AppButton>
+        </div>
+      </div>
+
+      <div class="w-full h-5/6 flex gap-6 overflow-x-auto bg-white pr-5">
         <TransitionGroup>
           <Draggable
             key="draggable"
@@ -76,12 +124,13 @@ const draggableProps = {
             </template>
           </Draggable>
         </TransitionGroup>
-        <div
-          class="h-[30px] w-[30px] rounded-3xl bg-primary-300 border-primary-400 self-center cursor-pointer flex items-center justify-center"
+        <el-button
+          class="h-[30px] w-[30px] bg-primary-300 text-white border border-primary-400 self-center cursor-pointer flex"
+          circle
           @click="studyBuilderStore.addSession"
         >
-          <ElImage src="/icons/plus.svg" />
-        </div>
+          <font-awesome-icon :icon="['fas', 'plus']" />
+        </el-button>
       </div>
     </div>
   </div>

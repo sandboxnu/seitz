@@ -2,7 +2,7 @@ import { Router } from "express";
 
 import { isAuthenticated } from "../middleware/auth";
 import * as studyService from "../services/study.service";
-import { authRoute } from "../util/handlers";
+import { authRoute, route } from "../util/handlers";
 
 const router = Router();
 
@@ -45,6 +45,11 @@ router.put(
   authRoute((req, user) =>
     studyService.putTask(user, req.params.studyId, req.params.taskId, req.body)
   )
+);
+
+router.get(
+  "/variants/:serverCode",
+  route((req) => studyService.getVariant(req.params.serverCode))
 );
 
 export default router;
