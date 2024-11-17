@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { ref, watch } from "vue";
 import mongoose from "mongoose";
 
-import studiesAPI from "@/api/studies";
+import studiesAPI, { VariantFromQuery } from "@/api/studies";
 import tasksAPI from "@/api/tasks";
 import { useRoute, useRouter } from "vue-router";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
@@ -60,15 +60,17 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   }
 
   const studyId = ref<string>("");
+  const currentVariantId = ref<string>("");
   const isStudyLoading = ref(false);
   const isStudySaving = ref(false);
-  const name = ref<string>();
+  const studyName = ref<string>();
   const description = ref<string>();
+  const variantName = ref<string>();
+  const variants = ref<VariantFromQuery[]>([]);
   const taskData = ref<Record<string, DTO<GETCustomizedTask>>>({});
   const taskBank = ref<string[]>([]);
   const sessionData = ref<Record<string, DTO<ISession>>>({});
   const sessions = ref<string[]>([]);
-  const variantId = ref<string>("");
   const serverCode = ref<string>("");
 
   function initialize() {
@@ -76,7 +78,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
 
     studyId.value = routeStudyId();
     isStudyLoading.value = true;
-    name.value = undefined;
+    studyName.value = undefined;
     description.value = undefined;
     taskData.value = {};
     taskBank.value = [];
@@ -92,22 +94,21 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
         },
       })
       .then((studyData) => {
-        name.value = studyData.name;
+        studyName.value = studyData.name;
         description.value = studyData.description;
+        variants.value = studyData.variants;
+
+        if (variants.value.length > 0) {
+          currentVariantId.value = studyData.variants[0]._id;
+          loadVariant(currentVariantId.value);
+        }
+
         taskData.value = {};
         studyData.batteries.forEach((b) => {
           taskData.value[b._id] = b;
         });
         taskBank.value = studyData.batteries.map((b) => b._id);
-        sessionData.value = {};
-        studyData.variants[0].sessions.forEach((s) => {
-          // TODO: map per variant later on
-          sessionData.value[s._id] = s;
-        });
-        variantId.value = studyData.variants[0]._id;
-        sessions.value = studyData.variants[0].sessions.map((s) => s._id); // TODO: map per variant later on
         isStudyLoading.value = false;
-        serverCode.value = studyData.serverCode;
       })
       .catch((err: AxiosError<Error>) => {
         router.push("/");
@@ -196,22 +197,49 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     }
   }
 
+  function switchVariant(variantId: string) {
+    if (currentVariantId.value !== variantId) {
+      currentVariantId.value = variantId;
+      loadVariant(currentVariantId.value);
+    }
+  }
+
+  function loadVariant(variantId: string) {
+    const variant = variants.value.find((v) => v._id === variantId);
+    if (variant) {
+      variant.sessions.forEach((s) => {
+        sessionData.value[s._id] = s;
+      });
+      sessions.value = variant.sessions.map((s) => s._id);
+      serverCode.value = variant.serverCode;
+      variantName.value = variant.name;
+    }
+  }
+
   function saveStudyStore() {
     if (isStudyLoading.value || isStudySaving.value || !authStore.currentUser)
       return;
+
+    const updatedVariants = variants.value.map((v) => {
+      if (v._id === currentVariantId.value) {
+        return {
+          ...v,
+          name: variantName.value ?? "",
+          sessions: sessions.value.map((id) => sessionData.value[id]),
+          serverCode: serverCode.value,
+        };
+      }
+      return v;
+    });
+
+    variants.value = updatedVariants;
+
     mutate({
       _id: studyId.value!,
-      name: name.value ?? "",
+      name: studyName.value ?? "",
       description: description.value ?? "",
       batteries: taskBank.value.map((id) => taskData.value[id]), // TODO: fix this
-      serverCode: serverCode.value,
-      variants: [
-        {
-          _id: variantId.value,
-          name: name.value ?? "",
-          sessions: sessions.value.map((id) => sessionData.value[id]),
-        },
-      ],
+      variants: updatedVariants,
       owner: authStore.currentUser._id,
     });
   }
@@ -220,15 +248,19 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
 
   return {
     studyId,
+    currentVariantId,
+    variantName,
+    variants,
     isStudyLoading,
     isStudySaving,
-    name,
+    name: studyName,
     description,
     taskBank,
     taskData,
     sessions,
     sessionData,
     serverCode,
+    switchVariant,
     addSession,
     saveStudyStore,
     handleChange,

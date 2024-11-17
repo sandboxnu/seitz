@@ -21,6 +21,7 @@ export interface CreateStudyVariant {
   _id?: Types.ObjectId;
   name: string;
   sessions: CreateSession[];
+  serverCode: string;
 }
 
 export interface IStudyVariant extends Required<CreateStudyVariant> {
@@ -33,7 +34,6 @@ export interface CreateStudy {
   description?: string;
   batteries?: Types.ObjectId[];
   owner: Types.ObjectId;
-  serverCode: string;
   variants: CreateStudyVariant[];
 }
 

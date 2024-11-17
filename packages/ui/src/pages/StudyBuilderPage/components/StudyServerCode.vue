@@ -17,21 +17,25 @@ function copyCode() {
 </script>
 
 <template>
-  <div
-    class="flex flex-col items-center font-light cursor-pointer"
-    @click="copyCode"
-  >
+  <el-button class="border rounded-lg px-5 py-1" @click="copyCode">
+    <FontAwesomeIcon :icon="['far', 'copy']" />
+  </el-button>
+
+  <div class="flex flex-col items-center font-light cursor-pointer">
     <span class="text-gray-400 text-sm">
-      {{ copied ? "Copied!" : "Server code" }}
+      {{ copied ? "Copied!" : "Server Code" }}
     </span>
     <div
       :class="[
-        'border rounded-lg px-5 py-1 flex items-center gap-1 w-full',
+        'border rounded-lg px-5 py-1 flex items-center justify-center gap-1 w-40',
         copied ? 'bg-gray-300 border-gray-500' : 'bg-gray-200 border-gray-300',
       ]"
     >
-      <span class="truncate">{{ studyBuilderStore.serverCode }}</span>
-      <FontAwesomeIcon :icon="['far', 'copy']" />
+      <input
+        v-model="studyBuilderStore.serverCode"
+        type="text"
+        class="truncate text-center border-none bg-transparent w-full focus:outline-none"
+      />
     </div>
   </div>
 </template>
