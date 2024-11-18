@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import { useStudyBuilderStore } from "@/stores/studyBuilder";
 import { useTaskEditingStore } from "@/stores/taskEditing";
+import { Close } from "@element-plus/icons-vue";
 
-defineProps<{ taskId: string; draggable: boolean }>();
+defineProps<{
+  taskId: string;
+  instanceId: string | null;
+  sessionId: string | null;
+  draggable: boolean;
+}>();
 
 const studyBuilderStore = useStudyBuilderStore();
 const taskEditingStore = useTaskEditingStore();
@@ -32,6 +38,17 @@ const taskEditingStore = useTaskEditingStore();
         {{ studyBuilderStore.taskData[taskId].name }}
       </p>
     </div>
-    <ElImage class="shrink-0" src="/icons/close.svg" fit="cover" />
+    <el-button
+      :icon="Close"
+      class="border-none"
+      circle
+      @click.stop="
+        studyBuilderStore.removeCustomizedTaskOrInstance(
+          instanceId,
+          taskId,
+          sessionId
+        )
+      "
+    />
   </div>
 </template>

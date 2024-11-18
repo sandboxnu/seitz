@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { isAdmin, isAuthenticated } from "../middleware/auth";
+import { isAuthenticated } from "../middleware/auth";
 import { authRoute, route } from "../util/handlers";
 import * as tasksService from "../services/tasks.service";
 
@@ -34,12 +34,6 @@ router.post(
       req.body.name
     )
   )
-);
-
-router.delete(
-  "/:id",
-  isAdmin,
-  route((req) => tasksService.deleteTask(req.params.id))
 );
 
 export default router;
