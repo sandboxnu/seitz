@@ -212,6 +212,33 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     sessionData.value[newSession._id] = newSession;
   }
 
+  function addVariant() {
+    const newVariant = {
+      _id: new mongoose.Types.ObjectId().toString(),
+      name: "",
+      sessions: [],
+      serverCode: "",
+    };
+    variants.value.push(newVariant);
+    switchVariant(newVariant._id);
+  }
+
+  function deleteVariant() {
+    const currIndex = variants.value.findIndex(
+      (v) => v._id === currentVariantId.value
+    );
+    variants.value = variants.value.filter(
+      (v) => v._id !== currentVariantId.value
+    );
+    if (variants.value.length > 0) {
+      switchVariant(
+        variants.value[currIndex - 1]?._id ?? variants.value[0]._id
+      );
+    } else {
+      addVariant();
+    }
+  }
+
   function handleChange(
     sessionId: string,
     event: ChangeEvent<string | DTO<ITaskInstance>, DTO<ITaskInstance>>
@@ -247,6 +274,14 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
 
   function switchVariant(variantId: string) {
     if (currentVariantId.value !== variantId) {
+      if (variantName.value) {
+        variants.value = variants.value.map((v) =>
+          v._id === currentVariantId.value
+            ? { ...v, name: variantName.value || "" }
+            : v
+        );
+      }
+
       currentVariantId.value = variantId;
       loadVariant(currentVariantId.value);
     }
@@ -314,5 +349,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     handleChange,
     addTaskInstance,
     removeCustomizedTaskOrInstance,
+    addVariant,
+    deleteVariant,
   };
 });
