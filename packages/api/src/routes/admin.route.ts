@@ -24,4 +24,10 @@ router.put(
   route((req) => adminService.editBattery(req.body, req.params.id))
 );
 
+router.delete(
+  "/battery/:id",
+  isAdmin,
+  route((req) => adminService.deleteBattery(req.params.id))
+);
+
 export default router;

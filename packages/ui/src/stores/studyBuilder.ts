@@ -153,6 +153,54 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     );
   }
 
+  const deleteCustomTaskMutation = useMutation({
+    mutationFn: (taskId: string) =>
+      tasksAPI.deleteCustomTask(studyId.value, taskId),
+  });
+
+  function removeCustomizedTaskOrInstance(
+    instanceId: string | null, // null if removing a customized task
+    taskId: string,
+    sessionId: string | null // null if removing a customized task
+  ) {
+    if (!instanceId) {
+      // Remove customized task from taskBank and taskData
+      taskBank.value = taskBank.value.filter((id) => id !== taskId);
+      delete taskData.value[taskId];
+      // Remove task instances from all sessions that match the taskId
+      sessions.value = sessions.value.map((s) => {
+        sessionData.value[s].tasks = sessionData.value[s].tasks.filter(
+          (t) => t.task !== taskId
+        );
+        return s;
+      });
+
+      deleteCustomTaskMutation.mutate(taskId, {
+        onSuccess: () => {
+          console.log("success removing custom task");
+        },
+        onError: (error) => {
+          console.error("Error deleting task:", error);
+          ElNotification({
+            title: "Error",
+            message: "Failed to delete task.",
+            type: "error",
+          });
+        },
+      });
+    } else {
+      // Remove task instance from session
+      sessions.value = sessions.value.map((s) => {
+        if (s === sessionId) {
+          sessionData.value[s].tasks = sessionData.value[s].tasks.filter(
+            (t) => t._id !== instanceId
+          );
+        }
+        return s;
+      });
+    }
+  }
+
   function addSession() {
     const newSession = {
       _id: new mongoose.Types.ObjectId().toString(),
@@ -162,6 +210,33 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
 
     sessions.value.push(newSession._id);
     sessionData.value[newSession._id] = newSession;
+  }
+
+  function addVariant() {
+    const newVariant = {
+      _id: new mongoose.Types.ObjectId().toString(),
+      name: "",
+      sessions: [],
+      serverCode: "",
+    };
+    variants.value.push(newVariant);
+    switchVariant(newVariant._id);
+  }
+
+  function deleteVariant() {
+    const currIndex = variants.value.findIndex(
+      (v) => v._id === currentVariantId.value
+    );
+    variants.value = variants.value.filter(
+      (v) => v._id !== currentVariantId.value
+    );
+    if (variants.value.length > 0) {
+      switchVariant(
+        variants.value[currIndex - 1]?._id ?? variants.value[0]._id
+      );
+    } else {
+      addVariant();
+    }
   }
 
   function handleChange(
@@ -199,6 +274,14 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
 
   function switchVariant(variantId: string) {
     if (currentVariantId.value !== variantId) {
+      if (variantName.value) {
+        variants.value = variants.value.map((v) =>
+          v._id === currentVariantId.value
+            ? { ...v, name: variantName.value || "" }
+            : v
+        );
+      }
+
       currentVariantId.value = variantId;
       loadVariant(currentVariantId.value);
     }
@@ -265,5 +348,8 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     saveStudyStore,
     handleChange,
     addTaskInstance,
+    removeCustomizedTaskOrInstance,
+    addVariant,
+    deleteVariant,
   };
 });

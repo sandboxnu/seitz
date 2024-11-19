@@ -56,8 +56,12 @@ async function saveTask(
   );
 }
 
-async function deleteTask(id: string) {
-  return await axiosInstance.delete(`/tasks/${id}`);
+async function deleteCustomTask(studyId: string, taskId: string) {
+  return await axiosInstance.delete(`/studies/${studyId}/tasks/${taskId}`);
+}
+
+async function deleteBattery(id: string) {
+  return await axiosInstance.delete(`/admin/battery/${id}`);
 }
 
 async function uploadBattery(data: object) {
@@ -75,7 +79,8 @@ export default {
   getBattery,
   createCustomTask,
   saveTask,
-  deleteTask,
+  deleteCustomTask,
+  deleteBattery,
   uploadBattery,
   editBattery,
 };

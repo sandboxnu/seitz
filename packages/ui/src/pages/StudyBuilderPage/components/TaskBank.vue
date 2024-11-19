@@ -52,7 +52,12 @@ const libraryVisible = ref(false);
               :sort="false"
             >
               <template #item="{ element: taskId }">
-                <TaskCard draggable :task-id="taskId" />
+                <TaskCard
+                  draggable
+                  :task-id="taskId"
+                  :instance-id="null"
+                  :session-id="null"
+                />
               </template>
             </Draggable>
           </TransitionGroup>

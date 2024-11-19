@@ -60,7 +60,13 @@ const draggableProps = {
         @change="(event) => studyBuilderStore.handleChange(sessionId, event)"
       >
         <template #item="{ element }">
-          <TaskCard draggable :task-id="element.task" class="mb-2" />
+          <TaskCard
+            draggable
+            :task-id="element.task"
+            :instance-id="element._id"
+            :session-id="props.sessionId"
+            class="mb-2"
+          />
         </template>
       </Draggable>
     </TransitionGroup>

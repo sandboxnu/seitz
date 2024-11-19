@@ -12,7 +12,7 @@ const store = useBatteryEditingStore();
 const { isLoading, isError, batteryData } = storeToRefs(store);
 const queryClient = useQueryClient();
 
-const deleteMutation = useMutation(taskAPI.deleteTask, {
+const deleteMutation = useMutation(taskAPI.deleteBattery, {
   onSuccess: () => {
     queryClient.invalidateQueries(["tasks"]);
     ElNotification({

@@ -96,8 +96,3 @@ export const createCustomizedTask = async (
   );
   return [201, populated];
 };
-
-export const deleteTask = async (batteryId: string): APIResponse<void> => {
-  await Battery.updateOne({ _id: batteryId }, { deleted: true });
-  return [200];
-};

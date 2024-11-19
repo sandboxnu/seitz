@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import { useStudyBuilderStore } from "@/stores/studyBuilder";
 import { useTaskEditingStore } from "@/stores/taskEditing";
+import { Close } from "@element-plus/icons-vue";
 
-defineProps<{ taskId: string; draggable: boolean }>();
+defineProps<{
+  taskId: string;
+  instanceId: string | null;
+  sessionId: string | null;
+  draggable: boolean;
+}>();
 
 const studyBuilderStore = useStudyBuilderStore();
 const taskEditingStore = useTaskEditingStore();
@@ -11,12 +17,16 @@ const taskEditingStore = useTaskEditingStore();
 <template>
   <div
     :class="[
-      'flex items-center pl-1.5 pr-3 py-2.5 gap-2 rounded-xl border border-neutral-300 bg-neutral-10',
+      'group flex items-center pl-1.5 pr-3 py-2.5 gap-2 rounded-xl border border-neutral-300 bg-neutral-10',
       { 'cursor-pointer': draggable },
     ]"
     @click="taskEditingStore.select(taskId)"
   >
-    <ElImage class="shrink-0" src="/icons/grip-vertical.svg" fit="cover" />
+    <ElImage
+      class="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+      src="/icons/grip-vertical.svg"
+      fit="cover"
+    />
     <ElImage
       :src="studyBuilderStore.taskData[taskId].battery.imageUrl"
       fit="cover"
@@ -32,6 +42,17 @@ const taskEditingStore = useTaskEditingStore();
         {{ studyBuilderStore.taskData[taskId].name }}
       </p>
     </div>
-    <ElImage class="shrink-0" src="/icons/close.svg" fit="cover" />
+    <el-button
+      :icon="Close"
+      class="border-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-lg"
+      circle
+      @click.stop="
+        studyBuilderStore.removeCustomizedTaskOrInstance(
+          instanceId,
+          taskId,
+          sessionId
+        )
+      "
+    />
   </div>
 </template>

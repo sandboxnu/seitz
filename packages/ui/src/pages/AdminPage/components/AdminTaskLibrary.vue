@@ -4,25 +4,8 @@ import taskAPI from "@/api/tasks";
 import { ElNotification } from "element-plus";
 import { useBatteryEditingStore } from "../../../stores/admin.ts";
 
-// const router = useRouter();
-// const authStore = useAuthStore();
 const queryClient = useQueryClient();
 const batteryEditingStore = useBatteryEditingStore();
-
-// if (!authStore.currentUser?.isAdmin) {
-//   router.push("/");
-// }
-
-// const deleteMutation = useMutation(taskAPI.deleteTask, {
-//   onSuccess: () => {
-//     queryClient.invalidateQueries(["tasks"]);
-//     ElNotification({
-//       title: "Success",
-//       message: "Battery deleted successfully",
-//       type: "success",
-//     });
-//   },
-// });
 
 const uploadMutation = useMutation(taskAPI.uploadBattery, {
   onSuccess: () => {

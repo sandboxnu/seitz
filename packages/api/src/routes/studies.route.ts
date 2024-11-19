@@ -47,6 +47,14 @@ router.put(
   )
 );
 
+router.delete(
+  "/:studyId/tasks/:taskId",
+  isAuthenticated,
+  authRoute((req) =>
+    studyService.deleteCustomizedTask(req.params.studyId, req.params.taskId)
+  )
+);
+
 router.get(
   "/variants/:serverCode",
   route((req) => studyService.getVariant(req.params.serverCode))

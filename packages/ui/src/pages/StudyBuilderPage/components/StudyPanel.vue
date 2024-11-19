@@ -5,7 +5,7 @@ import SessionCard from "./SessionCard.vue";
 import Draggable from "vuedraggable";
 import StudyServerCode from "./StudyServerCode.vue";
 import { ref } from "vue";
-import { ArrowRight, ArrowLeft, Plus } from "@element-plus/icons-vue";
+import { ArrowRight, ArrowLeft, Plus, Delete } from "@element-plus/icons-vue";
 
 const studyBuilderStore = useStudyBuilderStore();
 const currentVariantIndex = ref(0);
@@ -27,6 +27,20 @@ const switchVariant = (direction: "next" | "prev") => {
     currentVariantIndex.value--;
   }
   switchVariantByIndex(currentVariantIndex.value);
+};
+
+const addVariant = () => {
+  studyBuilderStore.addVariant();
+  currentVariantIndex.value = studyBuilderStore.variants.length - 1;
+};
+
+const deleteVariant = () => {
+  studyBuilderStore.deleteVariant();
+  if (currentVariantIndex.value > 0) {
+    currentVariantIndex.value = currentVariantIndex.value - 1;
+  } else {
+    currentVariantIndex.value = 0;
+  }
 };
 
 const draggableProps = {
@@ -84,7 +98,8 @@ const draggableProps = {
         :disabled="currentVariantIndex >= studyBuilderStore.variants.length - 1"
         @click="switchVariant('next')"
       />
-      <el-button v-else :icon="Plus" />
+      <el-button v-else :icon="Plus" @click="addVariant()" />
+      <el-button class="ml-8" :icon="Delete" @click="deleteVariant()" />
     </div>
 
     <div
