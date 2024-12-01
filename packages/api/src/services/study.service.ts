@@ -163,6 +163,31 @@ export const getVariant = async (
   return [200, variant];
 };
 
+export const deleteCustomizedTask = async (
+  studyId: string,
+  taskId: string
+): APIResponse<void> => {
+  console.log("deleting task", taskId);
+
+  const task = await CustomizedBattery.findByIdAndDelete(taskId);
+
+  if (!task) {
+    throw new HttpError(404, "Task not found");
+  }
+
+  const study = await Study.findByIdAndUpdate(studyId, {
+    $pull: {
+      "variants.$[].sessions.$[].tasks": { task: taskId },
+    },
+  });
+
+  if (!study) {
+    throw new HttpError(404, "Study or session not found");
+  }
+
+  return [200];
+};
+
 // for creating a new empty variant in a study
 export const createNewVariant = async (
   user: HydratedDocument<IUser>,

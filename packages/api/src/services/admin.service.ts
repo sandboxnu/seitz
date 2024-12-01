@@ -69,6 +69,11 @@ export const editBattery = async (
   return [200, newBattery];
 };
 
+export const deleteBattery = async (batteryId: string): APIResponse<void> => {
+  await Battery.updateOne({ _id: batteryId }, { deleted: true });
+  return [200];
+};
+
 function parseOptions(s: any): CreateOption[] {
   return Object.entries(s).reduce((acc: CreateOption[], item: any) => {
     const optionName = item[0];
