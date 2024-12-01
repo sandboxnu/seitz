@@ -28,7 +28,7 @@ const sessionSchema = new Schema<ISession>({
 const variantSchema = new Schema<IStudyVariant>({
   name: { type: String, default: "" },
   sessions: [sessionSchema],
-  serverCode: { type: String },
+  serverCode: { type: String, default: "" },
 });
 
 interface StudyDocumentProps {
@@ -56,23 +56,26 @@ studySchema.pre("save", async function (next) {
       serverCode: "",
     });
   }
-  next();
-});
 
-variantSchema.pre("save", async function (next) {
-  if (!this.serverCode || this.serverCode === "") {
-    this.serverCode = uid.rnd(serverCodeLength);
+  const existingServerCodes = new Set(
+    this.variants.map((variant) => variant.serverCode)
+  );
 
-    let study = await Study.findOne({
-      "variants.serverCode": this.serverCode,
-    });
-    while (study) {
-      this.serverCode = uid.rnd(serverCodeLength);
-      study = await Study.findOne({
-        "variants.serverCode": this.serverCode,
-      });
+  for (const variant of this.variants) {
+    if (!variant.serverCode || variant.serverCode === "") {
+      let newServerCode = uid.rnd(serverCodeLength);
+
+      while (
+        existingServerCodes.has(newServerCode) ||
+        (await Study.exists({ "variants.serverCode": newServerCode }))
+      ) {
+        newServerCode = uid.rnd(serverCodeLength);
+      }
+      variant.serverCode = newServerCode;
+      existingServerCodes.add(newServerCode);
     }
   }
+
   next();
 });
 
