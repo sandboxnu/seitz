@@ -19,6 +19,7 @@ import type {
   GETTasks,
   GETCustomizedTask,
 } from "@seitz/shared";
+import ShortUniqueId from "short-unique-id";
 
 export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const route = useRoute();
@@ -26,6 +27,8 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const queryClient = useQueryClient();
 
   const authStore = useAuthStore();
+  const uid = new ShortUniqueId({ dictionary: "alphanum_lower" });
+  const serverCodeLength = 5;
 
   const { mutate } = useMutation({
     mutationFn(studyData: PUTStudy) {
@@ -217,7 +220,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
       _id: new mongoose.Types.ObjectId().toString(),
       name: "",
       sessions: [],
-      serverCode: "",
+      serverCode: uid.rnd(serverCodeLength),
     };
     variants.value.push(newVariant);
     switchVariant(newVariant._id);
