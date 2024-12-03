@@ -214,3 +214,37 @@ export const deleteCustomizedTask = async (
 
   return [200];
 };
+
+// for creating a new empty variant in a study
+export const createNewVariant = async (
+  user: HydratedDocument<IUser>,
+  studyId: string
+): APIResponse<IStudy> => {
+  const updatedStudy = await Study.findOneAndUpdate(
+    { _id: studyId, owner: user._id },
+    { $push: { variants: { name: "", sessions: [] } } }
+  );
+
+  if (!updatedStudy) {
+    throw new HttpError(404);
+  }
+
+  return [201];
+};
+
+// for deleting a variant from a study
+export const deleteVariant = async (
+  user: HydratedDocument<IUser>,
+  studyId: string,
+  variantId: string
+): APIResponse<void> => {
+  const study = await Study.findOneAndUpdate(
+    { _id: studyId, owner: user._id },
+    {
+      $pull: { variants: { _id: variantId } },
+    }
+  );
+  if (!study) throw new HttpError(404);
+
+  return [200];
+};
