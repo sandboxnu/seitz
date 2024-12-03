@@ -72,29 +72,29 @@ const studies = data;
         >
           <div class="justify-start items-center gap-[130px] flex">
             <div
-              class="w-[82px] text-[#1f1915] text-lg font-bold font-['Lato'] leading-tight"
+              class="w-[82px] text-neutral-600 text-lg font-bold font-['Lato'] leading-tight"
             >
               Name
             </div>
             <div
-              class="w-[432px] text-[#1f1915] text-lg font-bold font-['Lato'] leading-tight"
+              class="w-[432px] text-neutral-600 text-lg font-bold font-['Lato'] leading-tight"
             >
               Description
             </div>
           </div>
           <div class="justify-start items-center gap-24 flex">
             <div
-              class="text-[#1f1915] text-lg font-bold font-['Lato'] leading-tight"
+              class="text-neutral-600 text-lg font-bold font-['Lato'] leading-tight"
             >
               Status
             </div>
             <div
-              class="text-[#1f1915] text-lg font-bold font-['Lato'] leading-tight"
+              class="text-neutral-600 text-lg font-bold font-['Lato'] leading-tight"
             >
               Conditions
             </div>
             <div
-              class="w-[110px] text-[#1f1915] text-lg font-bold font-['Lato'] leading-tight"
+              class="w-[110px] text-neutral-600 text-lg font-bold font-['Lato'] leading-tight"
             >
               Last Modified
             </div>

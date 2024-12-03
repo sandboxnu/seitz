@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/vue-query";
 
 const emit = defineEmits(["deleted"]);
 const props = defineProps<{ name: string; description: string; id: string }>();
-const { mutate } = useMutation({
+useMutation({
   mutationFn: () => studiesAPI.deleteStudy(props.id),
   onSuccess: () => {
     emit("deleted");
