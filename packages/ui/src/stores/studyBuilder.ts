@@ -180,7 +180,12 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
 
       deleteCustomTaskMutation.mutate(taskId, {
         onSuccess: () => {
-          console.log("success removing custom task");
+          console.log("Success removing custom task");
+          ElNotification({
+            title: "Success",
+            message: "Custom task removed.",
+            type: "success",
+          });
         },
         onError: (error) => {
           console.error("Error deleting task:", error);

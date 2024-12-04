@@ -14,11 +14,14 @@ const queryClient = useQueryClient();
 
 const usersToAdd = ref<string[]>([]);
 const searchQuery = ref("");
-const { data: adminUsers, isLoading } = useQuery(
+const { data: adminUsers, isLoading: isAdminsLoading } = useQuery(
   ["admins"],
   adminAPI.getAdminUsers
 );
-const { data: allUsers } = useQuery(["users"], adminAPI.getAllUsers);
+const { data: allUsers, isLoading: isUsersLoading } = useQuery(
+  ["users"],
+  adminAPI.getAllUsers
+);
 const addAdmin = useMutation(
   (userId: string) => adminAPI.addUserAsAdmin(userId),
   {
@@ -28,6 +31,14 @@ const addAdmin = useMutation(
         title: "Success",
         message: "Admin user added",
         type: "success",
+      });
+    },
+    onError: (error) => {
+      console.error(error);
+      ElNotification({
+        title: "Error",
+        message: "Failed to add admin user",
+        type: "error",
       });
     },
   }
@@ -41,6 +52,14 @@ const removeAdmin = useMutation(
         title: "Success",
         message: "Admin user removed",
         type: "success",
+      });
+    },
+    onError: (error) => {
+      console.error(error);
+      ElNotification({
+        title: "Error",
+        message: "Failed to remove admin user",
+        type: "error",
       });
     },
   }
@@ -140,7 +159,7 @@ if (!authStore.currentUser?.isAdmin) {
 
       <div class="m-4 mb-8 h-32 overflow-auto">
         <table
-          v-if="!isLoading && filteredUsers.length > 0"
+          v-if="!isUsersLoading && filteredUsers.length > 0"
           class="w-full table-auto border-collapse"
         >
           <tbody>
@@ -170,8 +189,8 @@ if (!authStore.currentUser?.isAdmin) {
             </tr>
           </tbody>
         </table>
-        <p v-else-if="!isLoading && filteredUsers.length === 0">
-          No admins found.
+        <p v-else-if="!isUsersLoading && filteredUsers.length === 0">
+          No users found.
         </p>
         <p v-else>Loading...</p>
       </div>
@@ -204,7 +223,7 @@ if (!authStore.currentUser?.isAdmin) {
           >
         </div>
         <table
-          v-if="!isLoading && adminUsers.length > 0"
+          v-if="!isAdminsLoading && adminUsers.length > 0"
           class="w-full table-auto border-collapse"
         >
           <thead>
@@ -228,7 +247,7 @@ if (!authStore.currentUser?.isAdmin) {
             </tr>
           </tbody>
         </table>
-        <p v-else-if="!isLoading && adminUsers.length === 0">
+        <p v-else-if="!isAdminsLoading && adminUsers.length === 0">
           No admins available
         </p>
         <p v-else>Loading...</p>
