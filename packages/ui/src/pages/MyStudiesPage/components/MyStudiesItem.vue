@@ -13,18 +13,21 @@ useMutation({
 </script>
 
 <template>
-  <RouterLink :to="{ name: 'study', params: { id } }" class="block">
+  <RouterLink
+    :to="{ name: 'study', params: { id } }"
+    class="block hover:bg-neutral-50 transition-colors"
+  >
     <div
       class="flex-grow-0 w-auto px-8 py-4 bg-neutral-10 border-b border-neutral-300 justify-between items-center flex"
     >
-      <div class="justify-start items-center gap-[32px] flex flex-1">
+      <div class="justify-start items-center gap-8 flex flex-1">
         <div
-          class="w-[182px] text-neutral-600 text-lg font-bold font-['Lato'] leading-tight flex"
+          class="w-[182px] text-neutral-600 text-lg font-bold leading-tight flex"
         >
           {{ name }}
         </div>
         <div
-          class="w-[432px] text-neutral-600 text-lg font-normal font-['Lato'] leading-tight truncate"
+          class="w-[432px] text-neutral-600 text-lg font-normal leading-tight line-clamp-1"
         >
           {{ description }}
         </div>
@@ -33,19 +36,17 @@ useMutation({
         <div
           class="px-3 py-1.5 bg-primary-50 rounded-lg border border-primary-100 justify-start items-center gap-2 flex"
         >
-          <div
-            class="text-neutral-600 text-lg font-normal font-['Lato'] leading-tight"
-          >
+          <div class="text-neutral-600 text-lg font-normal leading-tight">
             Editing
           </div>
         </div>
         <div
-          class="w-[60px] text-neutral-600 text-lg font-normal font-['Lato'] leading-tight"
+          class="w-[60px] text-neutral-600 text-lg font-normal leading-tight"
         >
           50
         </div>
         <div
-          class="w-[110px] text-neutral-500 text-lg font-normal font-['Lato'] leading-tight"
+          class="w-[110px] text-neutral-500 text-lg font-normal leading-tight"
         >
           10.24.2024
         </div>
