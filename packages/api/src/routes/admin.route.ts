@@ -7,9 +7,9 @@ import { route } from "../util/handlers";
 const router = Router();
 
 router.post(
-  "/promote",
+  "/users/:id",
   isAdmin,
-  route((req) => adminService.promoteToAdmin(req.body.email))
+  route((req) => adminService.promoteToAdmin(req.params.id))
 );
 
 router.post(
@@ -28,6 +28,18 @@ router.delete(
   "/battery/:id",
   isAdmin,
   route((req) => adminService.deleteBattery(req.params.id))
+);
+
+router.get(
+  "/users",
+  isAdmin,
+  route(() => adminService.getAdminUsers())
+);
+
+router.delete(
+  "/users/:id",
+  isAdmin,
+  route((req) => adminService.removeUserAsAdmin(req.params.id))
 );
 
 export default router;

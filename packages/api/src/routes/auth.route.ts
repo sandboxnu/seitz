@@ -28,6 +28,12 @@ router.get(
 );
 
 router.get(
+  "/users",
+  isAuthenticated,
+  authRoute(() => authService.getUsers())
+);
+
+router.get(
   "/verify/:token",
   route((req) => authService.verifyToken(req))
 );

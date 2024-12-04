@@ -91,6 +91,11 @@ export const getUser = async (req: any): APIResponse<IUser> => {
   return [200, req.user];
 };
 
+export const getUsers = async (): APIResponse<IUser[]> => {
+  const users = await User.find();
+  return [200, users];
+};
+
 export const verifyToken = async (req: any): APIResponse<string> => {
   const token = req.params.token;
   try {

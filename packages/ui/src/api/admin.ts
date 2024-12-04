@@ -56,8 +56,30 @@ async function getStages() {
   return result.data;
 }
 
-async function promoteUserToAdmin(email: string) {
-  return await axiosInstance.post("admin/promote", { email });
+async function getAdminUsers() {
+  const result = await axiosInstance.get("admin/users");
+  console.log(result.data);
+  return result.data;
 }
 
-export default { getStages, promoteUserToAdmin };
+async function getAllUsers() {
+  const result = await axiosInstance.get("auth/users");
+  console.log(result.data);
+  return result.data;
+}
+
+async function addUserAsAdmin(userId: string) {
+  return await axiosInstance.post(`admin/users/${userId}`);
+}
+
+async function removeUserAsAdmin(userId: string) {
+  return await axiosInstance.delete(`admin/users/${userId}`);
+}
+
+export default {
+  getStages,
+  getAdminUsers,
+  getAllUsers,
+  addUserAsAdmin,
+  removeUserAsAdmin,
+};
