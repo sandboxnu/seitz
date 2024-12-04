@@ -20,11 +20,6 @@ const taskInstanceSchema = new Schema<ITaskInstance>({
   quantity: { type: Number, required: true, default: 1 },
 });
 
-const sessionSchema = new Schema<ISession>({
-  name: { type: String, required: true },
-  tasks: [taskInstanceSchema],
-});
-
 export interface CreateOptionValue {
   _id?: Types.ObjectId;
   option: Types.ObjectId;
@@ -33,7 +28,7 @@ export interface CreateOptionValue {
 
 export type IOptionValue = Required<CreateOptionValue>;
 
-// TODO: Tech Debt - is there a better typing for this?
+// TODO: Tech Debt
 const optionValueSchema = new Schema<IOptionValue>({
   option: Schema.Types.ObjectId,
   value: Schema.Types.Mixed,
@@ -63,7 +58,7 @@ export interface ICustomizedSession extends Required<CreateCustomizedSession> {
 
 const variantSchema = new Schema<IStudyVariant>({
   name: { type: String, default: "" },
-  sessions: [sessionSchema],
+  sessions: [{ type: Schema.Types.ObjectId, ref: "CustomizedBattery" }], // is this right?
   serverCode: { type: String },
 });
 
@@ -113,3 +108,10 @@ variantSchema.pre("save", async function (next) {
 });
 
 export const Study = model<IStudy, StudyModelType>("Study", studySchema);
+
+const sessionSchema = new Schema<ISession>({
+  name: { type: String, required: true },
+  tasks: [taskInstanceSchema],
+});
+
+export const Session = model<ISession>("Session", sessionSchema);
