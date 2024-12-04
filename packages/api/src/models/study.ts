@@ -25,6 +25,42 @@ const sessionSchema = new Schema<ISession>({
   tasks: [taskInstanceSchema],
 });
 
+export interface CreateOptionValue {
+  _id?: Types.ObjectId;
+  option: Types.ObjectId;
+  value: unknown;
+}
+
+export type IOptionValue = Required<CreateOptionValue>;
+
+// TODO: Tech Debt - is there a better typing for this?
+const optionValueSchema = new Schema<IOptionValue>({
+  option: Schema.Types.ObjectId,
+  value: Schema.Types.Mixed,
+});
+
+export const customizedSessionSchema = new Schema<ICustomizedSession>({
+  battery: { type: Schema.Types.ObjectId, ref: "Battery", required: true },
+  name: { type: String, required: true },
+  values: [optionValueSchema],
+});
+
+export const CustomizedSession = model<ICustomizedSession>(
+  "CustomizedBattery",
+  customizedSessionSchema
+);
+
+export interface CreateCustomizedSession {
+  _id?: Types.ObjectId;
+  battery: Types.ObjectId;
+  name: string;
+  values: CreateOptionValue[];
+}
+
+export interface ICustomizedSession extends Required<CreateCustomizedSession> {
+  values: IOptionValue[];
+}
+
 const variantSchema = new Schema<IStudyVariant>({
   name: { type: String, default: "" },
   sessions: [sessionSchema],
