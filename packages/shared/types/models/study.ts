@@ -40,3 +40,22 @@ export interface CreateStudy {
 export interface IStudy extends Required<CreateStudy> {
   variants: IStudyVariant[];
 }
+
+export interface CreateOptionValue {
+  _id?: Types.ObjectId;
+  option: Types.ObjectId;
+  value: unknown;
+}
+
+export type IOptionValue = Required<CreateOptionValue>;
+
+export interface CreateCustomizedSession {
+  _id?: Types.ObjectId;
+  battery: Types.ObjectId;
+  name: string;
+  values: CreateOptionValue[];
+}
+
+export interface ICustomizedSession extends Required<CreateCustomizedSession> {
+  values: IOptionValue[];
+}

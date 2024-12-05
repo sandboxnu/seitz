@@ -9,6 +9,8 @@ import type {
   IStudy,
   IStudyVariant,
   ITaskInstance,
+  IOptionValue,
+  ICustomizedSession,
 } from "@seitz/shared";
 
 const taskInstanceSchema = new Schema<ITaskInstance>({
@@ -25,9 +27,11 @@ const sessionSchema = new Schema<ISession>({
   tasks: [taskInstanceSchema],
 });
 
+export const Session = model<ISession>("Session", sessionSchema);
+
 const variantSchema = new Schema<IStudyVariant>({
   name: { type: String, default: "" },
-  sessions: [sessionSchema],
+  sessions: [{ type: Schema.Types.ObjectId, ref: "CustomizedSession" }],
   serverCode: { type: String },
 });
 
@@ -77,3 +81,20 @@ variantSchema.pre("save", async function (next) {
 });
 
 export const Study = model<IStudy, StudyModelType>("Study", studySchema);
+
+// TODO: Tech Debt - is there a better typing for this?
+const optionValueSchema = new Schema<IOptionValue>({
+  option: Schema.Types.ObjectId,
+  value: Schema.Types.Mixed,
+});
+
+export const customizedSessionSchema = new Schema<ICustomizedSession>({
+  battery: { type: Schema.Types.ObjectId, ref: "Session", required: true },
+  name: { type: String, required: true },
+  values: [optionValueSchema],
+});
+
+export const CustomizedSession = model<ICustomizedSession>(
+  "CustomizedSession",
+  customizedSessionSchema
+);
