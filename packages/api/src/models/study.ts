@@ -9,6 +9,8 @@ import type {
   IStudy,
   IStudyVariant,
   ITaskInstance,
+  IOptionValue,
+  ICustomizedSession,
 } from "@seitz/shared";
 
 const taskInstanceSchema = new Schema<ITaskInstance>({
@@ -20,45 +22,16 @@ const taskInstanceSchema = new Schema<ITaskInstance>({
   quantity: { type: Number, required: true, default: 1 },
 });
 
-export interface CreateOptionValue {
-  _id?: Types.ObjectId;
-  option: Types.ObjectId;
-  value: unknown;
-}
-
-export type IOptionValue = Required<CreateOptionValue>;
-
-// TODO: Tech Debt
-const optionValueSchema = new Schema<IOptionValue>({
-  option: Schema.Types.ObjectId,
-  value: Schema.Types.Mixed,
-});
-
-export const customizedSessionSchema = new Schema<ICustomizedSession>({
-  battery: { type: Schema.Types.ObjectId, ref: "Battery", required: true },
+const sessionSchema = new Schema<ISession>({
   name: { type: String, required: true },
-  values: [optionValueSchema],
+  tasks: [taskInstanceSchema],
 });
 
-export const CustomizedSession = model<ICustomizedSession>(
-  "CustomizedBattery",
-  customizedSessionSchema
-);
-
-export interface CreateCustomizedSession {
-  _id?: Types.ObjectId;
-  battery: Types.ObjectId;
-  name: string;
-  values: CreateOptionValue[];
-}
-
-export interface ICustomizedSession extends Required<CreateCustomizedSession> {
-  values: IOptionValue[];
-}
+export const Session = model<ISession>("Session", sessionSchema);
 
 const variantSchema = new Schema<IStudyVariant>({
   name: { type: String, default: "" },
-  sessions: [{ type: Schema.Types.ObjectId, ref: "CustomizedBattery" }], // is this right?
+  sessions: [{ type: Schema.Types.ObjectId, ref: "CustomizedSession" }],
   serverCode: { type: String },
 });
 
@@ -109,9 +82,19 @@ variantSchema.pre("save", async function (next) {
 
 export const Study = model<IStudy, StudyModelType>("Study", studySchema);
 
-const sessionSchema = new Schema<ISession>({
-  name: { type: String, required: true },
-  tasks: [taskInstanceSchema],
+// TODO: Tech Debt - is there a better typing for this?
+const optionValueSchema = new Schema<IOptionValue>({
+  option: Schema.Types.ObjectId,
+  value: Schema.Types.Mixed,
 });
 
-export const Session = model<ISession>("Session", sessionSchema);
+export const customizedSessionSchema = new Schema<ICustomizedSession>({
+  battery: { type: Schema.Types.ObjectId, ref: "Session", required: true },
+  name: { type: String, required: true },
+  values: [optionValueSchema],
+});
+
+export const CustomizedSession = model<ICustomizedSession>(
+  "CustomizedSession",
+  customizedSessionSchema
+);
