@@ -8,13 +8,13 @@ import type {
   CreateBatteryStage,
   CreateOption,
   IBattery,
+  IUser,
 } from "@seitz/shared";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-export const promoteToAdmin = async (filter: any): APIResponse<void> => {
-  const update = { isAdmin: true };
-  const user = await User.findOneAndUpdate({ email: filter }, update);
+export const promoteToAdmin = async (userId: string): APIResponse<void> => {
+  const user = await User.findOneAndUpdate({ _id: userId }, { isAdmin: true });
   if (!user) {
     throw new HttpError(404);
   }
@@ -71,6 +71,19 @@ export const editBattery = async (
 
 export const deleteBattery = async (batteryId: string): APIResponse<void> => {
   await Battery.updateOne({ _id: batteryId }, { deleted: true });
+  return [200];
+};
+
+export const getAdminUsers = async (): APIResponse<IUser[]> => {
+  const adminUsers = await User.find({ isAdmin: true });
+  return [200, adminUsers];
+};
+
+export const removeUserAsAdmin = async (userId: string): APIResponse<void> => {
+  const user = await User.updateOne({ _id: userId }, { isAdmin: false });
+  if (!user) {
+    throw new HttpError(404);
+  }
   return [200];
 };
 

@@ -80,6 +80,33 @@ export const updateStudy = async (
   studyId: string,
   studyData: PUTStudy
 ): APIResponse<IStudy> => {
+  const studyServerCodes = studyData.variants.map(
+    (variant) => variant.serverCode
+  );
+
+  // Check if the serverCodes in the current study are unique
+  if (studyServerCodes.length !== new Set(studyServerCodes).size) {
+    throw new HttpError(409, "Server codes in this study must be unique.");
+  }
+
+  const existingServerCodes = new Set<string>(
+    (
+      await Study.find({ _id: { $ne: studyId } }, "variants.serverCode").lean()
+    ).flatMap((study) => study.variants.map((variant) => variant.serverCode))
+  );
+
+  // Check for duplicate server codes in the updated study data
+  if (studyData.variants) {
+    for (const variant of studyData.variants) {
+      if (variant.serverCode && existingServerCodes.has(variant.serverCode)) {
+        throw new HttpError(
+          409,
+          `Server code '${variant.serverCode}' is already in use. Please choose another.`
+        );
+      }
+    }
+  }
+
   const study = await Study.findOneAndUpdate(
     { _id: studyId, owner: user._id },
     studyData,
