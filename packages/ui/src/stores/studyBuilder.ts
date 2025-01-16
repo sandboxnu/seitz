@@ -260,10 +260,10 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
       const task =
         typeof element == "string"
           ? {
-            _id: new mongoose.Types.ObjectId().toString(),
-            task: element,
-            quantity: 1,
-          }
+              _id: new mongoose.Types.ObjectId().toString(),
+              task: element,
+              quantity: 1,
+            }
           : element;
       taskAdded(event.added.newIndex, task);
     } else if ("removed" in event) {
