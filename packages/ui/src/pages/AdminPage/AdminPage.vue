@@ -1,3 +1,5 @@
+<!-- This component serves as the Admin interface for managing tasks and editing battery templates. -->
+
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";

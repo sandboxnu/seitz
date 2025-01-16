@@ -1,3 +1,4 @@
+<!--  This component defines a simple button and allows parent component to handle click. */ -->
 <script setup lang="ts">
 defineEmits(["click"]);
 </script>

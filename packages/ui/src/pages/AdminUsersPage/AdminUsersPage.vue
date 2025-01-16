@@ -1,3 +1,4 @@
+<!-- This component allows admins to promote a user to an admin role by submitting their email address. -->
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";

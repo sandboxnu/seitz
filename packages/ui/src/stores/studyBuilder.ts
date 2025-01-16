@@ -1,3 +1,5 @@
+// manages the state of a study builder including study conditions, tasks, sessions, and the related API calls.
+
 import { defineStore } from "pinia";
 import { ref, watch } from "vue";
 import mongoose from "mongoose";
@@ -258,10 +260,10 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
       const task =
         typeof element == "string"
           ? {
-              _id: new mongoose.Types.ObjectId().toString(),
-              task: element,
-              quantity: 1,
-            }
+            _id: new mongoose.Types.ObjectId().toString(),
+            task: element,
+            quantity: 1,
+          }
           : element;
       taskAdded(event.added.newIndex, task);
     } else if ("removed" in event) {

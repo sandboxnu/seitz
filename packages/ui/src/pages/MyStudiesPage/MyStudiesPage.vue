@@ -1,3 +1,5 @@
+<!-- This file displays the MyStudies page, where a user can see a table-view of all their studies and see their most recent studies at the top. A user is able to click on a study card and be taken to the  -->
+
 <script setup lang="ts">
 import { useAuthStore } from "../../stores/auth";
 import { useRouter } from "vue-router";

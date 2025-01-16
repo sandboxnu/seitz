@@ -1,3 +1,5 @@
+<!-- This component fetches and displays a list of tasks from an API and allows the user to add them to their study builder. -->
+
 <script setup lang="ts">
 import { useQuery } from "@tanstack/vue-query";
 import tasksAPI from "@/api/tasks";

@@ -1,3 +1,5 @@
+<!-- This component represents a task bank panel that allows users to view and add tasks. -->
+
 <script setup lang="ts">
 import TaskCard from "./TaskCard.vue";
 import Draggable from "vuedraggable";

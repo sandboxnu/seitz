@@ -1,3 +1,5 @@
+// manages the editing state of a battery in a task. It handles battery selection, saving, and managing loading and error states.
+
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { defineStore } from "pinia";
 import { ref } from "vue";

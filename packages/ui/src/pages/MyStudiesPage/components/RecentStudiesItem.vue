@@ -1,3 +1,5 @@
+<!-- This component represents a single card in the "recent studies" top area of the MyStudiesPage. Each card has the study's details (name, description, status, # of conditions, and last modified date). -->
+
 <script setup lang="ts">
 import studiesAPI from "@/api/studies";
 import { useMutation } from "@tanstack/vue-query";

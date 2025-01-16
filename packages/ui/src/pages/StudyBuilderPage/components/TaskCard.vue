@@ -1,3 +1,5 @@
+<!-- This component represents a task card in the task bank, displaying information like its name and battery details. -->
+
 <script setup lang="ts">
 import { useStudyBuilderStore } from "@/stores/studyBuilder";
 import { useTaskEditingStore } from "@/stores/taskEditing";

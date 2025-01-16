@@ -1,3 +1,4 @@
+<!-- This component provides a side panel for task selection and editing. -->
 <script setup lang="ts">
 import { useStudyBuilderStore } from "@/stores/studyBuilder";
 import { useTaskEditingStore } from "@/stores/taskEditing";

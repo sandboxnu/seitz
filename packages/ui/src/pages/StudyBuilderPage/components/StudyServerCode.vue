@@ -1,3 +1,5 @@
+<!-- This component represents a button for copying the study's server code to the clipboard. -->
+
 <script setup lang="ts">
 import { useStudyBuilderStore } from "@/stores/studyBuilder";
 import { ref } from "vue";

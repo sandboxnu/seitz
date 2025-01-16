@@ -1,3 +1,5 @@
+<!--  This component serves as the study builder interface, allowing users to manage conditions and sessions for a study with features for adding, switching, and deleting conditions, and reordering sessions within the study. -->
+
 <script setup lang="ts">
 import { useStudyBuilderStore } from "@/stores/studyBuilder";
 import AppButton from "@/components/ui/AppButton.vue";
