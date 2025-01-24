@@ -3,12 +3,13 @@ import { User, Battery } from "../models";
 import HttpError from "../types/errors";
 import { APIResponse } from "../util/handlers";
 import * as crypto from "crypto";
-import type {
-  CreateBattery,
-  CreateBatteryStage,
-  CreateOption,
-  IBattery,
-  IUser,
+import {
+  Role,
+  type CreateBattery,
+  type CreateBatteryStage,
+  type CreateOption,
+  type IBattery,
+  type IUser,
 } from "@seitz/shared";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -75,7 +76,7 @@ export const deleteBattery = async (batteryId: string): APIResponse<void> => {
 };
 
 export const getAdminUsers = async (): APIResponse<IUser[]> => {
-  const adminUsers = await User.find({ isAdmin: true });
+  const adminUsers = await User.find({ role: { $ne: Role.BasicUser } });
   return [200, adminUsers];
 };
 

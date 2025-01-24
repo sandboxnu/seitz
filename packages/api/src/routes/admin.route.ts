@@ -1,44 +1,44 @@
 import { Router } from "express";
 
 import * as adminService from "../services/admin.service";
-import { isAdmin } from "../middleware/auth";
+import { isSuperAdmin, isUserManager } from "../middleware/auth";
 import { route } from "../util/handlers";
 
 const router = Router();
 
 router.post(
   "/users/:id",
-  isAdmin,
+  isSuperAdmin,
   route((req) => adminService.promoteToAdmin(req.params.id))
 );
 
 router.post(
   "/battery",
-  isAdmin,
+  isSuperAdmin,
   route((req) => adminService.createBattery(req.body))
 );
 
 router.put(
   "/battery/:id",
-  isAdmin,
+  isSuperAdmin,
   route((req) => adminService.editBattery(req.body, req.params.id))
 );
 
 router.delete(
   "/battery/:id",
-  isAdmin,
+  isSuperAdmin,
   route((req) => adminService.deleteBattery(req.params.id))
 );
 
 router.get(
   "/users",
-  isAdmin,
+  isUserManager,
   route(() => adminService.getAdminUsers())
 );
 
 router.delete(
   "/users/:id",
-  isAdmin,
+  isSuperAdmin,
   route((req) => adminService.removeUserAsAdmin(req.params.id))
 );
 

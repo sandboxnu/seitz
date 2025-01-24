@@ -1,11 +1,12 @@
 import { defineStore } from "pinia";
 import { useStorage, StorageSerializers } from "@vueuse/core";
 import authAPI from "@/api/auth";
+import { Role } from "@seitz/shared";
 
 export interface IUser {
   _id: string;
   email: string;
-  isAdmin: boolean;
+  role: Role;
   studies: string[];
 }
 

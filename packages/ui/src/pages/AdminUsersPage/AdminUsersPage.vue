@@ -7,6 +7,7 @@ import adminAPI from "@/api/admin";
 import AppButton from "@/components/ui/AppButton.vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { ElButton, ElCard, ElNotification } from "element-plus";
+import { Role } from "@seitz/shared";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -113,8 +114,11 @@ const filteredUsers = computed(() => {
     user.email.toLowerCase().includes(searchQuery.value.toLowerCase())
   );
 });
-
-if (!authStore.currentUser?.isAdmin) {
+// TODO: Should all admins be able to access this page?
+if (
+  !authStore.currentUser?.role ||
+  authStore.currentUser.role === Role.BasicUser
+) {
   router.push("/");
 }
 </script>
