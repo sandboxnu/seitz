@@ -58,13 +58,23 @@ const isCollapsed = computed(() => {
         <template v-if="!isCollapsed">Profile</template>
       </ElMenuItem>
       <!-- TODO: should user also be able to see this as study manager? -->
-      <template v-if="authStore.currentUser.role === Role.SuperAdmin">
+      <template
+        v-if="authStore.hasAdminPower(Role.StudyManager, Role.UserManager)"
+      >
         <ElImage src="/icons/horiz-line.svg" class="mx-6 my-9" />
-        <ElMenuItem index="/admin" class="flex items-center gap-3">
+        <ElMenuItem
+          v-if="authStore.hasAdminPower(Role.StudyManager)"
+          index="/admin"
+          class="flex items-center gap-3"
+        >
           <ElImage src="/icons/pencil.svg" />
           <template v-if="!isCollapsed">Task Templates</template>
         </ElMenuItem>
-        <ElMenuItem index="/admin/users" class="flex items-center gap-3">
+        <ElMenuItem
+          v-if="authStore.hasAdminPower(Role.UserManager)"
+          index="/admin/users"
+          class="flex items-center gap-3"
+        >
           <ElImage src="/icons/people.svg" />
           <template v-if="!isCollapsed">Users</template>
         </ElMenuItem>
