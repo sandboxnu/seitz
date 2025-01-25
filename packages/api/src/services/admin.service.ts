@@ -123,3 +123,25 @@ function parseOptions(s: any): CreateOption[] {
     return acc;
   }, []);
 }
+
+export const updateAdminVisibility = async (
+  batteryId: string,
+  visibility: string
+): APIResponse<void> => {
+  if (visibility !== "on" && visibility !== "off") {
+    throw new HttpError(400);
+  }
+
+  const visibility_bool = visibility == "on" ? true : false;
+
+  const battery = await Battery.findOneAndUpdate(
+    { _id: batteryId },
+    { isVisibleToNonAdmins: visibility_bool }
+  );
+
+  if (!battery) {
+    throw new HttpError(404);
+  }
+
+  return [200];
+};
