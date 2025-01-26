@@ -20,6 +20,7 @@ export const useAuthStore = defineStore("auth", () => {
     currentUser.value = null;
   }
 
+  // Check if the current user has either super admin or one of the specified roles
   function hasAdminPower(...roles: Role[]) {
     const currentUserRole = currentUser.value?.role;
     return (

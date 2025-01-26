@@ -57,7 +57,6 @@ const isCollapsed = computed(() => {
         <ElImage src="/icons/person.svg" />
         <template v-if="!isCollapsed">Profile</template>
       </ElMenuItem>
-      <!-- TODO: should user also be able to see this as study manager? -->
       <template
         v-if="authStore.hasAdminPower(Role.StudyManager, Role.UserManager)"
       >
