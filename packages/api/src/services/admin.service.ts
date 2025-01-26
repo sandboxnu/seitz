@@ -132,7 +132,7 @@ export const updateAdminVisibility = async (
     throw new HttpError(400);
   }
 
-  const visibility_bool = visibility == "on" ? true : false;
+  const visibility_bool = visibility === "on";
 
   const battery = await Battery.findOneAndUpdate(
     { _id: batteryId },
