@@ -14,6 +14,7 @@ import {
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+//TODO: change to updateRole
 export const promoteToAdmin = async (userId: string): APIResponse<void> => {
   const user = await User.findOneAndUpdate({ _id: userId }, { isAdmin: true });
   if (!user) {
@@ -80,8 +81,9 @@ export const getAdminUsers = async (): APIResponse<IUser[]> => {
   return [200, adminUsers];
 };
 
+//TODO: not sure if this is correct..
 export const removeUserAsAdmin = async (userId: string): APIResponse<void> => {
-  const user = await User.updateOne({ _id: userId }, { isAdmin: false });
+  const user = await User.updateOne({ _id: userId }, { role: Role.BasicUser });
   if (!user) {
     throw new HttpError(404);
   }
