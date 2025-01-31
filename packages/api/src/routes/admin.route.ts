@@ -1,7 +1,11 @@
 import { Router } from "express";
 
 import * as adminService from "../services/admin.service";
-import { isSuperAdmin, isUserManager } from "../middleware/auth";
+import {
+  isStudyManager,
+  isSuperAdmin,
+  isUserManager,
+} from "../middleware/auth";
 import { route } from "../util/handlers";
 
 const router = Router();
@@ -14,19 +18,19 @@ router.post(
 
 router.post(
   "/battery",
-  isSuperAdmin,
+  isStudyManager,
   route((req) => adminService.createBattery(req.body))
 );
 
 router.put(
   "/battery/:id",
-  isSuperAdmin,
+  isStudyManager,
   route((req) => adminService.editBattery(req.body, req.params.id))
 );
 
 router.delete(
   "/battery/:id",
-  isSuperAdmin,
+  isStudyManager,
   route((req) => adminService.deleteBattery(req.params.id))
 );
 

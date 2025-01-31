@@ -29,3 +29,13 @@ export const isUserManager: RequestHandler = (req, res, next) => {
 
   next(new HttpError(403, "Admin access only"));
 };
+
+export const isStudyManager: RequestHandler = (req, res, next) => {
+  const user = req.user as IUser | undefined;
+  const userRole = user?.role;
+  if (userRole === Role.SuperAdmin || userRole === Role.StudyManager) {
+    return next();
+  }
+
+  next(new HttpError(403, "Admin access only"));
+};
