@@ -16,10 +16,10 @@ import {
 
 export const updateRole = async (
   userId: string,
-  newRole: Role
+  role: Role
 ): APIResponse<void> => {
-  if (!Object.values(Role).includes(newRole)) {
-    throw new HttpError(400);
+  if (!Object.values(Role).includes(role)) {
+    throw new HttpError(400, "Invalid role");
   }
 
   let user = await User.findById(userId);
@@ -27,7 +27,7 @@ export const updateRole = async (
     throw new HttpError(404);
   }
 
-  if (user.role === Role.SuperAdmin && newRole !== Role.SuperAdmin) {
+  if (user.role === Role.SuperAdmin && role !== Role.SuperAdmin) {
     throw new HttpError(403); // Super Admins can't be assigned a lesser role
   }
 
