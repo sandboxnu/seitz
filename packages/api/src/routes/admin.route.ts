@@ -13,7 +13,7 @@ const router = Router();
 router.post(
   "/users/:id",
   isSuperAdmin,
-  route((req) => adminService.promoteToAdmin(req.params.id))
+  route((req) => adminService.updateRole(req.params.id, req.body.role))
 );
 
 router.post(

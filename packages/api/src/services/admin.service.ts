@@ -14,12 +14,28 @@ import {
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-//TODO: change to updateRole
-export const promoteToAdmin = async (userId: string): APIResponse<void> => {
-  const user = await User.findOneAndUpdate({ _id: userId }, { isAdmin: true });
+export const updateRole = async (
+  userId: string,
+  newRole: Role
+): APIResponse<void> => {
+  if (!Object.values(Role).includes(newRole)) {
+    throw new HttpError(400);
+  }
+
+  let user = await User.findById(userId);
   if (!user) {
     throw new HttpError(404);
   }
+
+  if (user.role === Role.SuperAdmin && newRole !== Role.SuperAdmin) {
+    throw new HttpError(403); // Super Admins can't be assigned a lesser role
+  }
+
+  user = await User.findOneAndUpdate({ _id: userId }, { isAdmin: true });
+  if (!user) {
+    throw new HttpError(404);
+  }
+
   return [200];
 };
 
@@ -81,7 +97,6 @@ export const getAdminUsers = async (): APIResponse<IUser[]> => {
   return [200, adminUsers];
 };
 
-//TODO: not sure if this is correct..
 export const removeUserAsAdmin = async (userId: string): APIResponse<void> => {
   const user = await User.updateOne({ _id: userId }, { role: Role.BasicUser });
   if (!user) {
