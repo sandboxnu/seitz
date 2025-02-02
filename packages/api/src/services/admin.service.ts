@@ -15,8 +15,15 @@ import {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 //TODO: change to updateRole
-export const promoteToAdmin = async (userId: string): APIResponse<void> => {
-  const user = await User.findOneAndUpdate({ _id: userId }, { isAdmin: true });
+export const promoteToAdmin = async (
+  userId: string,
+  role: string
+): APIResponse<void> => {
+  if (!Object.values(Role).includes(role as Role)) {
+    throw new HttpError(400, "Invalid role");
+  }
+
+  const user = await User.findOneAndUpdate({ _id: userId }, { role: role });
   if (!user) {
     throw new HttpError(404);
   }
