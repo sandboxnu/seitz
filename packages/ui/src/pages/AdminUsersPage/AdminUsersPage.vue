@@ -24,8 +24,8 @@ const { data: allUsers, isLoading: isUsersLoading } = useQuery(
   adminAPI.getAllUsers
 );
 const addAdmin = useMutation(
-  // TODO: Change this to use the new ROLE variable here---V
-  (userId: string) => adminAPI.addUserAsAdmin(userId, Role.SuperAdmin),
+  // TODO: Change this to use the new ROLE variable here ↓↓↓↓
+  (userId: string) => adminAPI.assignAdminRole(userId, Role.SuperAdmin),
   {
     onSuccess: () => {
       queryClient.invalidateQueries(["admins"]);

@@ -81,6 +81,6 @@ export default {
   getStages,
   getAdminUsers,
   getAllUsers,
-  addUserAsAdmin: assignAdminRole,
+  assignAdminRole,
   removeUserAsAdmin,
 };
