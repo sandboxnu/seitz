@@ -94,7 +94,4 @@ export const customizedSessionSchema = new Schema<ICustomizedSession>({
   values: [optionValueSchema],
 });
 
-export const CustomizedSession = model<ICustomizedSession>(
-  "CustomizedSession",
-  customizedSessionSchema
-);
+export const CustomizedSession = model("CustomizedSession", sessionSchema);
