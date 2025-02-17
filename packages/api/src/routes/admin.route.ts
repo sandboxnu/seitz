@@ -43,7 +43,6 @@ router.delete(
 );
 
 router.put(
-<<<<<<< HEAD
   "/battery/:id/stage/:stageId/visibility/:status",
   isAdmin,
   route((req) =>
@@ -56,8 +55,6 @@ router.put(
 );
 
 router.put(
-=======
->>>>>>> 94315a1 (first implementation)
   "/battery/:id/visibility/:status",
   isAdmin,
   route((req) =>
