@@ -8,6 +8,7 @@ import AppButton from "@/components/ui/AppButton.vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { ElButton, ElCard, ElNotification } from "element-plus";
 import { Role } from "@seitz/shared";
+import RolesDropdown from "./components/RolesDropdown.vue";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -240,11 +241,11 @@ if (
             <tr v-for="user in adminUsers" :key="user._id">
               <td class="py-2 px-4 border-b flex">
                 {{ user.email }}
+                <RolesDropdown class="ml-auto" />
                 <ElButton
                   :text="true"
                   type="danger"
-                  class="ml-auto hover:bg-red-100 text-red-600 underline"
-                  size="small"
+                  class="hover:bg-red-100 text-red-600 underline"
                   @click="handleRemoveAdmin(user.email, user._id)"
                   >Remove</ElButton
                 >
