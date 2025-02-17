@@ -172,25 +172,29 @@ if (
             <tr v-for="user in filteredUsers" :key="user._id">
               <td class="py-2 px-4 border-b flex">
                 {{ user.email }}
-                <ElButton
-                  :text="true"
-                  type="primary"
-                  :class="{
-                    'ml-auto hover:bg-red-100 text-red-600 underline':
-                      !usersToAdd.includes(user._id),
-                    'ml-auto hover:bg-green-200 bg-green-100 text-green-600 underline':
-                      usersToAdd.includes(user._id),
-                  }"
-                  :disabled="isUserAdmin(user._id)"
-                  size="small"
-                  @click="handleAddAdmin(user._id)"
-                  >{{
-                    usersToAdd.includes(user._id) ||
-                    adminUsers.find((admin: any) => admin._id === user._id)
-                      ? "Added"
-                      : "Add"
-                  }}
-                </ElButton>
+                <div class="ml-auto flex items-center">
+                  <RolesDropdown :user="user" class="mr-2" />
+                  <ElButton
+                    :text="true"
+                    type="primary"
+                    :class="{
+                      'ml-2 hover:bg-red-100 text-red-600 underline':
+                        !usersToAdd.includes(user._id),
+                      'ml-2 hover:bg-green-200 bg-green-100 text-green-600 underline':
+                        usersToAdd.includes(user._id),
+                    }"
+                    :disabled="isUserAdmin(user._id)"
+                    size="small"
+                    style="width: 60px"
+                    @click="handleAddAdmin(user._id)"
+                    >{{
+                      usersToAdd.includes(user._id) ||
+                      adminUsers.find((admin: any) => admin._id === user._id)
+                        ? "Added"
+                        : "Add"
+                    }}
+                  </ElButton>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -241,7 +245,7 @@ if (
             <tr v-for="user in adminUsers" :key="user._id">
               <td class="py-2 px-4 border-b flex">
                 {{ user.email }}
-                <RolesDropdown class="ml-auto" />
+                <RolesDropdown class="ml-auto" :user="user" />
                 <ElButton
                   :text="true"
                   type="danger"

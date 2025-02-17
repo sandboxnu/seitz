@@ -1,10 +1,10 @@
 import { Types } from "mongoose";
 
 export enum Role {
-  BasicUser = "basic-user",
-  UserManager = "user-manager",
-  StudyManager = "study-manager",
-  SuperAdmin = "super-admin",
+  BasicUser = "Basic User",
+  UserManager = "User Manager",
+  StudyManager = "Study Manager",
+  SuperAdmin = "Super Admin",
 }
 
 export interface CreateUser {

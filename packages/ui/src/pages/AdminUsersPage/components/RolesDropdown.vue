@@ -2,7 +2,7 @@
   <div>
     <select v-model="selectedRole" class="dropdown-select">
       <option disabled value="">Select a role</option>
-      <option v-for="role in roles" :key="role" :value="role">
+      <option v-for="role in Object.values(Role)" :key="role" :value="role">
         {{ role }}
       </option>
     </select>
@@ -10,10 +10,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { Role } from "@seitz/shared";
+import { ref, defineProps, onMounted } from "vue";
+import type { IUser } from "@seitz/shared";
+
+const props = defineProps<{
+  user: IUser;
+}>();
 
 const selectedRole = ref("");
-const roles = ["Super Admin", "Basic User", "Study Manager", "User Manager"];
+
+onMounted(() => {
+  let curRole = props.user.role;
+  if (!Object.values(Role).includes(curRole)) {
+    curRole = Role.BasicUser;
+  }
+  selectedRole.value = curRole;
+});
 </script>
 
 <style scoped>
