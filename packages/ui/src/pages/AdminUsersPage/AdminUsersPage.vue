@@ -274,13 +274,13 @@ if (
           <h2 class="font-bold text-xl mb-4 ml-3">Administrators</h2>
           <!-- Handle button click -->
           <AppButton
-            class="bg-[#fafafa] !text-black border border-[#e6e6e6] rounded-md hover:bg-[#f3f3f3] ml-auto px-4"
+            class="mb-4 bg-[#fafafa] !text-black border border-[#e6e6e6] rounded-md hover:bg-[#f3f3f3] ml-auto px-4"
             @click="addAdminDialogVisible = true"
           >
             Save Changes
           </AppButton>
           <AppButton
-            class="bg-[#1F1915] border-[#1F1915] rounded-md"
+            class="mb-4 bg-[#1F1915] border-[#1F1915] rounded-md"
             @click="addAdminDialogVisible = true"
             >Add Administrator</AppButton
           >
