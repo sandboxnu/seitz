@@ -15,6 +15,8 @@ const authStore = useAuthStore();
 const queryClient = useQueryClient();
 
 const usersToAdd = ref<string[]>([]);
+//const rolesToUpdate = ref<Record<string, Role>>({});
+
 const searchQuery = ref("");
 const { data: adminUsers, isLoading: isAdminsLoading } = useQuery(
   ["admins"],
@@ -306,7 +308,7 @@ if (
                 {{ user.email }}
               </td>
               <td class="py-2 px-4 border-b text-left">
-                <RolesDropdown :user="user" />
+                <RolesDropdown :user="user" @roleChanged="console.log" />
               </td>
               <td class="py-2 px-4 border-b text-right">
                 <ElButton
