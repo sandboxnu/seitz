@@ -116,6 +116,14 @@ const filteredUsers = computed(() => {
     user.email.toLowerCase().includes(searchQuery.value.toLowerCase())
   );
 });
+
+const selectedUsers = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return allUsers.value?.filter((user: any) =>
+    usersToAdd.value.includes(user._id)
+  );
+});
+
 // TODO: Should all admins be able to access this page?
 if (
   !authStore.currentUser?.role ||
@@ -171,8 +179,7 @@ if (
           <tbody>
             <tr v-for="user in filteredUsers" :key="user._id">
               <td class="py-2 px-4 border-b flex items-center justify-evenly">
-                <!-- PLACEHOLDER NAME -->
-                <div class="mr-auto font-bold">First Last</div>
+                <div class="mr-auto font-bold">{{ user.name }}</div>
                 <div>{{ user.email }}</div>
                 <div class="ml-auto">
                   <ElButton
@@ -214,26 +221,24 @@ if (
       </div>
 
       <div class="m-4 mb-8 h-32 overflow-auto">
-        <!-- PLACEHOLDER TABLE, NEED TO USE A NEW LIST WITH SELECTED ADMINS-->
         <table
           v-if="!isUsersLoading && filteredUsers.length > 0"
           class="w-full table-auto border-collapse"
         >
           <tbody>
-            <tr v-for="user in filteredUsers" :key="user._id">
+            <tr v-for="user in selectedUsers" :key="user._id">
               <td class="py-2 px-4 border-b flex items-center justify-evenly">
-                <!-- PLACEHOLDER NAME -->
-                <div class="mr-auto font-bold">First Last</div>
+                <div class="mr-auto font-bold">{{ user.name }}</div>
                 <div class="ml-auto">
                   <RolesDropdown :user="user" />
                 </div>
-                <!-- REMOVE BUTTON, NEED TO IMPLEMENT @CLICK TO REMOVE FROM usersToAdd -->
                 <div class="ml-auto">
                   <ElButton
                     :text="true"
                     type="danger"
                     class="hover:bg-red-100 text-red-600 underline"
                     size="small"
+                    @click="handleAddAdmin(user._id)"
                     >Remove</ElButton
                   >
                 </div>
@@ -266,8 +271,17 @@ if (
     <ElCard class="rounded-xl shadow-md m-10">
       <div class="m-4">
         <div class="flex justify-between items-center">
-          <h2 class="font-bold text-lg mb-4">Administrators</h2>
-          <AppButton type="primary" @click="addAdminDialogVisible = true"
+          <h2 class="font-bold text-xl mb-4 ml-3">Administrators</h2>
+          <!-- Handle button click -->
+          <AppButton
+            class="bg-[#fafafa] !text-black border border-[#e6e6e6] rounded-md hover:bg-[#f3f3f3] ml-auto px-4"
+            @click="addAdminDialogVisible = true"
+          >
+            Save Changes
+          </AppButton>
+          <AppButton
+            class="bg-[#1F1915] border-[#1F1915] rounded-md"
+            @click="addAdminDialogVisible = true"
             >Add Administrator</AppButton
           >
         </div>
@@ -277,14 +291,7 @@ if (
         >
           <thead>
             <tr>
-              <!-- PLACEHOLDER FOR FIRST NAME -->
-              <th class="text-black text-center py-2 px-2 border-b-2">
-                First Name
-              </th>
-              <!-- PLACEHOLDER FOR LAST NAME -->
-              <th class="text-black text-center py-2 px-2 border-b-2">
-                Last Name
-              </th>
+              <th class="text-black text-left py-2 px-8 border-b-2">Name</th>
               <th class="text-black text-left py-2 px-12 border-b-2">Email</th>
               <th class="text-black text-left py-2 px-4 border-b-2">
                 Admin Type
@@ -294,8 +301,7 @@ if (
           </thead>
           <tbody>
             <tr v-for="user in adminUsers" :key="user._id">
-              <td class="py-2 px-4 border-b text-center">First</td>
-              <td class="py-2 px-4 border-b text-center">Last</td>
+              <td class="py-2 px-6 border-b text-left">{{ user.name }}</td>
               <td class="py-2 px-12 border-b">
                 {{ user.email }}
               </td>

@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { Role, type IUser } from "@seitz/shared";
 
 const userSchema = new Schema<IUser>({
+  name: { type: String, required: true, unique: false },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: {
