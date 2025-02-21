@@ -223,12 +223,9 @@ if (
 
     <ElCard class="rounded-xl shadow-md m-10">
       <div class="m-4">
-        <div class="flex">
+        <div class="flex justify-between items-center">
           <h2 class="font-bold text-lg mb-4">Administrators</h2>
-          <AppButton
-            class="ml-auto"
-            type="primary"
-            @click="addAdminDialogVisible = true"
+          <AppButton type="primary" @click="addAdminDialogVisible = true"
             >Add Administrator</AppButton
           >
         </div>
@@ -238,14 +235,30 @@ if (
         >
           <thead>
             <tr>
-              <th class="text-black text-left py-2 px-4 border-b-2">Email</th>
+              <th class="text-black text-center py-2 px-2 border-b-2">
+                First Name
+              </th>
+              <th class="text-black text-center py-2 px-2 border-b-2">
+                Last Name
+              </th>
+              <th class="text-black text-left py-2 px-12 border-b-2">Email</th>
+              <th class="text-black text-left py-2 px-4 border-b-2">
+                Admin Type
+              </th>
+              <th class="text-black text-right py-2 px-4 border-b-2"></th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="user in adminUsers" :key="user._id">
-              <td class="py-2 px-4 border-b flex">
+              <td class="py-2 px-4 border-b text-center">First</td>
+              <td class="py-2 px-4 border-b text-center">Last</td>
+              <td class="py-2 px-12 border-b">
                 {{ user.email }}
-                <RolesDropdown class="ml-auto" :user="user" />
+              </td>
+              <td class="py-2 px-4 border-b text-left">
+                <RolesDropdown :user="user" />
+              </td>
+              <td class="py-2 px-4 border-b text-right">
                 <ElButton
                   :text="true"
                   type="danger"

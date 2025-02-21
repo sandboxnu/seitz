@@ -1,6 +1,6 @@
 <template>
   <div>
-    <select v-model="selectedRole" class="dropdown-select">
+    <select v-model="selectedRole" class="dropdown-select text-sm mr-5">
       <option disabled value="">Select a role</option>
       <option v-for="role in Object.values(Role)" :key="role" :value="role">
         {{ role }}
@@ -28,12 +28,3 @@ onMounted(() => {
   selectedRole.value = curRole;
 });
 </script>
-
-<style scoped>
-.dropdown-select {
-  padding: 3px;
-  font-size: 15px;
-  margin: 5px 0;
-  border: 0.5px solid black;
-}
-</style>
