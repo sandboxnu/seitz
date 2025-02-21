@@ -159,7 +159,7 @@ if (
         <ElInput
           v-model="searchQuery"
           placeholder="Search by email"
-          class="w-full"
+          class="w-full rounded-full"
         />
       </div>
 
@@ -170,10 +170,11 @@ if (
         >
           <tbody>
             <tr v-for="user in filteredUsers" :key="user._id">
-              <td class="py-2 px-4 border-b flex">
-                {{ user.email }}
-                <div class="ml-auto flex items-center">
-                  <RolesDropdown :user="user" class="mr-2" />
+              <td class="py-2 px-4 border-b flex items-center justify-evenly">
+                <!-- PLACEHOLDER NAME -->
+                <div class="mr-auto font-bold">First Last</div>
+                <div>{{ user.email }}</div>
+                <div class="ml-auto">
                   <ElButton
                     :text="true"
                     type="primary"
@@ -204,6 +205,47 @@ if (
         </p>
         <p v-else>Loading...</p>
       </div>
+
+      <hr class="border-black w-11/12 mx-auto" />
+      <div
+        class="ml-5 text-black text-base font-bold text-left py-2 whitespace-nowrap"
+      >
+        Selected Administrators
+      </div>
+
+      <div class="m-4 mb-8 h-32 overflow-auto">
+        <!-- PLACEHOLDER TABLE, NEED TO USE A NEW LIST WITH SELECTED ADMINS-->
+        <table
+          v-if="!isUsersLoading && filteredUsers.length > 0"
+          class="w-full table-auto border-collapse"
+        >
+          <tbody>
+            <tr v-for="user in filteredUsers" :key="user._id">
+              <td class="py-2 px-4 border-b flex items-center justify-evenly">
+                <!-- PLACEHOLDER NAME -->
+                <div class="mr-auto font-bold">First Last</div>
+                <div class="ml-auto">
+                  <RolesDropdown :user="user" />
+                </div>
+                <!-- REMOVE BUTTON, NEED TO IMPLEMENT @CLICK TO REMOVE FROM usersToAdd -->
+                <div class="ml-auto">
+                  <ElButton
+                    :text="true"
+                    type="danger"
+                    class="hover:bg-red-100 text-red-600 underline"
+                    size="small"
+                    >Remove</ElButton
+                  >
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p v-else-if="!isUsersLoading && filteredUsers.length === 0">
+          No users found.
+        </p>
+        <p v-else>Loading...</p>
+      </div>
       <div class="flex">
         <el-button
           class="rounded-lg px-5 py-1 justify-center"
@@ -211,12 +253,12 @@ if (
           >Cancel</el-button
         >
         <AppButton
-          class="ml-auto"
+          class="ml-auto bg-black text-white"
           type="primary"
           :disabled="usersToAdd.length === 0"
           @click="confirmAddAdmin"
         >
-          Add
+          Add Selected
         </AppButton>
       </div>
     </el-dialog>
@@ -235,9 +277,11 @@ if (
         >
           <thead>
             <tr>
+              <!-- PLACEHOLDER FOR FIRST NAME -->
               <th class="text-black text-center py-2 px-2 border-b-2">
                 First Name
               </th>
+              <!-- PLACEHOLDER FOR LAST NAME -->
               <th class="text-black text-center py-2 px-2 border-b-2">
                 Last Name
               </th>
