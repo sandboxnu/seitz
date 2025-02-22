@@ -11,6 +11,7 @@ import type {
   ICustomizedBattery,
   IUser,
 } from "@seitz/shared";
+import { parseVisibility } from "@/util/validation.utils";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -129,20 +130,16 @@ export const updateAdminVisibility = async (
   batteryId: string,
   visibility: string
 ): APIResponse<ICustomizedBattery> => {
-  if (visibility !== "on" && visibility !== "off") {
-    throw new HttpError(400, "Invalid visibility must be 'on' or 'off'");
-  }
-
-  const visibility_bool = visibility === "on"; // hardcoded - could be improved
+  const isVisibleToNonAdmins = parseVisibility(visibility);
 
   const battery = await CustomizedBattery.findOneAndUpdate(
     { _id: batteryId },
-    { isVisibleToNonAdmins: visibility_bool },
+    { isVisibleToNonAdmins: isVisibleToNonAdmins },
     { new: true }
   );
 
   if (!battery) {
-    throw new HttpError(404, `Battery not found ${batteryId}`);
+    throw new HttpError(404, `Battery not found with ID: ${batteryId}`);
   }
 
   return [200, battery];
