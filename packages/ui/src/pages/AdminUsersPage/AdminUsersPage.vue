@@ -14,8 +14,9 @@ const router = useRouter();
 const authStore = useAuthStore();
 const queryClient = useQueryClient();
 
-const usersToAdd = ref<string[]>([]);
-//const rolesToUpdate = ref<Record<string, Role>>({});
+const usersToAdd = ref<string[]>([]); // IDs of the users to be added as new admins
+const rolesToAdd = ref<Record<string, Role>>({}); // The roles of the new admins to be added
+const rolesToUpdate = ref<Record<string, Role>>({}); // The roles of the existing admins to be updated
 
 const searchQuery = ref("");
 const { data: adminUsers, isLoading: isAdminsLoading } = useQuery(
@@ -27,14 +28,20 @@ const { data: allUsers, isLoading: isUsersLoading } = useQuery(
   adminAPI.getAllUsers
 );
 const addAdmin = useMutation(
-  // TODO: Change this to use the new ROLE variable here ↓↓↓↓
-  (userId: string) => adminAPI.assignAdminRole(userId, Role.SuperAdmin),
+  async (usersToUpdate: Record<string, Role>) => {
+    await Promise.all(
+      Object.entries(usersToUpdate).map(([userId, role]) =>
+        adminAPI.assignAdminRole(userId, role)
+      )
+    );
+  },
   {
     onSuccess: () => {
       queryClient.invalidateQueries(["admins"]);
+      queryClient.invalidateQueries(["users"]);
       ElNotification({
         title: "Success",
-        message: "Admin user added",
+        message: "Selected roles updated",
         type: "success",
       });
     },
@@ -42,7 +49,7 @@ const addAdmin = useMutation(
       console.error(error);
       ElNotification({
         title: "Error",
-        message: "Failed to add admin user",
+        message: "Failed to update admin roles",
         type: "error",
       });
     },
@@ -53,6 +60,7 @@ const removeAdmin = useMutation(
   {
     onSuccess: () => {
       queryClient.invalidateQueries(["admins"]);
+      queryClient.invalidateQueries(["users"]);
       ElNotification({
         title: "Success",
         message: "Admin user removed",
@@ -77,6 +85,15 @@ const userToRemove = ref<{ email: string; userId: string } | null>(null);
 const handleAddAdmin = (userId: string) => {
   if (usersToAdd.value.includes(userId)) {
     usersToAdd.value = usersToAdd.value.filter((id) => id !== userId);
+    rolesToAdd.value = Object.keys(rolesToAdd.value).reduce(
+      (acc: Record<string, Role>, key: string) => {
+        if (key !== userId) {
+          acc[key] = rolesToAdd.value[key];
+        }
+        return acc;
+      },
+      {}
+    );
     return;
   }
   usersToAdd.value.push(userId);
@@ -90,11 +107,9 @@ const handleRemoveAdmin = (email: string, userId: string) => {
 
 const confirmAddAdmin = () => {
   if (usersToAdd.value) {
-    usersToAdd.value.forEach((userId) => {
-      addAdmin.mutate(userId);
-    });
-
+    addAdmin.mutate(rolesToAdd.value);
     usersToAdd.value = [];
+    rolesToAdd.value = {};
     addAdminDialogVisible.value = false;
   }
 };
@@ -105,6 +120,12 @@ const confirmRemoveAdmin = () => {
     userToRemove.value = null;
     removeAdminDialogVisible.value = false;
   }
+};
+
+const cancelAddAdmin = () => {
+  usersToAdd.value = [];
+  rolesToAdd.value = {};
+  addAdminDialogVisible.value = false;
 };
 
 const isUserAdmin = (userId: string) => {
@@ -119,12 +140,38 @@ const filteredUsers = computed(() => {
   );
 });
 
+const filteredBasicUsers = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return allUsers.value?.filter((user: any) => user.role === Role.BasicUser);
+});
+
 const selectedUsers = computed(() => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return allUsers.value?.filter((user: any) =>
     usersToAdd.value.includes(user._id)
   );
 });
+
+const updateRoles = (userId: string, role: Role) => {
+  rolesToUpdate.value = {
+    ...rolesToUpdate.value,
+    [userId]: role,
+  };
+};
+
+const newAdminRoleChanged = (userId: string, role: Role) => {
+  rolesToAdd.value = {
+    ...rolesToAdd.value,
+    [userId]: role,
+  };
+};
+
+const saveChanges = () => {
+  if (Object.keys(rolesToUpdate.value).length) {
+    addAdmin.mutate(rolesToUpdate.value);
+    rolesToUpdate.value = {};
+  }
+};
 
 // TODO: Should all admins be able to access this page?
 if (
@@ -179,7 +226,7 @@ if (
           class="w-full table-auto border-collapse"
         >
           <tbody>
-            <tr v-for="user in filteredUsers" :key="user._id">
+            <tr v-for="user in filteredBasicUsers" :key="user._id">
               <td class="py-2 px-4 border-b flex items-center justify-evenly">
                 <div class="mr-auto font-bold">{{ user.name }}</div>
                 <div>{{ user.email }}</div>
@@ -232,7 +279,10 @@ if (
               <td class="py-2 px-4 border-b flex items-center justify-evenly">
                 <div class="mr-auto font-bold">{{ user.name }}</div>
                 <div class="ml-auto">
-                  <RolesDropdown :user="user" />
+                  <RolesDropdown
+                    :user="user"
+                    @roleChanged="newAdminRoleChanged"
+                  />
                 </div>
                 <div class="ml-auto">
                   <ElButton
@@ -256,7 +306,7 @@ if (
       <div class="flex">
         <el-button
           class="rounded-lg px-5 py-1 justify-center"
-          @click="addAdminDialogVisible = false"
+          @click="cancelAddAdmin"
           >Cancel</el-button
         >
         <AppButton
@@ -277,7 +327,7 @@ if (
           <!-- Handle button click -->
           <AppButton
             class="mb-4 bg-[#fafafa] !text-black border border-[#e6e6e6] rounded-md hover:bg-[#f3f3f3] ml-auto px-4"
-            @click="addAdminDialogVisible = true"
+            @click="saveChanges"
           >
             Save Changes
           </AppButton>
@@ -308,7 +358,7 @@ if (
                 {{ user.email }}
               </td>
               <td class="py-2 px-4 border-b text-left">
-                <RolesDropdown :user="user" @roleChanged="console.log" />
+                <RolesDropdown :user="user" @roleChanged="updateRoles" />
               </td>
               <td class="py-2 px-4 border-b text-right">
                 <ElButton

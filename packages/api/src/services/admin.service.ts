@@ -27,11 +27,12 @@ export const updateRole = async (
     throw new HttpError(404);
   }
 
-  if (user.role === Role.SuperAdmin && role !== Role.SuperAdmin) {
-    throw new HttpError(403); // Super Admins can't be assigned a lesser role
-  }
+  // TODO this needa be figured out lol
+  // if (user.role === Role.SuperAdmin && role !== Role.SuperAdmin) {
+  //   throw new HttpError(403); // Super Admins can't be assigned a lesser role
+  // }
 
-  user = await User.findOneAndUpdate({ _id: userId }, { isAdmin: true });
+  user = await User.findOneAndUpdate({ _id: userId }, { role: role });
   if (!user) {
     throw new HttpError(404);
   }
