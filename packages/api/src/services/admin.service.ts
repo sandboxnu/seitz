@@ -10,6 +10,7 @@ import type {
   IBattery,
   IUser,
 } from "@seitz/shared";
+import { parseVisibility } from "@/util/validation.utils";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -92,13 +93,11 @@ export const updateStageVisibility = async (
   stageId: string,
   visibility: string
 ): APIResponse<IBattery> => {
-  if (visibility !== "on" && visibility !== "off") {
-    throw new HttpError(400, "Invalid visibility must be 'on' or 'off'");
-  }
-  const visibilityBool = visibility === "on";
+  const isVisibleToNonAdmins = parseVisibility(visibility);
+
   const updatedBattery = await Battery.findOneAndUpdate(
     { _id: batteryId, "stages._id": stageId },
-    { $set: { "stages.$.isVisibleToNonAdmins": visibilityBool } },
+    { $set: { "stages.$.isVisibleToNonAdmins": isVisibleToNonAdmins } },
     { new: true }
   );
 
