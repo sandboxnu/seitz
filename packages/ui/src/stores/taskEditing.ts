@@ -93,16 +93,16 @@ export const useTaskEditingStore = defineStore("taskEditing", () => {
   function saveAs() {
     if (!editingTaskId.value || !battery.value) return;
 
-    const originalName = name.value?.trim() || battery.value.name;
-    let newName = name.value?.trim();
+    const originalName = name.value?.trim() || battery.value.name.trim() || "";
+    let newName = name.value?.trim() || "";
 
-    if (!newName || newName === originalName) {
-      // Get existing copies in the studyBuilderStore task bank
+    const isNameUnchanged = !newName || newName === originalName;
+
+    if (isNameUnchanged) {
       const existingCopies = studyBuilderStore.taskBank
         .map((taskId) => studyBuilderStore.taskData[taskId]?.name)
         .filter((taskName) => taskName?.startsWith(`${originalName}_copy`));
 
-      // Determine the highest copy number
       let maxCopyNumber = 0;
       existingCopies.forEach((taskName) => {
         const match = taskName.match(
@@ -113,7 +113,6 @@ export const useTaskEditingStore = defineStore("taskEditing", () => {
         }
       });
 
-      // Set new name
       newName = `${originalName}_copy${maxCopyNumber + 1}`;
     }
 
