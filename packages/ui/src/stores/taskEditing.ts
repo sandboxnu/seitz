@@ -90,20 +90,59 @@ export const useTaskEditingStore = defineStore("taskEditing", () => {
     });
   }
 
+  // function saveAs() {
+  //   if (!editingTaskId.value || !name.value || !battery.value) return;
+
+  //   saveMutation.mutate({
+  //     isSaveAs: true,
+  //     taskId: new mongoose.Types.ObjectId().toString(),
+  //     name: name.value,
+  //     battery: battery.value._id,
+  //     values: Object.entries(formValues.value).map((v) => {
+  //       return {
+  //         option: v[0],
+  //         value: v[1],
+  //       };
+  //     }),
+  //   });
+  // }
+
   function saveAs() {
-    if (!editingTaskId.value || !name.value || !battery.value) return;
+    if (!editingTaskId.value || !battery.value) return;
+
+    const originalName = name.value?.trim() || battery.value.name;
+    let newName = name.value?.trim();
+
+    if (!newName || newName === originalName) {
+      // Get existing copies in the studyBuilderStore task bank
+      const existingCopies = studyBuilderStore.taskBank
+        .map((taskId) => studyBuilderStore.taskData[taskId]?.name)
+        .filter((taskName) => taskName?.startsWith(`${originalName}_copy`));
+
+      // Determine the highest copy number
+      let maxCopyNumber = 0;
+      existingCopies.forEach((taskName) => {
+        const match = taskName.match(
+          new RegExp(`^${originalName}_copy(\\d+)$`)
+        );
+        if (match) {
+          maxCopyNumber = Math.max(maxCopyNumber, parseInt(match[1], 10));
+        }
+      });
+
+      // Set new name
+      newName = `${originalName}_copy${maxCopyNumber + 1}`;
+    }
 
     saveMutation.mutate({
       isSaveAs: true,
       taskId: new mongoose.Types.ObjectId().toString(),
-      name: name.value,
+      name: newName,
       battery: battery.value._id,
-      values: Object.entries(formValues.value).map((v) => {
-        return {
-          option: v[0],
-          value: v[1],
-        };
-      }),
+      values: Object.entries(formValues.value).map(([option, value]) => ({
+        option,
+        value,
+      })),
     });
   }
 
