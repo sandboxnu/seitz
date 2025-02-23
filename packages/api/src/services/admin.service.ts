@@ -89,6 +89,29 @@ export const removeUserAsAdmin = async (userId: string): APIResponse<void> => {
   return [200];
 };
 
+export const updateStageVisibility = async (
+  batteryId: string,
+  stageId: string,
+  visibility: string
+): APIResponse<IBattery> => {
+  const isVisibleToNonAdmins = parseVisibility(visibility);
+
+  const updatedBattery = await Battery.findOneAndUpdate(
+    { _id: batteryId, "stages._id": stageId },
+    { $set: { "stages.$.isVisibleToNonAdmins": isVisibleToNonAdmins } },
+    { new: true }
+  );
+
+  if (!updatedBattery) {
+    throw new HttpError(
+      404,
+      `Battery ${batteryId} or Stage ${stageId} not found.`
+    );
+  }
+
+  return [200, updatedBattery];
+};
+
 function parseOptions(s: any): CreateOption[] {
   return Object.entries(s).reduce((acc: CreateOption[], item: any) => {
     const optionName = item[0];

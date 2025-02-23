@@ -43,6 +43,18 @@ router.delete(
 );
 
 router.put(
+  "/battery/:id/stage/:stageId/visibility/:status",
+  isAdmin,
+  route((req) =>
+    adminService.updateStageVisibility(
+      req.params.id,
+      req.params.stageId,
+      req.params.status
+    )
+  )
+);
+
+router.put(
   "/battery/:id/visibility/:status",
   isAdmin,
   route((req) =>
