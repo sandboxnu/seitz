@@ -90,23 +90,6 @@ export const useTaskEditingStore = defineStore("taskEditing", () => {
     });
   }
 
-  // function saveAs() {
-  //   if (!editingTaskId.value || !name.value || !battery.value) return;
-
-  //   saveMutation.mutate({
-  //     isSaveAs: true,
-  //     taskId: new mongoose.Types.ObjectId().toString(),
-  //     name: name.value,
-  //     battery: battery.value._id,
-  //     values: Object.entries(formValues.value).map((v) => {
-  //       return {
-  //         option: v[0],
-  //         value: v[1],
-  //       };
-  //     }),
-  //   });
-  // }
-
   function saveAs() {
     if (!editingTaskId.value || !battery.value) return;
 
