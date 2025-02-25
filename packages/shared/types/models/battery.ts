@@ -53,6 +53,7 @@ export interface CreateBatteryStage {
   type: string;
   stageLabel: string;
   options: CreateOptionGroup;
+  isVisibleToNonAdmins: boolean;
 }
 
 export interface IBatteryStage extends Required<CreateBatteryStage> {
@@ -85,6 +86,7 @@ export interface CreateCustomizedBattery {
   battery: Types.ObjectId;
   name: string;
   values: CreateOptionValue[];
+  isVisibleToNonAdmins: boolean;
 }
 
 export interface ICustomizedBattery extends Required<CreateCustomizedBattery> {
