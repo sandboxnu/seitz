@@ -10,11 +10,7 @@ const router = useRouter();
 const authStore = useAuthStore();
 const batteryEditingStore = useBatteryEditingStore();
 
-// TODO: Should all admins be able to access this page?
-if (
-  !authStore.currentUser?.role ||
-  authStore.currentUser.role === Role.BasicUser
-) {
+if (!authStore.hasAdminPower(Role.StudyManager)) {
   router.push("/");
 }
 </script>

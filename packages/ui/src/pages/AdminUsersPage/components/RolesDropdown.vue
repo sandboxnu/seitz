@@ -11,14 +11,14 @@
 
 <script setup lang="ts">
 import { Role } from "@seitz/shared";
-import { ref, defineProps, onMounted, watch } from "vue";
+import { ref, onMounted, watch } from "vue";
 import type { IUser } from "@seitz/shared";
 
 const props = defineProps<{
   user: IUser;
 }>();
 
-const emit = defineEmits(["roleChanged"]);
+const emit = defineEmits(["role-changed"]);
 const selectedRole = ref("");
 
 onMounted(() => {
@@ -28,7 +28,7 @@ onMounted(() => {
   }
   selectedRole.value = curRole;
   watch(selectedRole, (newRole) => {
-    emit("roleChanged", props.user._id, newRole);
+    emit("role-changed", props.user._id, newRole);
   });
 });
 </script>

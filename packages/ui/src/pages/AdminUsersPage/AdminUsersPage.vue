@@ -173,11 +173,7 @@ const saveChanges = () => {
   }
 };
 
-// TODO: Should all admins be able to access this page?
-if (
-  !authStore.currentUser?.role ||
-  authStore.currentUser.role === Role.BasicUser
-) {
+if (!authStore.hasAdminPower(Role.UserManager)) {
   router.push("/");
 }
 </script>
@@ -281,7 +277,7 @@ if (
                 <div class="ml-auto">
                   <RolesDropdown
                     :user="user"
-                    @roleChanged="newAdminRoleChanged"
+                    @role-changed="newAdminRoleChanged"
                   />
                 </div>
                 <div class="ml-auto">
@@ -358,7 +354,7 @@ if (
                 {{ user.email }}
               </td>
               <td class="py-2 px-4 border-b text-left">
-                <RolesDropdown :user="user" @roleChanged="updateRoles" />
+                <RolesDropdown :user="user" @role-changed="updateRoles" />
               </td>
               <td class="py-2 px-4 border-b text-right">
                 <ElButton
