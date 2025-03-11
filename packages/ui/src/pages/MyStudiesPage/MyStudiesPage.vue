@@ -38,7 +38,6 @@ const studies = data;
       <h1 class="text-3xl font-bold">My Studies</h1>
       <AppButton @click="mutate">+ New Study</AppButton>
     </div>
-
     <h4 class="mt-8 mb-3 text-neutral-600 font-normal leading-tight">Recent</h4>
 
     <div class="space-y-6">
