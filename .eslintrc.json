@@ -6,6 +6,7 @@
   },
   "extends": [
     "eslint:recommended",
+    "prettier",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/stylistic",
     "plugin:vue/vue3-recommended",
@@ -21,7 +22,8 @@
     "prettier/prettier": [
       "error",
       {
-        "endOfLine": "auto"
+        "endOfLine": "auto",
+        "tabWidth": 2
       }
     ],
     "@typescript-eslint/no-empty-function": "off"

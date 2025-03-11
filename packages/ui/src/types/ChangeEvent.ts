@@ -1,3 +1,5 @@
+// interfaces for adding, removing, and moving elements in a collection.
+
 interface AddEvent<T> {
   added: {
     newIndex: number;

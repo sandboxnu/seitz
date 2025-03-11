@@ -1,3 +1,4 @@
+<!-- This component handles user signup functionality. -->
 <script setup lang="ts">
 import { useMutation } from "@tanstack/vue-query";
 import authAPI from "@/api/auth";

@@ -1,3 +1,5 @@
+<!-- This component represents a draggable list of tasks within a session. -->
+
 <script setup lang="ts">
 import TaskCard from "./TaskCard.vue";
 import Draggable from "vuedraggable";

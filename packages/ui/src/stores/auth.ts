@@ -1,3 +1,5 @@
+// handles the authentication state, the currently logged-in user.
+
 import { defineStore } from "pinia";
 import { useStorage, StorageSerializers } from "@vueuse/core";
 import authAPI from "@/api/auth";

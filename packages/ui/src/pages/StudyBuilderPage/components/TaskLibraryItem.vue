@@ -1,3 +1,4 @@
+<!-- This component displays a task in the task library with its name, description, and image. It also has an "Add to bank" button -->
 <script setup lang="ts">
 defineProps<{
   name: string;

@@ -1,3 +1,5 @@
+<!-- This component represents a form section for task customization. -->
+
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
 import { useTaskEditingStore } from "@/stores/taskEditing";

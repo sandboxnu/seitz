@@ -1,3 +1,5 @@
+<!-- This component represents the main page for study creation, including task management and customization. -->
+
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import Draggable from "vuedraggable";
