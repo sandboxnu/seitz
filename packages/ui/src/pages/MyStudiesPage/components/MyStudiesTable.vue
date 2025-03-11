@@ -2,8 +2,6 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-// import studiesAPI from "@/api/studies";
-// import { useMutation } from "@tanstack/vue-query";
 
 const props = defineProps<{
   studies: {
@@ -16,21 +14,7 @@ const props = defineProps<{
   }[];
 }>();
 
-// const emit = defineEmits(["deleted"]);
-
-// Show placeholder message if no studies found
 const hasStudies = computed(() => props.studies && props.studies.length > 0);
-
-// const deleteStudy = (studyId: string) => {
-//   const { mutate } = useMutation({
-//     mutationFn: () => studiesAPI.deleteStudy(studyId),
-//     onSuccess: () => {
-//       emit("deleted");
-//     },
-//   });
-
-//   mutate();
-// };
 </script>
 
 <template>

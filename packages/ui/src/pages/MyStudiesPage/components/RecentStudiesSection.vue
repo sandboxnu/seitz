@@ -14,7 +14,6 @@ const props = defineProps<{
 
 const emit = defineEmits(["deleted"]);
 
-// Show placeholder message if no studies found
 const hasStudies = computed(() => props.studies && props.studies.length > 0);
 </script>
 
@@ -23,8 +22,8 @@ const hasStudies = computed(() => props.studies && props.studies.length > 0);
     <div v-if="hasStudies" class="flex gap-6">
       <RecentStudyCard
         v-for="study in studies"
-        :key="study._id"
         :id="study._id"
+        :key="study._id"
         :name="study.name"
         :description="study.description"
         @deleted="emit('deleted')"
