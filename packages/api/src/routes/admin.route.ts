@@ -5,6 +5,7 @@ import {
   isStudyManager,
   isSuperAdmin,
   isUserManager,
+  roleUpdateIsValid,
 } from "../middleware/auth";
 import { route } from "../util/handlers";
 
@@ -12,7 +13,7 @@ const router = Router();
 
 router.post(
   "/users/:id",
-  isSuperAdmin,
+  roleUpdateIsValid,
   route((req) => adminService.updateRole(req.params.id, req.body.role))
 );
 
