@@ -11,7 +11,7 @@ import type {
   ICustomizedBattery,
   IUser,
 } from "@seitz/shared";
-import { parseVisibility } from "@/util/validation.utils";
+import { parseVisibility } from "../util/validation.utils";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
