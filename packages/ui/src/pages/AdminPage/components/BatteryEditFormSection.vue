@@ -14,8 +14,16 @@ const isToggled = ref(false);
 async function toggleStageRequirement() {
   isToggled.value = !isToggled.value;
   const status = isToggled.value ? "on" : "off";
-  console.log("Status toggled to:", status);
-  await adminApi.updateStageRequirement(props.batteryId, props.stageId, status);
+  try {
+    await adminApi.updateStageRequirement(
+      props.batteryId,
+      props.stageId,
+      status
+    );
+  } catch (error) {
+    console.error("Error updating stage requirement:", error);
+    isToggled.value = !isToggled.value;
+  }
 }
 </script>
 
