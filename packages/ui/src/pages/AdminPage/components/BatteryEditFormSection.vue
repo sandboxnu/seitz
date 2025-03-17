@@ -1,14 +1,36 @@
 <script setup lang="ts">
+import { ref } from "vue";
+import adminApi from "@/api/admin";
 import type { DTO, IBattery } from "@seitz/shared";
 
-defineProps<{ group: DTO<IBattery>["stages"][0]["options"] }>();
+const props = defineProps<{
+  group: DTO<IBattery>["stages"][0]["options"];
+  batteryId: string;
+  stageId: string;
+}>();
+
+const isToggled = ref(false);
+
+async function toggleStageRequirement() {
+  isToggled.value = !isToggled.value;
+  const status = isToggled.value ? "on" : "off";
+  console.log("Status toggled to:", status);
+  await adminApi.updateStageRequirement(props.batteryId, props.stageId, status);
+}
 </script>
 
 <template>
   <div class="border border-gray-400 rounded-xl p-5">
-    <h2 class="text-base font-bold">
-      {{ group.name }}
-    </h2>
+    <div class="flex items-center gap-2 mb-4">
+      <div
+        class="ellipseWrapper"
+        :style="{ backgroundColor: isToggled ? '#e05846' : '#c3bcb5' }"
+        @click="toggleStageRequirement"
+      >
+        <div class="frameChild" :class="{ active: isToggled }"></div>
+      </div>
+      <h2 class="text-base font-bold">{{ group.name }}</h2>
+    </div>
     <template v-for="option in group.options" :key="option._id">
       <template v-if="option.type == 'dropdown'">
         <ElFormItem :label="option.name" class="block">
@@ -56,6 +78,8 @@ defineProps<{ group: DTO<IBattery>["stages"][0]["options"] }>();
         <BatteryEditFormSection
           v-if="option.options.length > 0"
           :group="option"
+          :battery-id="batteryId"
+          :stage-id="stageId"
           class="my-2"
         />
       </template>
@@ -66,5 +90,30 @@ defineProps<{ group: DTO<IBattery>["stages"][0]["options"] }>();
 <style scoped>
 .el-form-item {
   margin-bottom: 0;
+}
+.ellipseWrapper {
+  width: 30px;
+  border-radius: 25px;
+  background-color: #e05846;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 3px;
+  box-sizing: border-box;
+}
+
+.frameChild {
+  width: 14px;
+  position: relative;
+  border-radius: 50%;
+  background-color: #fffdfd;
+  height: 14px;
+}
+
+.frameChild.active {
+  transform: translateX(10px);
 }
 </style>

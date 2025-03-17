@@ -84,7 +84,11 @@ const editingName = ref(false);
             class="flex-1 flex flex-col gap-2 overflow-y-auto h-full p-6 pt-0"
           >
             <template v-for="stage in batteryData.stages" :key="stage._id">
-              <BatteryEditFormSection :group="stage.options" />
+              <BatteryEditFormSection
+                :group="stage.options"
+                :battery-id="batteryData._id"
+                :stage-id="stage._id"
+              />
             </template>
           </ElForm>
         </template>

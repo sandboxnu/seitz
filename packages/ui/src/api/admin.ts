@@ -76,10 +76,21 @@ async function removeUserAsAdmin(userId: string) {
   return await axiosInstance.delete(`admin/users/${userId}`);
 }
 
+async function updateStageRequirement(
+  batteryId: string,
+  stageId: string,
+  status: string
+) {
+  return await axiosInstance.put(
+    `admin/battery/${batteryId}/stage/${stageId}/visibility/${status}`
+  );
+}
+
 export default {
   getStages,
   getAdminUsers,
   getAllUsers,
   addUserAsAdmin,
   removeUserAsAdmin,
+  updateStageRequirement,
 };
