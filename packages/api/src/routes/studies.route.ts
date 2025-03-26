@@ -78,4 +78,15 @@ router.delete(
   )
 );
 
+router.post(
+  "/:studyId/validate-prefix-server-code",
+  isAuthenticated,
+  authRoute((req) =>
+    studyService.validateAndUpdatePrefixServerCode(
+      req.params.studyId,
+      req.body.prefixServerCode
+    )
+  )
+);
+
 export default router;

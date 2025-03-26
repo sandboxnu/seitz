@@ -84,6 +84,20 @@ export const updateStudy = async (
     (variant) => variant.serverCode
   );
 
+  if (studyData.prefixServerCode) {
+    const existingStudy = await Study.findOne({
+      _id: { $ne: studyId },
+      prefixServerCode: studyData.prefixServerCode,
+    });
+
+    if (existingStudy) {
+      throw new HttpError(
+        409,
+        "This prefix is already in use by another study. Please choose a different prefix."
+      );
+    }
+  }
+
   // Check if the serverCodes in the current study are unique
   if (studyServerCodes.length !== new Set(studyServerCodes).size) {
     throw new HttpError(409, "Server codes in this study must be unique.");
@@ -247,4 +261,43 @@ export const deleteVariant = async (
   if (!study) throw new HttpError(404);
 
   return [200];
+};
+
+export const validateAndUpdatePrefixServerCode = async (
+  studyId: string,
+  newPrefixServerCode: string
+): APIResponse<IStudy> => {
+  if (!newPrefixServerCode) {
+    throw new HttpError(400, "Prefix server code cannot be empty");
+  }
+
+  try {
+    // check if the study exists and user owns it
+    const study = await Study.findOne({ _id: studyId });
+    if (!study) {
+      throw new HttpError(404, "Study not found");
+    }
+
+    const existingStudy = await Study.findOne({
+      _id: { $ne: studyId },
+      prefixServerCode: newPrefixServerCode,
+    });
+
+    if (existingStudy) {
+      throw new HttpError(
+        409,
+        "This prefix is already in use by another study. Please choose a different prefix."
+      );
+    }
+
+    await study.updateOne({ prefixServerCode: newPrefixServerCode });
+
+    return [200];
+  } catch (error) {
+    console.error("Error validating/updating prefix server code:", error);
+    throw new HttpError(
+      500,
+      "An internal error occured while updating the prefix server code"
+    );
+  }
 };
