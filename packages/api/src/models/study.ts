@@ -1,7 +1,7 @@
 import { Model, Schema, Types, model } from "mongoose";
 import ShortUniqueId from "short-unique-id";
 
-const uid = new ShortUniqueId({ dictionary: "alphanum_lower" });
+export const uid = new ShortUniqueId({ dictionary: "alphanum_lower" });
 const serverCodeLength = 5;
 
 import type {
@@ -10,6 +10,7 @@ import type {
   IStudyVariant,
   ITaskInstance,
 } from "@seitz/shared";
+import { generateUniquePrefixServerCode } from "../util/study.utils";
 
 const taskInstanceSchema = new Schema<ITaskInstance>({
   task: {
@@ -41,6 +42,13 @@ const studySchema = new Schema<IStudy, StudyModelType>({
   description: { type: String, default: "" },
   batteries: [{ type: Schema.Types.ObjectId, ref: "CustomizedBattery" }],
   owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  prefixServerCode: {
+    type: String,
+    required: true,
+    default: () => uid.rnd(3),
+    index: true,
+    unique: true,
+  },
   variants: {
     type: [variantSchema],
     default: [],
@@ -48,6 +56,11 @@ const studySchema = new Schema<IStudy, StudyModelType>({
 });
 
 studySchema.pre("save", async function (next) {
+  // generate prefixServerCode if it doesn't exist
+  if (!this.prefixServerCode) {
+    this.prefixServerCode = await generateUniquePrefixServerCode();
+  }
+
   if (this.variants.length === 0) {
     this.variants.push({
       _id: new Types.ObjectId(),
