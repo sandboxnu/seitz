@@ -81,7 +81,7 @@ router.delete(
 router.post(
   "/:studyId/validate-prefix-server-code",
   isAuthenticated,
-  route((req) =>
+  authRoute((req) =>
     studyService.validateAndUpdatePrefixServerCode(
       req.params.studyId,
       req.body.prefixServerCode
