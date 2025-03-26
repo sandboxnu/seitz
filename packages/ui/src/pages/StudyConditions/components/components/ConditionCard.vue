@@ -1,20 +1,37 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed } from "vue";
 import { useStudyBuilderStore } from "@/stores/studyBuilder";
 import Draggable from "vuedraggable";
 import SessionCard from "./SessionCard.vue";
 import AppButton from "@/components/ui/AppButton.vue";
-import { Plus } from "@element-plus/icons-vue";
+import { defineProps } from "vue";
 
 const studyBuilderStore = useStudyBuilderStore();
+const props = defineProps<{ variantId: string }>();
 
-const currentSessionIndex = ref(0);
+//get data for the current variant based on the variantId prop
+const variantData = computed({
+  get: () => {
+    return (
+      studyBuilderStore.variants.find(
+        (variant) => variant._id === props.variantId
+      ) || {}
+    );
+  },
+  set(newData) {
+    const index = studyBuilderStore.variants.findIndex(
+      (variant) => variant._id === props.variantId
+    );
+    if (index !== -1) {
+      studyBuilderStore.variants[index] = {
+        ...studyBuilderStore.variants[index],
+        ...newData,
+      };
+    }
+  },
+});
 
-const addSession = () => {
-  studyBuilderStore.addSession();
-  currentSessionIndex.value = studyBuilderStore.sessions.length - 1;
-};
-
+//todo: make this actually draggable
 const draggableProps = {
   ghostClass: "invisible",
   animation: 100,
@@ -33,19 +50,19 @@ const draggableProps = {
           class="handle cursor-pointer h-4 w-4"
         />
         <input
+          v-model="variantData.name"
           class="text-left w-full bg-transparent font-medium text-xl"
           type="text"
           placeholder="Condition Title"
         />
 
-        <el-button
-          class="flex items-end justify-end flex-wrap"
-          :icon="Plus"
-          @click="addSession()"
-        />
-        <div class="border rounded px-2 py-1 whitespace-nowrap">sca-hd1</div>
+        <div class="border rounded px-2 py-1 whitespace-nowrap">
+          {{ variantId }}
+        </div>
         <div class="flex items-end justify-end flex-wrap">
-          <AppButton> Edit </AppButton>
+          <RouterLink :to="{ name: 'study', params: { id } }">
+            <AppButton>Edit</AppButton>
+          </RouterLink>
         </div>
       </div>
 
@@ -53,7 +70,7 @@ const draggableProps = {
         <TransitionGroup>
           <Draggable
             key="draggable"
-            v-model="studyBuilderStore.sessions"
+            v-model="variantData.sessions"
             v-bind="draggableProps"
             class="flex gap-6"
             group="sessions"
@@ -69,14 +86,6 @@ const draggableProps = {
             </template>
           </Draggable>
         </TransitionGroup>
-
-        <el-button
-          class="h-[30px] w-[30px] bg-primary-300 text-white border border-primary-400 self-center cursor-pointer flex"
-          circle
-          @click="addSession"
-        >
-          <font-awesome-icon :icon="['fas', 'plus']" />
-        </el-button>
       </div>
     </div>
   </div>

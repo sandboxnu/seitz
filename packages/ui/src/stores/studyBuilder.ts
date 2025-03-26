@@ -57,7 +57,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   });
 
   function routeStudyId() {
-    if (route.name !== "study") return "";
+    if (route.name !== "study" && route.name !== "conditions") return "";
     const idParam = route.params.id;
     return typeof idParam === "string" ? idParam : idParam[0];
   }
@@ -77,7 +77,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const serverCode = ref<string>("");
 
   function initialize() {
-    if (route.name !== "study") return;
+    if (route.name !== "study" && route.name !== "conditions") return;
 
     studyId.value = routeStudyId();
     isStudyLoading.value = true;

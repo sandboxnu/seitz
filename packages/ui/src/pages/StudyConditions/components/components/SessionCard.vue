@@ -3,6 +3,7 @@ import { ref } from "vue";
 import Draggable from "vuedraggable";
 
 const { draggable } = defineProps<{
+  sessionId: string;
   draggable: boolean;
 }>();
 
