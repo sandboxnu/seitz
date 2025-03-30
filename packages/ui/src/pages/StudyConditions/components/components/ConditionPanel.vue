@@ -6,7 +6,7 @@ const studyBuilderStore = useStudyBuilderStore();
 </script>
 
 <template>
-  <div class="flex items-center gap-2 mb-2">
+  <div class="flex items-center gap-2 mb-2 p-5">
     <div class="flex-1">
       <ElSkeleton animated :loading="studyBuilderStore.isStudyLoading">
         <template #template>
@@ -15,16 +15,23 @@ const studyBuilderStore = useStudyBuilderStore();
         </template>
 
         <template #default>
-          <div class="flex gap-3 flex-col">
-            <input
-              v-model="studyBuilderStore.name"
-              class="w-full bg-transparent text-neutral-600 font-bold text-4xl"
-              type="text"
-              placeholder="Untitled Study"
-            />
+          <div class="flex flex-row">
+            <div class="flex items-center gap-3">
+              <input
+                v-model="studyBuilderStore.name"
+                class="w-full bg-transparent text-neutral-600 font-bold text-2xl"
+                type="text"
+                placeholder="Untitled Study"
+              />
+              <ElImage
+                src="/icons/dropdown-arrow.svg"
+                fit="cover"
+                class="handle cursor-pointer self-center"
+              />
+            </div>
             <input
               v-model="studyBuilderStore.description"
-              class="w-full bg-transparent text-neutral-600 font-medium text-lg"
+              class="w-full bg-transparent text-neutral-600 font-medium text-md"
               type="text"
               placeholder="Add a description"
             />
@@ -38,6 +45,7 @@ const studyBuilderStore = useStudyBuilderStore();
       v-for="variant in studyBuilderStore.variants"
       :key="variant._id"
       :variant-id="variant._id"
+      :draggable="true"
     />
   </div>
 </template>

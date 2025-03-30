@@ -209,6 +209,10 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     }
   }
 
+  function getTaskName(taskId: string) {
+    return taskData.value[taskId]?.name ?? "Task not found";
+  }
+
   function addSession() {
     const newSession = {
       _id: new mongoose.Types.ObjectId().toString(),
@@ -359,5 +363,6 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     removeCustomizedTaskOrInstance,
     addVariant,
     deleteVariant,
+    getTaskName,
   };
 });

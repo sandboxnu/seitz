@@ -7,7 +7,7 @@ import AppButton from "@/components/ui/AppButton.vue";
 import { defineProps } from "vue";
 
 const studyBuilderStore = useStudyBuilderStore();
-const props = defineProps<{ variantId: string }>();
+const props = defineProps<{ variantId: string; draggable: boolean }>();
 
 //get data for the current variant based on the variantId prop
 const variantData = computed({
@@ -39,13 +39,14 @@ const draggableProps = {
 </script>
 
 <template>
-  <div class="flex flex-col overflow-x-hidden p-5">
+  <div class="flex flex-col overflow-x-hidden px-5 py-2">
     <div
       v-loading="studyBuilderStore.isStudyLoading"
       class="grow p-6 bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
     >
       <div class="flex items-start justify-between gap-4 pb-5">
         <ElImage
+          v-if="draggable"
           src="/icons/grip-vertical.svg"
           class="handle cursor-pointer h-4 w-4"
         />
@@ -76,12 +77,11 @@ const draggableProps = {
             group="sessions"
             item-key="_id"
           >
-            <template #item="{ element: sessionId, index }">
+            <template #item="{ element: session }">
               <SessionCard
-                :session-id="sessionId"
-                :index="index + 1"
-                draggable
-                class="w-[264px] shrink-0"
+                :key="session._id"
+                :session="session"
+                :draggable="true"
               />
             </template>
           </Draggable>
