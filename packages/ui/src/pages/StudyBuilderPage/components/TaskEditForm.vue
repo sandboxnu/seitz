@@ -33,7 +33,9 @@ const { isLoading, isError, name, battery } = storeToRefs(store);
     <template v-else>
       <ElForm class="flex-1 flex flex-col overflow-y-auto h-full p-6 pt-0">
         <template v-for="stage in battery.stages" :key="stage._id">
-          <TaskEditFormSection :group="stage.options" />
+          <template v-if="stage.isVisibleToNonAdmins == true">
+            <TaskEditFormSection :group="stage.options" :depth="0" />
+          </template>
         </template>
       </ElForm>
     </template>
