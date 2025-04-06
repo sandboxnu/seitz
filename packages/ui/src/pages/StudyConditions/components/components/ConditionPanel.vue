@@ -15,20 +15,13 @@ const studyBuilderStore = useStudyBuilderStore();
         </template>
 
         <template #default>
-          <div class="flex flex-row">
-            <div class="flex items-center gap-3">
-              <input
-                v-model="studyBuilderStore.name"
-                class="w-full bg-transparent text-neutral-600 font-bold text-2xl"
-                type="text"
-                placeholder="Untitled Study"
-              />
-              <ElImage
-                src="/icons/dropdown-arrow.svg"
-                fit="cover"
-                class="handle cursor-pointer self-center"
-              />
-            </div>
+          <div class="flex flex-col">
+            <input
+              v-model="studyBuilderStore.name"
+              class="w-fit bg-transparent text-neutral-600 font-bold text-2xl"
+              type="text"
+              placeholder="Untitled Study"
+            />
             <input
               v-model="studyBuilderStore.description"
               class="w-full bg-transparent text-neutral-600 font-medium text-md"

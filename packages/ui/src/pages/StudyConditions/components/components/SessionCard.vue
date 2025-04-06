@@ -68,21 +68,26 @@ const draggableProps = {
       >
         <template #item="{ element }">
           <div class="inline-flex justify-start items-center">
-            <div class="justify-center text-black text-xs">
-              {{ studyBuilderStore.getTaskName(element.task) }}
+            <div class="text-black text-xs">
+              {{
+                studyBuilderStore.getTaskName(element.task).length > 15
+                  ? studyBuilderStore.getTaskName(element.task).slice(0, 15)
+                  : studyBuilderStore.getTaskName(element.task)
+              }}
             </div>
-            <div class="justify-center text-stone-900 text-xs">
-              {{ element.quantity }}
-            </div>
+            <div class="text-stone-900 text-xs">...{{ element.quantity }}</div>
           </div>
         </template>
       </Draggable>
+      <div v-if="props.session.tasks.length > 3" class="text-black text-xs">
+        ...
+      </div>
     </TransitionGroup>
-
     <div
       class="mt-auto self-stretch text-center justify-center text-stone-500 text-xs"
     >
-      id: {{ props.session._id }}
+      <!-- placeholder for session id -->
+      id: sca-hd1
     </div>
   </div>
 </template>

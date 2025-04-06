@@ -1,15 +1,18 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useStudyBuilderStore } from "@/stores/studyBuilder";
 import Draggable from "vuedraggable";
 import SessionCard from "./SessionCard.vue";
 import AppButton from "@/components/ui/AppButton.vue";
-import { defineProps } from "vue";
+import { defineProps, reactive } from "vue";
 
-const studyBuilderStore = useStudyBuilderStore();
+// Define props for this component
 const props = defineProps<{ variantId: string; draggable: boolean }>();
 
-//get data for the current variant based on the variantId prop
+// Use the study builder store to get your data
+const studyBuilderStore = useStudyBuilderStore();
+
+// Get data for the current variant based on the variantId prop
 const variantData = computed({
   get: () => {
     return (
@@ -31,62 +34,149 @@ const variantData = computed({
   },
 });
 
-//todo: make this actually draggable
+// Todo: make this actually draggable
 const draggableProps = {
   ghostClass: "invisible",
   animation: 100,
 };
+
+//for variant name input resizing
+const state = reactive({
+  input: variantData.value.name,
+});
+
+// Component state: controls whether the container is expanded or collapsed
+const isOpen = ref(true);
+
+// Method to toggle the container's state
+function toggleContent() {
+  isOpen.value = !isOpen.value;
+}
 </script>
 
 <template>
   <div class="flex flex-col overflow-x-hidden px-5 py-2">
-    <div
-      v-loading="studyBuilderStore.isStudyLoading"
-      class="grow p-6 bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
-    >
-      <div class="flex items-start justify-between gap-4 pb-5">
-        <ElImage
-          v-if="draggable"
-          src="/icons/grip-vertical.svg"
-          class="handle cursor-pointer h-4 w-4"
-        />
-        <input
-          v-model="variantData.name"
-          class="text-left w-full bg-transparent font-medium text-xl"
-          type="text"
-          placeholder="Condition Title"
-        />
+    <Transition name="fade" mode="out-in">
+      <div
+        v-loading="studyBuilderStore.isStudyLoading"
+        class="grow p-6 bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
+        v-if="isOpen === true"
+        @click="toggleContent"
+      >
+        <div class="flex items-start justify-between gap-4 pb-5">
+          <div class="flex items-center gap-2.5">
+            <ElImage
+              v-if="props.draggable"
+              src="/icons/grip-vertical.svg"
+              class="handle cursor-pointer align-center"
+            />
+            <input
+              v-model="variantData.name"
+              class="text-left w-full bg-transparent font-bold text-lg"
+              type="text"
+              placeholder="Condition Title"
+            />
+          </div>
 
-        <div class="border rounded px-2 py-1 whitespace-nowrap">
-          {{ variantId }}
+          <div class="flex items-center gap-2.5">
+            <!-- placeholder for variant id -->
+            <div class="border rounded px-2 py-1 whitespace-nowrap">
+              sca-vi1
+            </div>
+            <div class="flex items-end justify-end flex-wrap">
+              <RouterLink :to="{ name: 'study', params: { id } }">
+                <AppButton>Edit</AppButton>
+              </RouterLink>
+            </div>
+          </div>
         </div>
-        <div class="flex items-end justify-end flex-wrap">
-          <RouterLink :to="{ name: 'study', params: { id } }">
-            <AppButton>Edit</AppButton>
-          </RouterLink>
+
+        <!-- placeholder for variant description -->
+        <div class="text-neutral-600 font-medium text-sm mb-4">
+          Participants are in control of the astronaut, Lerner, and are given a
+          sequence of flowers that appear one after another with a distraction
+          task in-between each presentation. When prompted, the participant must
+          recall the flowers in the order they were presented previously.
+        </div>
+
+        <div class="w-full h-5/6 flex gap-6 overflow-x-auto bg-white pr-5">
+          <TransitionGroup>
+            <Draggable
+              key="draggable"
+              v-model="variantData.sessions"
+              v-bind="draggableProps"
+              class="flex gap-6"
+              group="sessions"
+              item-key="_id"
+            >
+              <template #item="{ element: session }">
+                <SessionCard
+                  :key="session._id"
+                  :session="session"
+                  :draggable="true"
+                />
+              </template>
+            </Draggable>
+          </TransitionGroup>
         </div>
       </div>
+      <div
+        v-loading="studyBuilderStore.isStudyLoading"
+        class="grow p-6 bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
+        v-else
+        @click="toggleContent"
+      >
+        <div class="flex items-start justify-between gap-4 pb-5">
+          <div class="flex items-center gap-2.5">
+            <ElImage
+              v-if="props.draggable"
+              src="/icons/grip-vertical.svg"
+              class="handle cursor-pointer align-center"
+            />
+            <span
+              class="input text-left font-bold text-lg"
+              data-placeholder="Condition Title"
+              contenteditable
+              @input="(e) => (state.input = e.target.innerText)"
+              >{{ state.input }}</span
+            >
+            <!--placeholder for description-->
+            <div
+              class="items-start text-left text-sm overflow-hidden whitespace-nowrap text-ellipsis min-w-0"
+              style="max-width: 40vw"
+            >
+              Participants are in control of the astronaut, Lerner, and are
+              given a sequence of flowers that appear one after another with a
+              distraction task in-between each presentation. When prompted, the
+              participant must recall the flowers in the order they were
+              presented previously.
+            </div>
+          </div>
 
-      <div class="w-full h-5/6 flex gap-6 overflow-x-auto bg-white pr-5">
-        <TransitionGroup>
-          <Draggable
-            key="draggable"
-            v-model="variantData.sessions"
-            v-bind="draggableProps"
-            class="flex gap-6"
-            group="sessions"
-            item-key="_id"
-          >
-            <template #item="{ element: session }">
-              <SessionCard
-                :key="session._id"
-                :session="session"
-                :draggable="true"
-              />
-            </template>
-          </Draggable>
-        </TransitionGroup>
+          <div class="flex items-center gap-2.5">
+            <!-- placeholder for variant id -->
+            <div class="border rounded px-2 py-1 whitespace-nowrap">
+              sca-vi1
+            </div>
+            <div class="flex items-end justify-end flex-wrap">
+              <RouterLink :to="{ name: 'study', params: { id } }">
+                <AppButton>Edit</AppButton>
+              </RouterLink>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </Transition>
   </div>
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.1s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 60%;
+}
+</style>
