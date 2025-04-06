@@ -87,6 +87,7 @@ export const useTaskEditingStore = defineStore("taskEditing", () => {
           value: v[1],
         };
       }),
+      isVisibleToNonAdmins: battery.value.isVisibleToNonAdmins,
     });
   }
 
@@ -104,6 +105,7 @@ export const useTaskEditingStore = defineStore("taskEditing", () => {
           value: v[1],
         };
       }),
+      isVisibleToNonAdmins: battery.value.isVisibleToNonAdmins,
     });
   }
 

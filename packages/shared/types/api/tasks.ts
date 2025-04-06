@@ -4,7 +4,12 @@ type ListTask = Pick<IBattery, "_id" | "name" | "description" | "imageUrl">;
 
 export type GETTask = Pick<
   IBattery,
-  "_id" | "name" | "description" | "imageUrl" | "stages"
+  | "_id"
+  | "name"
+  | "description"
+  | "imageUrl"
+  | "stages"
+  | "isVisibleToNonAdmins"
 >;
 
 export type GETTasks = ListTask[];

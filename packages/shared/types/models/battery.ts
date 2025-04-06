@@ -66,11 +66,13 @@ export interface CreateBattery {
   description: string;
   imageUrl: string;
   stages: CreateBatteryStage[];
+  isVisibleToNonAdmins: boolean;
   deleted?: boolean;
 }
 
 export interface IBattery extends Required<CreateBattery> {
   stages: IBatteryStage[];
+  isVisibleToNonAdmins: boolean;
 }
 
 export interface CreateOptionValue {
