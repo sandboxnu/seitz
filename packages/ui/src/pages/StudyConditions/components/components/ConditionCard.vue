@@ -4,7 +4,7 @@ import { useStudyBuilderStore } from "@/stores/studyBuilder";
 import Draggable from "vuedraggable";
 import SessionCard from "./SessionCard.vue";
 import AppButton from "@/components/ui/AppButton.vue";
-import { defineProps, reactive } from "vue";
+import { defineProps } from "vue";
 
 // Define props for this component
 const props = defineProps<{ variantId: string; draggable: boolean }>();
@@ -40,11 +40,6 @@ const draggableProps = {
   animation: 100,
 };
 
-//for variant name input resizing
-const state = reactive({
-  input: variantData.value.name,
-});
-
 // Component state: controls whether the container is expanded or collapsed
 const isOpen = ref(true);
 
@@ -61,21 +56,21 @@ function toggleContent() {
         v-loading="studyBuilderStore.isStudyLoading"
         class="grow p-6 bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
         v-if="isOpen === true"
-        @click="toggleContent"
       >
         <div class="flex items-start justify-between gap-4 pb-5">
           <div class="flex items-center gap-2.5">
             <ElImage
               v-if="props.draggable"
-              src="/icons/grip-vertical.svg"
+              src="/icons/dropdown-arrow.svg"
               class="handle cursor-pointer align-center"
+              @click="toggleContent"
             />
-            <input
-              v-model="variantData.name"
-              class="text-left w-full bg-transparent font-bold text-lg"
-              type="text"
+            <header
+              class="text-left font-bold text-lg"
               placeholder="Condition Title"
-            />
+            >
+              {{ variantData.name }}
+            </header>
           </div>
 
           <div class="flex items-center gap-2.5">
@@ -122,28 +117,27 @@ function toggleContent() {
       </div>
       <div
         v-loading="studyBuilderStore.isStudyLoading"
-        class="grow p-6 bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
         v-else
-        @click="toggleContent"
+        class="grow p-6 bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
       >
         <div class="flex items-start justify-between gap-4 pb-5">
           <div class="flex items-center gap-2.5">
             <ElImage
               v-if="props.draggable"
-              src="/icons/grip-vertical.svg"
+              src="/icons/dropdown-arrow.svg"
               class="handle cursor-pointer align-center"
+              @click="toggleContent"
             />
-            <span
-              class="input text-left font-bold text-lg"
-              data-placeholder="Condition Title"
-              contenteditable
-              @input="(e) => (state.input = e.target.innerText)"
-              >{{ state.input }}</span
+            <header
+              class="text-left font-bold text-lg"
+              placeholder="Condition Title"
             >
+              {{ variantData.name }}
+            </header>
             <!--placeholder for description-->
             <div
               class="items-start text-left text-sm overflow-hidden whitespace-nowrap text-ellipsis min-w-0"
-              style="max-width: 40vw"
+              style="max-width: 30vw"
             >
               Participants are in control of the astronaut, Lerner, and are
               given a sequence of flowers that appear one after another with a
