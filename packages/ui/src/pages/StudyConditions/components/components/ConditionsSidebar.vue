@@ -13,9 +13,31 @@ const draggableProps = {
   animation: 100,
 };
 
-const sessionList = computed(() =>
-  Object.values(studyBuilderStore.sessionData)
-);
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const variantData = computed<Record<string, any>>({
+  get: () => {
+    return (
+      studyBuilderStore.variants.find(
+        (variant) => variant._id === studyBuilderStore.currentVariantId
+      ) || {}
+    );
+  },
+  set(newData) {
+    const index = studyBuilderStore.variants.findIndex(
+      (variant) => variant._id === studyBuilderStore.currentVariantId
+    );
+    if (index !== -1) {
+      studyBuilderStore.variants[index] = {
+        ...studyBuilderStore.variants[index],
+        ...newData,
+      };
+    }
+  },
+});
+
+function updateVariantName() {
+  // TODO: Make database update
+}
 </script>
 
 <template>
@@ -24,7 +46,14 @@ const sessionList = computed(() =>
   >
     <div class="flex flex-col w-full mb-5">
       <div class="flex items-center">
-        <h1 class="text-2xl font-bold">smth goes here</h1>
+        <ElImage src="/icons/pencil.svg" />
+        <input
+          v-model="variantData.name"
+          class="w-fit bg-transparent text-neutral-600 font-bold text-2xl"
+          type="text"
+          placeholder="Untitled variant"
+          @change="updateVariantName"
+        />
       </div>
     </div>
     <div class="flex flex-col w-full flex-1 overflow-hidden">
@@ -79,7 +108,7 @@ const sessionList = computed(() =>
           <TransitionGroup>
             <Draggable
               key="draggable"
-              v-model="sessionList"
+              v-model="variantData.sessions"
               v-bind="draggableProps"
               :group="{ name: 'taskbar', pull: 'clone', put: false }"
               item-key="_id"

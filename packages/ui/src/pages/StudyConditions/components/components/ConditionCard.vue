@@ -47,15 +47,20 @@ const isOpen = ref(true);
 function toggleContent() {
   isOpen.value = !isOpen.value;
 }
+
+function setVariantId() {
+  studyBuilderStore.currentVariantId = props.variantId;
+}
 </script>
 
 <template>
   <div class="flex flex-col overflow-x-hidden px-5 py-2">
     <Transition name="fade" mode="out-in">
       <div
+        v-if="isOpen === true"
         v-loading="studyBuilderStore.isStudyLoading"
         class="grow p-6 bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
-        v-if="isOpen === true"
+        @click="setVariantId"
       >
         <div class="flex items-start justify-between gap-4 pb-5">
           <div class="flex items-center gap-2.5">
@@ -116,9 +121,10 @@ function toggleContent() {
         </div>
       </div>
       <div
-        v-loading="studyBuilderStore.isStudyLoading"
         v-else
+        v-loading="studyBuilderStore.isStudyLoading"
         class="grow p-6 bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
+        @click="setVariantId"
       >
         <div class="flex items-start justify-between gap-4 pb-5">
           <div class="flex items-center gap-2.5">
