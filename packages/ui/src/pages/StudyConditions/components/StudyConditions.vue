@@ -16,29 +16,13 @@ onMounted(() => {
 });
 </script>
 <template>
-  <div class="study-conditions-container">
-    <div class="condition-panel">
+  <div class="flex flex-row">
+    <div class="w-3/4">
       <ConditionPanel />
     </div>
 
-    <div class="conditions-sidebar">
+    <div class="w-1/5">
       <ConditionsSidebar />
     </div>
   </div>
 </template>
-
-<style scoped>
-.study-conditions-container {
-  display: flex;
-  flex-direction: row;
-}
-
-.condition-panel {
-  flex: 3;
-}
-
-.conditions-sidebar {
-  flex: 1;
-  max-width: 300px;
-}
-</style>
