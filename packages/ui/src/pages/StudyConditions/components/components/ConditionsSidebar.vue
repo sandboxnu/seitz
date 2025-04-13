@@ -8,7 +8,7 @@ const selectedOption = ref("Details");
 const studyBuilderStore = useStudyBuilderStore();
 
 const draggableProps = {
-  chosenClass: "bg-gray-400",
+  chosenClass: "bg-gray-100",
   dragClass: "bg-gray-400",
   animation: 100,
 };
@@ -105,21 +105,18 @@ function updateVariantName() {
           v-else-if="selectedOption === 'Sessions'"
           class="flex-1 overflow-y-auto flex flex-col"
         >
-          <TransitionGroup>
-            <Draggable
-              key="draggable"
-              v-model="variantData.sessions"
-              v-bind="draggableProps"
-              :group="{ name: 'taskbar', pull: 'clone', put: false }"
-              item-key="_id"
-              class="flex flex-col gap-2"
-              :sort="false"
-            >
-              <template #item="{ element: session }">
-                <SessionCard :key="session._id" :session="session" draggable />
-              </template>
-            </Draggable>
-          </TransitionGroup>
+          <Draggable
+            v-model="variantData.sessions"
+            v-bind="draggableProps"
+            :group="{ name: 'sessions', pull: 'clone', put: true }"
+            item-key="_id"
+            class="flex flex-col gap-2"
+            @change="$emit('session-dragged', $event)"
+          >
+            <template #item="{ element: session }">
+              <SessionCard :key="session._id" :session="session" draggable />
+            </template>
+          </Draggable>
         </div>
       </div>
     </div>
