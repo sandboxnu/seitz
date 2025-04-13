@@ -34,8 +34,9 @@ export interface CreateOptionGroup {
   options: CreateOption[];
 }
 
-interface IOptionGroup extends Required<CreateOptionGroup> {
+export interface IOptionGroup extends Required<CreateOptionGroup> {
   options: IOption[];
+  isIncludedInJSON: boolean;
 }
 
 type CreateBasicOption =

@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useTaskEditingStore } from "@/stores/taskEditing";
-import type { DTO, GETCustomizedTask } from "@seitz/shared";
+import type { DTO, GETCustomizedTask, IOptionGroup } from "@seitz/shared";
 
 const props = defineProps<{
   group: DTO<GETCustomizedTask>["battery"]["stages"][0]["options"];
@@ -18,7 +18,12 @@ function toggleStageIncluded() {
   const status = isToggled.value ? "on" : "off";
   console.log(`Stage "${props.group.name}" toggled: ${status}`);
 
-  // call api here
+  if (props.depth < 2) {
+    store.updateStageIncluded(
+      props.group as unknown as IOptionGroup,
+      isToggled.value
+    );
+  }
 }
 </script>
 

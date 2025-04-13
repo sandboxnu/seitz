@@ -5,7 +5,12 @@ import { useStudyBuilderStore } from "./studyBuilder";
 import tasksAPI from "@/api/tasks";
 import mongoose from "mongoose";
 import { ElNotification } from "element-plus";
-import { CreateCustomizedBattery, DTO, GETCustomizedTask } from "@seitz/shared";
+import {
+  CreateCustomizedBattery,
+  DTO,
+  GETCustomizedTask,
+  IOptionGroup,
+} from "@seitz/shared";
 
 export const useTaskEditingStore = defineStore("taskEditing", () => {
   const queryClient = useQueryClient();
@@ -109,6 +114,10 @@ export const useTaskEditingStore = defineStore("taskEditing", () => {
     });
   }
 
+  function setStageIncluded(group: IOptionGroup, isIncluded: boolean) {
+    group.isIncludedInJSON = isIncluded;
+  }
+
   return {
     editingTaskId,
     battery,
@@ -119,5 +128,6 @@ export const useTaskEditingStore = defineStore("taskEditing", () => {
     select,
     save,
     saveAs,
+    setStageIncluded,
   };
 });
