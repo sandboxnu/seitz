@@ -108,6 +108,9 @@ function setVariantId() {
               class="flex gap-6"
               group="sessions"
               item-key="_id"
+              @change="
+                (event) => studyBuilderStore.changeVariant(variantId, event)
+              "
             >
               <template #item="{ element: session }">
                 <SessionCard

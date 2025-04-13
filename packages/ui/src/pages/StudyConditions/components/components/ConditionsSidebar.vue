@@ -111,7 +111,6 @@ function updateVariantName() {
             :group="{ name: 'sessions', pull: 'clone', put: true }"
             item-key="_id"
             class="flex flex-col gap-2"
-            @change="$emit('session-dragged', $event)"
           >
             <template #item="{ element: session }">
               <SessionCard :key="session._id" :session="session" draggable />
