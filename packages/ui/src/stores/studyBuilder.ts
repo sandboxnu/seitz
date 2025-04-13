@@ -289,7 +289,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     }
 
     // COMMENT THIS LINE BELOW TO DISABLE DATABASE UPDATE
-    studiesAPI.updateVariant(studyId.value, variantId, variant);
+    // studiesAPI.updateVariant(studyId.value, variantId, variant);
   }
 
   function handleChange(
