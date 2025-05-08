@@ -1,3 +1,5 @@
+// manages the state of a study builder including study conditions, tasks, sessions, and the related API calls.
+
 import { defineStore } from "pinia";
 import { ref, watch } from "vue";
 import mongoose from "mongoose";

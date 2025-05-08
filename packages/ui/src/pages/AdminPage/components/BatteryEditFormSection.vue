@@ -1,3 +1,5 @@
+<!-- This component represents a form section for editing a specific group of options in a battery template. -->
+
 <script setup lang="ts">
 import type { DTO, IBattery } from "@seitz/shared";
 

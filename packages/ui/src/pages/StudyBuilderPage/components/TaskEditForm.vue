@@ -1,3 +1,5 @@
+<!-- This component is used for editing tasks within the task editing interface. It allows the user to modify the name and options of a task's battery and its stages. -->
+
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
 import { useTaskEditingStore } from "@/stores/taskEditing";

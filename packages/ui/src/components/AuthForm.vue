@@ -1,3 +1,4 @@
+<!-- This component represents the login/sign-up card with a form. -->
 <script setup lang="ts">
 import { ref } from "vue";
 import { ElNotification } from "element-plus";

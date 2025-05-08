@@ -1,3 +1,5 @@
+// manages the drag-and-drop state for lists of items.
+
 import { defineStore } from "pinia";
 
 export const useDragStore = defineStore("drag", () => {

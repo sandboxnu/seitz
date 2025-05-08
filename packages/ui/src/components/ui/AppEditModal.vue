@@ -1,3 +1,4 @@
+<!-- This component represents a customizable modal with a header, optional subheader, and slot. */ -->
 <script setup lang="ts">
 import useImmutable from "@/util/useImmutable";
 import AppButton from "./AppButton.vue";

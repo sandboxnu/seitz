@@ -1,3 +1,5 @@
+<!-- This represents a draggable list component -->
+
 <script setup lang="ts">
 import { useDragStore } from "@/stores/drag";
 import { ref } from "vue";

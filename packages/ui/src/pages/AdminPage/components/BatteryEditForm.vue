@@ -1,3 +1,5 @@
+<!-- This component provides an interface for editing a battery template, allowing users to modify its name, description, stages, and image. Users can also delete the template, cancel editing, preview, or save changes. -->
+
 <script setup lang="ts">
 import { ref } from "vue";
 import { storeToRefs } from "pinia";

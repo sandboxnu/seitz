@@ -1,3 +1,5 @@
+<!-- This component handles the fetching and displaying of a list of cars. -->
+
 <script setup lang="ts">
 import { useQuery } from "@tanstack/vue-query";
 import carAPI from "@/api/example";

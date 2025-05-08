@@ -1,3 +1,5 @@
+<!-- This component represents the Task Template Library for managing task batteries. -->
+
 <script setup lang="ts">
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import taskAPI from "@/api/tasks";

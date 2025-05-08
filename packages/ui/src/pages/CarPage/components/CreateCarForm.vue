@@ -1,3 +1,5 @@
+<!-- This component allows users to create a new car entry by submitting details such as make, model, miles, and year. -->
+
 <script setup lang="ts">
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import carAPI from "@/api/example";

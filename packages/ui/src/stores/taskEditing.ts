@@ -1,3 +1,5 @@
+// manages editing tasks in a study builder app, enabling task selection, saving, and creating new tasks.
+
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { defineStore } from "pinia";
 import { ref } from "vue";

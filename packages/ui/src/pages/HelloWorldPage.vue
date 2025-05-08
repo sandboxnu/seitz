@@ -1,3 +1,4 @@
+<!-- simple button with count displayed -->
 <script setup lang="ts">
 import { ref } from "vue";
 
