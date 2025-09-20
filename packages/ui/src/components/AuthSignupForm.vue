@@ -42,6 +42,7 @@ const { mutate } = useMutation<void, AxiosError<Error>, SignupDTO>({
 
 <template>
   <AuthForm
+    has-name
     has-password-confirm
     header-text="Create your account"
     submit-text="Sign Up"

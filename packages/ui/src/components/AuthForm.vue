@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { ElNotification } from "element-plus";
 
 const props = defineProps({
+  hasName: Boolean,
   hasPasswordConfirm: Boolean,
   headerText: {
     type: String,
@@ -17,6 +18,7 @@ const props = defineProps({
 const emit = defineEmits(["submitted"]);
 
 const loginData = ref({
+  name: "",
   email: "",
   password: "",
   passwordConfirm: "",
@@ -47,6 +49,9 @@ function submit() {
     Welcome to the Brain Game Center
     <div class="p-2"></div>
     <ElForm label-position="top" @submit.prevent="submit">
+      <ElFormItem v-if="hasName" label="Name">
+        <ElInput v-model="loginData.name" />
+      </ElFormItem>
       <ElFormItem label="Email">
         <ElInput v-model="loginData.email" />
       </ElFormItem>
