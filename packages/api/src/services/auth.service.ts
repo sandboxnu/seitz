@@ -40,12 +40,16 @@ passport.deserializeUser((id, done) =>
 );
 
 export const signUp = async (req: any, res: any, next: any): Promise<void> => {
-  const { email, password } = req.body;
-  if (typeof email !== "string" || typeof password !== "string") {
-    next(new HttpError(400, "Must have fields email and password"));
+  const { name, email, password } = req.body;
+  if (
+    typeof email !== "string" ||
+    typeof password !== "string" ||
+    typeof name !== "string"
+  ) {
+    next(new HttpError(400, "Must have fields name, email, and password"));
   } else {
     const token = crypto.randomBytes(20).toString("hex");
-    User.create({ email, password, token })
+    User.create({ name, email, password, token })
       .then(async (user) => {
         sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
         const URL = `http://localhost:4000/auth/verify/${user.token}`;
