@@ -69,6 +69,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const studyName = ref<string>();
   const description = ref<string>();
   const variantName = ref<string>();
+  const isFavorite = ref<boolean>(false);
   const variants = ref<VariantFromQuery[]>([]);
   const taskData = ref<Record<string, DTO<GETCustomizedTask>>>({});
   const taskBank = ref<string[]>([]);
@@ -99,6 +100,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
       .then((studyData) => {
         studyName.value = studyData.name;
         description.value = studyData.description;
+        isFavorite.value = studyData.isFavorite;
         variants.value = studyData.variants;
 
         if (variants.value.length > 0) {
@@ -159,6 +161,14 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const deleteCustomTaskMutation = useMutation({
     mutationFn: (taskId: string) =>
       tasksAPI.deleteCustomTask(studyId.value, taskId),
+  });
+
+  const toggleFavoriteMutation = useMutation({
+    mutationFn: (newFavoriteStatus: boolean) =>
+      studiesAPI.toggleFavorite(studyId.value, newFavoriteStatus),
+    onSuccess: () => {
+      isFavorite.value = !isFavorite.value;
+    },
   });
 
   function removeCustomizedTaskOrInstance(
@@ -332,7 +342,13 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
       batteries: taskBank.value.map((id) => taskData.value[id]), // TODO: fix this
       variants: updatedVariants,
       owner: authStore.currentUser._id,
+      isFavorite: isFavorite.value,
+      prefixServerCode: "", // This will be handled by the backend
     });
+  }
+
+  function toggleFavorite() {
+    toggleFavoriteMutation.mutate(!isFavorite.value);
   }
 
   watch(() => route.params.id, initialize, { immediate: true });
@@ -346,6 +362,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     isStudySaving,
     name: studyName,
     description,
+    isFavorite,
     taskBank,
     taskData,
     sessions,
@@ -359,5 +376,6 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     removeCustomizedTaskOrInstance,
     addVariant,
     deleteVariant,
+    toggleFavorite,
   };
 });

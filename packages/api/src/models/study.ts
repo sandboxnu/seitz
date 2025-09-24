@@ -53,6 +53,7 @@ const studySchema = new Schema<IStudy, StudyModelType>({
     type: [variantSchema],
     default: [],
   },
+  isFavorite: { type: Boolean, default: false },
 });
 
 studySchema.pre("save", async function (next) {

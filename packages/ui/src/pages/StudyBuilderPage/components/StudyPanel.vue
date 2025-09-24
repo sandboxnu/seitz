@@ -63,12 +63,37 @@ const draggableProps = {
           </template>
           <template #default>
             <div class="flex gap-3 flex-col">
-              <input
-                v-model="studyBuilderStore.name"
-                class="w-full bg-transparent text-neutral-600 font-bold text-4xl"
-                type="text"
-                placeholder="Untitled Study"
-              />
+              <div class="flex items-center gap-3">
+                <input
+                  v-model="studyBuilderStore.name"
+                  class="flex-1 bg-transparent text-neutral-600 font-bold text-4xl"
+                  type="text"
+                  placeholder="Untitled Study"
+                />
+                <button
+                  class="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
+                  :class="
+                    studyBuilderStore.isFavorite
+                      ? 'bg-yellow-50 border-yellow-300'
+                      : 'bg-white'
+                  "
+                  @click="studyBuilderStore.toggleFavorite"
+                >
+                  <span
+                    class="text-lg"
+                    :class="
+                      studyBuilderStore.isFavorite
+                        ? 'text-yellow-500'
+                        : 'text-gray-400'
+                    "
+                  >
+                    ★
+                  </span>
+                  <span class="text-sm font-medium text-gray-700"
+                    >Favorite</span
+                  >
+                </button>
+              </div>
               <input
                 v-model="studyBuilderStore.description"
                 class="w-full bg-transparent text-neutral-600 font-medium text-lg"

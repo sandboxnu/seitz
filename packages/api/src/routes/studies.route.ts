@@ -89,4 +89,12 @@ router.post(
   )
 );
 
+router.patch(
+  "/:id/favorite",
+  isAuthenticated,
+  authRoute((req, user) =>
+    studyService.toggleFavorite(user, req.params.id, req.body.isFavorite)
+  )
+);
+
 export default router;

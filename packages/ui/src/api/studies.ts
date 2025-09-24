@@ -44,6 +44,10 @@ async function saveStudy(id: string, studyData: DTO<PUTStudy>) {
   await axiosInstance.put(`/studies/${id}`, studyData);
 }
 
+async function toggleFavorite(id: string, isFavorite: boolean) {
+  await axiosInstance.patch(`/studies/${id}/favorite`, { isFavorite });
+}
+
 export interface VariantFromQuery {
   _id: string;
   name: string;
@@ -69,4 +73,5 @@ export default {
   getStudy,
   saveStudy,
   createStudy,
+  toggleFavorite,
 };
