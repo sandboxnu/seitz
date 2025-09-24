@@ -3,15 +3,14 @@ import { createClient, RedisClientType } from "redis";
 // Creating a typed connection
 const redisClient: RedisClientType = createClient({
   url: "redis://localhost:6379",
-  password: process.env.REDIS_PASSWORD, // Good practice: use environment variables
+  // Not needed for local hosting => password: process.env.REDIS_PASSWORD
 });
 
-// Connecting to the Redis server
 async function connectRedis(): Promise<void> {
   await redisClient.connect();
   console.log("Successfully connected to Redis");
 }
-// Error handling
+
 redisClient.on("error", (err: Error) => {
   console.error("Redis connection error:", err);
 });
