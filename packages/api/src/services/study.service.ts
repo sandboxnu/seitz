@@ -25,6 +25,23 @@ export const getMyStudies = async (
   ];
 };
 
+//not complete
+export const getRecentlyEditedStudies = async (
+  user: HydratedDocument<IUser>
+): APIResponse<GETStudies> => {
+  const recentIds = (user.recentStudyIds ?? []) as string[];
+  if (!recentIds.length) return [200, []];
+
+  /*
+  const studies = await Study.find({
+    _id: { $in: recentIds },
+    owner: user._id,
+  }).select(["_id", "name", "description"]);
+  */
+
+  return [200];
+};
+
 export const deleteStudy = async (
   user: HydratedDocument<IUser>,
   studyId: string

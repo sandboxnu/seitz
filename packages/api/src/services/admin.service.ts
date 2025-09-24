@@ -153,8 +153,8 @@ function parseOptions(s: any): CreateOption[] {
           typeof optionValue === "number"
             ? "number"
             : typeof optionValue === "boolean"
-            ? "checkbox"
-            : "text",
+              ? "checkbox"
+              : "text",
       };
     }
 

@@ -5,6 +5,8 @@ import app from "./app";
 
 dotenv.config();
 
+import "./redis";
+
 const port = process.env.PORT || 4000;
 
 // Database connection

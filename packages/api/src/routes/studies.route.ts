@@ -12,6 +12,12 @@ router.get(
   authRoute((_, user) => studyService.getMyStudies(user))
 );
 
+router.get(
+  "/recent",
+  isAuthenticated,
+  authRoute((_, user) => studyService.getRecentlyEditedStudies(user))
+);
+
 router.delete(
   "/:id",
   isAuthenticated,
