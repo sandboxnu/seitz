@@ -26,16 +26,29 @@ export const getMyStudies = async (
   ];
 };
 
-//not complete
 export const getRecentlyEditedStudies = async (
   user: HydratedDocument<IUser>
 ): APIResponse<GETStudies> => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const recentStudyIds = await redisService.getRecentDocs(user._id.toString());
-  // fetch actual study detials here or don't that's an arhcitectural deicsion to make
-  // if not, can be done in the frontend
 
-  return [200];
+  if (recentStudyIds.length === 0) {
+    return [200, []];
+  }
+
+  const studies = await Study.find({
+    _id: { $in: recentStudyIds },
+    userId: user._id,
+  });
+
+  const sortedStudies: IStudy[] = [];
+  for (const id of recentStudyIds) {
+    const study = studies.find((study) => study._id.toString() === id);
+    if (study) {
+      sortedStudies.push(study);
+    }
+  }
+
+  return [200, sortedStudies];
 };
 
 export const deleteStudy = async (
@@ -51,6 +64,8 @@ export const deleteStudy = async (
   study.deleteOne();
   user.studies.splice(studyIndex, 1);
   user.save();
+
+  await redisService.removeRecentDocs(user._id.toString(), studyId);
   return [200];
 };
 
@@ -180,6 +195,10 @@ export const putTask = async (
     });
     await study.updateOne({ $push: { batteries: task._id } });
     const populated = await task.populate<{ battery: IBattery }>("battery");
+
+    // If we can guarantee that getStudy is always called before updateStudy, then this is not
+    // needed. Otherwise, this is necessary.
+    await redisService.addRecentDocument(user._id.toString(), studyId);
     return [200, populated];
   }
 };
