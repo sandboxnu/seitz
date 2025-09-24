@@ -158,6 +158,9 @@ export const updateStudy = async (
   if (!study) {
     throw new HttpError(404);
   }
+  // If we can guarantee that getStudy is always called before updateStudy, then this is not
+  // needed. Otherwise, this is necessary.
+  await redisService.addRecentDocument(user._id.toString(), studyId);
   return [200, study];
 };
 
@@ -195,10 +198,6 @@ export const putTask = async (
     });
     await study.updateOne({ $push: { batteries: task._id } });
     const populated = await task.populate<{ battery: IBattery }>("battery");
-
-    // If we can guarantee that getStudy is always called before updateStudy, then this is not
-    // needed. Otherwise, this is necessary.
-    await redisService.addRecentDocument(user._id.toString(), studyId);
     return [200, populated];
   }
 };

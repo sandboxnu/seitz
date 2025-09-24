@@ -34,7 +34,9 @@ export const loadFromDatabase = async (userId: string): Promise<void> => {
 };
 
 /**
- * Adds the given document to the Queue of recent documents specified for the given user. If the length of the specified user's cache goes over (HIGH - LOW + 1), then the item at the front of the queue is popped off and the specified documentId is added to the back of the queue.
+ * Adds the given document to the Queue of recent documents specified for the given user. If the
+ * length of the specified user's cache goes over (HIGH - LOW + 1), then the item at the front of
+ * the queue is popped off and the specified documentId is added to the back of the queue.
  * @param userId the user whose cache is to be updated with the new document.
  * @param documentId the id of the document to add to the specified user's cache.
  */
@@ -54,7 +56,9 @@ export const addRecentDocument = async (
 };
 
 /**
- * Fetches the recent documents associated with the given user. If less than (HIGH - LOW + 1) documents are returned, then it can be assumed the user has not accessed 3 or more documents before.
+ * Fetches the recent documents associated with the given user. If less than (HIGH - LOW + 1)
+ * documents are returned, then it can be assumed the user has not accessed 3 or more documents
+ * before.
  * @param userId the id of the user whose most recent documents are to be fetched.
  * @returns the list of the id's of the most recent documents associated with the given user.
  */
