@@ -1,5 +1,6 @@
 import HttpError from "../types/errors";
 import { CustomizedBattery, Study } from "../models";
+import * as redisService from "./redis.service";
 
 import type { HydratedDocument, Types } from "mongoose";
 import type {
@@ -29,15 +30,10 @@ export const getMyStudies = async (
 export const getRecentlyEditedStudies = async (
   user: HydratedDocument<IUser>
 ): APIResponse<GETStudies> => {
-  const recentIds = (user.recentStudyIds ?? []) as string[];
-  if (!recentIds.length) return [200, []];
-
-  /*
-  const studies = await Study.find({
-    _id: { $in: recentIds },
-    owner: user._id,
-  }).select(["_id", "name", "description"]);
-  */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const recentStudyIds = await redisService.getRecentDocs(user._id.toString());
+  // fetch actual study detials here or don't that's an arhcitectural deicsion to make
+  // if not, can be done in the frontend
 
   return [200];
 };
@@ -79,6 +75,7 @@ export const getStudy = async (
     throw new HttpError(404);
   }
 
+  await redisService.addRecentDocument(user._id.toString(), studyId);
   return [200, study];
 };
 

@@ -6,6 +6,7 @@ import { Strategy as LocalStrategy } from "passport-local";
 import sgMail from "@sendgrid/mail";
 import crypto from "crypto";
 import { IUser } from "@seitz/shared";
+import * as redisService from "./redis.service";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -78,11 +79,18 @@ export const signUp = async (req: any, res: any, next: any): Promise<void> => {
   }
 };
 
-export const login = async (): APIResponse<void> => {
+export const login = async (req: any): APIResponse<void> => {
+  const user = req.user;
+  await redisService.loadFromDatabase(user._id.toString());
   return [200];
 };
 
 export const logout = async (req: any): APIResponse<void> => {
+  const userId = req.user?._id;
+
+  if (userId) {
+    await redisService.saveToDatabase(userId.toString());
+  }
   req.logout((err: any) => {
     if (err) {
       throw new HttpError(500);
