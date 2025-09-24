@@ -1,9 +1,8 @@
 import { createClient, RedisClientType } from "redis";
 
-// Creating a typed connection
 const redisClient: RedisClientType = createClient({
-  url: "redis://localhost:6379",
-  // Not needed for local hosting => password: process.env.REDIS_PASSWORD
+  url: process.env.REDIS_URL || "redis://localhost:6379",
+  // password: process.env.REDIS_PASSWORD // uncomment if needed
 });
 
 async function connectRedis(): Promise<void> {
@@ -11,8 +10,16 @@ async function connectRedis(): Promise<void> {
   console.log("Successfully connected to Redis");
 }
 
+redisClient.on("ready", () => {
+  console.log("Redis client ready");
+});
+
 redisClient.on("error", (err: Error) => {
   console.error("Redis connection error:", err);
+});
+
+redisClient.on("end", () => {
+  console.log("Redis connection closed");
 });
 
 connectRedis().catch(console.error);
