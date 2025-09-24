@@ -26,12 +26,7 @@ connectRedis().catch(console.error);
 
 export default redisClient;
 
-// things we need
-
-// first startup, cache empty: redis talk to mongdb
-// & grabs data of last 3 edited for current user
-// returns frontend & stores in redis
-
-// when user logs out, update mongodb & clear redis cache
-
-// when user makes changes, update redis cache
+// Features Left:
+// Frontend integration
+// Fix overall logic of documents being replaced for studies (wording to keep things consistent)
+// Read over the studies and auth routes logic to check for any possible mistakes
