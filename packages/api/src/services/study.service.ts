@@ -301,3 +301,21 @@ export const validateAndUpdatePrefixServerCode = async (
     );
   }
 };
+
+export const toggleFavorite = async (
+  user: HydratedDocument<IUser>,
+  studyId: string,
+  isFavorite: boolean
+): APIResponse<IStudy> => {
+  const study = await Study.findOneAndUpdate(
+    { _id: studyId, owner: user._id },
+    { isFavorite },
+    { new: true }
+  );
+
+  if (!study) {
+    throw new HttpError(404, "Study not found");
+  }
+
+  return [200, study];
+};

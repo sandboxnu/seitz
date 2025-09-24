@@ -7,7 +7,13 @@ type ListStudy = Pick<IStudy, "_id" | "name" | "description">;
 
 export type GETStudy = Pick<
   IStudy,
-  "_id" | "name" | "description" | "owner" | "variants" | "prefixServerCode"
+  | "_id"
+  | "name"
+  | "description"
+  | "owner"
+  | "variants"
+  | "prefixServerCode"
+  | "isFavorite"
 > & {
   batteries: GETCustomizedTask[];
 };
@@ -18,7 +24,13 @@ export type GETStudies = ListStudy[];
 export type PUTStudy = DTO<
   Pick<
     IStudy,
-    "_id" | "name" | "description" | "owner" | "variants" | "prefixServerCode"
+    | "_id"
+    | "name"
+    | "description"
+    | "owner"
+    | "variants"
+    | "prefixServerCode"
+    | "isFavorite"
   > & {
     batteries: GETCustomizedTask[];
   }
