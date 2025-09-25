@@ -90,7 +90,6 @@ export const getStudy = async (
     throw new HttpError(404);
   }
 
-  await redisService.addRecentDocument(user._id.toString(), studyId);
   return [200, study];
 };
 
