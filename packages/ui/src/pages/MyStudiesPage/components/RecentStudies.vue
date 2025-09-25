@@ -47,7 +47,7 @@ const isoDate = computed(() =>
 <template>
   <!-- TODO: repeat and display 3 most recent studies -->
   <article
-    class="p-6 sm:p-8 my-6 sm:my-10 bg-white rounded-2xl ring-1 ring-stone-300/90 shadow-sm flex flex-col gap-3 max-w-xl"
+    class="p-6 sm:p-8 my-6 sm:my-10 bg-white rounded-xl ring-1 ring-stone-300/90 shadow-sm flex flex-col gap-3 max-w-lg"
     :aria-label="`${title} card`"
   >
     <header class="flex items-start justify-between gap-3">
@@ -63,8 +63,8 @@ const isoDate = computed(() =>
       <span class="text-stone-900">{{ variants }}</span>
     </div>
 
-    <div class="mt-4 flex items-center justify-between w-full">
-      <div class="flex items-center gap-1.5">
+    <div class="flex items-center justify-between w-full">
+      <div class="flex items-center gap-1.5 text-sm">
         <span>Last Modified</span>
         <time :datetime="isoDate">{{ formattedDate }}</time>
       </div>
