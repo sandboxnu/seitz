@@ -5,6 +5,7 @@ import Draggable from "vuedraggable";
 import useImmutable from "@/util/useImmutable";
 import { useStudyBuilderStore } from "@/stores/studyBuilder";
 import { computed } from "vue";
+import { ChangeEvent } from "@/types/ChangeEvent";
 
 const props = defineProps<{
   draggable: boolean;
@@ -49,6 +50,7 @@ const draggableProps = {
         placeholder="Untitled Session"
       />
     </div>
+    <!-- previous @change: @change="(event) => studyBuilderStore.handleChange(sessionId, event)"-->
     <TransitionGroup>
       <Draggable
         key="draggable"
@@ -57,7 +59,14 @@ const draggableProps = {
         class="flex-1 flex flex-col gap-2 overflow-y-auto"
         :group="{ name: 'session', put: ['taskbar', 'session'] }"
         item-key="_id"
-        @change="(event) => studyBuilderStore.handleChange(sessionId, event)"
+        @change="
+          (
+            event: ChangeEvent<
+              string | { _id: string; task: string; quantity: number },
+              { _id: string; task: string; quantity: number }
+            >
+          ) => studyBuilderStore.handleChange(sessionId, event)
+        "
       >
         <template #item="{ element }">
           <TaskCard

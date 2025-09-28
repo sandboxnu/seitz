@@ -151,7 +151,7 @@ export const updateStudy = async (
 
   const study = await Study.findOneAndUpdate(
     { _id: studyId, owner: user._id },
-    studyData,
+    { ...studyData, lastModified: new Date() },
     { new: true }
   );
   if (!study) {
