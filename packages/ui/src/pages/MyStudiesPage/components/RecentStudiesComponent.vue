@@ -37,9 +37,8 @@ const isoDate = computed(() =>
 </script>
 
 <template>
-  <!-- TODO: repeat and display 3 most recent studies -->
   <article
-    class="sm:p-7 sm:my-9 bg-white rounded-xl ring-1 ring-stone-300/90 shadow-sm flex flex-col gap-3 min-w-md max-w-md h-56"
+    class="sm:p-6 sm:my-8 bg-white rounded-xl ring-1 ring-stone-300/90 shadow-sm flex flex-col gap-3 w-full"
     :aria-label="`${title} card`"
   >
     <header class="flex items-start justify-between">
@@ -48,13 +47,11 @@ const isoDate = computed(() =>
       </h3>
     </header>
 
-    <div
-      class="text-stone-900 text-sm leading-snug flex-grow w-full overflow-hidden"
-    >
-      <p v-if="description" class="line-clamp-3">
-        {{ description }}
-      </p>
-      <p v-else class="opacity-0 select-none line-clamp-3">placeholder</p>
+    <div class="text-stone-900 text-sm w-full flex-grow">
+      <div class="line-clamp-2">
+        <p v-if="description">{{ description }}</p>
+        <p v-else class="opacity-0 select-none">placeholder</p>
+      </div>
     </div>
 
     <div class="flex items-center gap-2 text-sm">
@@ -62,16 +59,16 @@ const isoDate = computed(() =>
       <span class="text-stone-900">{{ variants }}</span>
     </div>
 
-    <div class="flex items-center justify-between mt-auto">
+    <div class="flex items-center justify-between gap-3">
       <div class="flex items-center gap-1.5 text-sm">
         <span>Last Modified</span>
         <time :datetime="isoDate">{{ formattedDate }}</time>
       </div>
       <span
-        v-if="status"
         class="px-3 py-1.5 rounded-lg ring-1 ring-red-400 bg-rose-100 text-stone-900 text-sm"
+        :class="{ 'opacity-0 select-none': !status }"
       >
-        {{ status }}
+        {{ status || "placeholder" }}
       </span>
     </div>
   </article>
