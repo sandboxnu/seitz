@@ -39,23 +39,30 @@ const isoDate = computed(() =>
 <template>
   <!-- TODO: repeat and display 3 most recent studies -->
   <article
-    class="sm:p-7 sm:my-9 bg-white rounded-xl ring-1 ring-stone-300/90 shadow-sm flex flex-col gap-3 max-w-md"
+    class="sm:p-7 sm:my-9 bg-white rounded-xl ring-1 ring-stone-300/90 shadow-sm flex flex-col gap-3 min-w-md max-w-md h-56"
     :aria-label="`${title} card`"
   >
     <header class="flex items-start justify-between">
-      <h3 class="text-stone-900 text-2xl font-bold leading-7">{{ title }}</h3>
+      <h3 class="text-stone-900 text-2xl font-bold leading-7 truncate w-full">
+        {{ title }}
+      </h3>
     </header>
 
-    <p v-if="description" class="text-stone-900 text-sm leading-snug">
-      {{ description }}
-    </p>
+    <div
+      class="text-stone-900 text-sm leading-snug flex-grow w-full overflow-hidden"
+    >
+      <p v-if="description" class="line-clamp-3">
+        {{ description }}
+      </p>
+      <p v-else class="opacity-0 select-none line-clamp-3">placeholder</p>
+    </div>
 
     <div class="flex items-center gap-2 text-sm">
       <span class="font-bold text-stone-900">Variants:</span>
       <span class="text-stone-900">{{ variants }}</span>
     </div>
 
-    <div class="flex items-center justify-between w-full">
+    <div class="flex items-center justify-between mt-auto">
       <div class="flex items-center gap-1.5 text-sm">
         <span>Last Modified</span>
         <time :datetime="isoDate">{{ formattedDate }}</time>
