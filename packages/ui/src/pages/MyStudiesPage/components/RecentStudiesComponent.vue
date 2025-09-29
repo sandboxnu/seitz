@@ -37,34 +37,38 @@ const isoDate = computed(() =>
 </script>
 
 <template>
-  <!-- TODO: repeat and display 3 most recent studies -->
   <article
-    class="sm:p-7 sm:my-9 bg-white rounded-xl ring-1 ring-stone-300/90 shadow-sm flex flex-col gap-3 max-w-md"
+    class="sm:p-6 sm:my-8 bg-white rounded-xl ring-1 ring-stone-300/90 shadow-sm flex flex-col gap-3 w-full"
     :aria-label="`${title} card`"
   >
     <header class="flex items-start justify-between">
-      <h3 class="text-stone-900 text-2xl font-bold leading-7">{{ title }}</h3>
+      <h3 class="text-stone-900 text-2xl font-bold leading-7 truncate w-full">
+        {{ title }}
+      </h3>
     </header>
 
-    <p v-if="description" class="text-stone-900 text-sm leading-snug">
-      {{ description }}
-    </p>
+    <div class="text-stone-900 text-sm w-full flex-grow">
+      <div class="line-clamp-2">
+        <p v-if="description">{{ description }}</p>
+        <p v-else class="opacity-0 select-none">placeholder</p>
+      </div>
+    </div>
 
     <div class="flex items-center gap-2 text-sm">
       <span class="font-bold text-stone-900">Variants:</span>
       <span class="text-stone-900">{{ variants }}</span>
     </div>
 
-    <div class="flex items-center justify-between w-full">
+    <div class="flex items-center justify-between gap-3">
       <div class="flex items-center gap-1.5 text-sm">
         <span>Last Modified</span>
         <time :datetime="isoDate">{{ formattedDate }}</time>
       </div>
       <span
-        v-if="status"
         class="px-3 py-1.5 rounded-lg ring-1 ring-red-400 bg-rose-100 text-stone-900 text-sm"
+        :class="{ 'opacity-0 select-none': !status }"
       >
-        {{ status }}
+        {{ status || "placeholder" }}
       </span>
     </div>
   </article>

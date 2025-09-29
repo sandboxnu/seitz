@@ -11,14 +11,16 @@ const { data: recentStudies } = useQuery({
 
 <template>
   <!-- calls 3 most recent, variants and status are currently placeholders -->
-  <div v-if="recentStudies?.length" class="flex flex-col gap-4">
+  <div v-if="recentStudies?.length" class="flex flex-row gap-4">
     <RecentStudiesComponent
       v-for="s in recentStudies"
       :key="s._id"
       :title="s.name || 'Untitled Study'"
       :description="s.description"
-      :variants="50"
-      :lastModified="new Date()"
+      :variants="(s as any).variants ? (s as any).variants.length : 0"
+      :last-modified="
+        (s as any).lastModified ? new Date((s as any).lastModified) : new Date()
+      "
       status="Editing"
     />
   </div>

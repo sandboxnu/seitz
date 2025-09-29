@@ -34,21 +34,39 @@ export const getRecentlyEditedStudies = async (
   if (recentStudyIds.length === 0) {
     return [200, []];
   }
-
-  const studies = await Study.find({
-    _id: { $in: recentStudyIds },
-    userId: user._id,
-  });
-
-  const sortedStudies: IStudy[] = [];
-  for (const id of recentStudyIds) {
-    const study = studies.find((study) => study._id.toString() === id);
-    if (study) {
-      sortedStudies.push(study);
-    }
+  // Fetch only studies owned by the user and present in the recent list
+  interface RecentStudyProjection {
+    _id: Types.ObjectId;
+    name: string;
+    description: string;
+    variants: IStudy["variants"];
+    lastModified: Date;
   }
 
-  return [200, sortedStudies];
+  const studies = (await Study.find(
+    {
+      _id: { $in: recentStudyIds },
+      owner: user._id,
+    },
+    // projection: only fields the UI currently needs
+    {
+      name: 1,
+      description: 1,
+      variants: 1,
+      lastModified: 1,
+    }
+  ).lean()) as unknown as RecentStudyProjection[];
+
+  // Preserve ordering based on recency list from Redis
+  const studiesById = new Map<string, RecentStudyProjection>(
+    studies.map((s) => [s._id.toString(), s])
+  );
+  const ordered: IStudy[] = recentStudyIds
+    .map((id) => studiesById.get(id))
+    .filter((s): s is RecentStudyProjection => Boolean(s))
+    .map((s) => s as unknown as IStudy); // cast back to shared type
+
+  return [200, ordered];
 };
 
 export const deleteStudy = async (
@@ -96,9 +114,16 @@ export const getStudy = async (
 export const createBlankStudy = async (
   user: HydratedDocument<IUser>
 ): APIResponse<Types.ObjectId> => {
-  const study = await Study.create({ owner: user._id });
-
+  const study = await Study.create({
+    owner: user._id,
+    lastModified: new Date(),
+  });
   await user.updateOne({ $push: { studies: study._id } });
+  // Immediately add to recent documents so it appears in UI after creation
+  await redisService.addRecentDocument(
+    user._id.toString(),
+    study._id.toString()
+  );
   return [201, study._id];
 };
 
