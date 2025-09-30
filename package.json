@@ -25,7 +25,8 @@
     "format": "pnpm prettier:fix && pnpm lint:fix",
     "prepare": "husky install",
     "dev": "pnpm --stream -r dev",
-    "dev:infra": "trap 'docker-compose stop redis' EXIT; docker-compose up -d redis"
+    "dev:infra": "docker-compose up -d redis",
+    "dev:infra:stop": "docker-compose down"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
