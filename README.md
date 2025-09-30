@@ -15,3 +15,9 @@ npm run dev:infra
 ```bash
 npm run dev
 ```
+
+### Cleanup Infrastructure
+
+```bash
+npm run dev:infra:stop
+```
