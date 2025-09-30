@@ -4,6 +4,7 @@ import { computed } from "vue";
 //take in title, description, # of variants, last modified date
 
 const props = defineProps<{
+  id: string;
   title: string;
   description: string;
   variants: number;
@@ -37,7 +38,8 @@ const isoDate = computed(() =>
 </script>
 
 <template>
-  <article
+  <RouterLink
+    :to="{ name: 'study', params: { id } }"
     class="sm:p-6 sm:my-8 bg-white rounded-xl ring-1 ring-stone-300/90 shadow-sm flex flex-col gap-3 w-full"
     :aria-label="`${title} card`"
   >
@@ -47,7 +49,7 @@ const isoDate = computed(() =>
       </h3>
     </header>
 
-    <div class="text-stone-900 text-sm w-full flex-grow">
+    <div class="text-stone-900 text-sm w-fll">
       <div class="line-clamp-2">
         <p v-if="description">{{ description }}</p>
         <p v-else class="opacity-0 select-none">placeholder</p>
@@ -71,5 +73,5 @@ const isoDate = computed(() =>
         {{ status || "placeholder" }}
       </span>
     </div>
-  </article>
+  </RouterLink>
 </template>

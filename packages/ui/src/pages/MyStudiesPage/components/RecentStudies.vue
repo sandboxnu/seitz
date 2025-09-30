@@ -22,6 +22,7 @@ const { data: recentStudies } = useQuery({
         (s as any).lastModified ? new Date((s as any).lastModified) : new Date()
       "
       status="Editing"
+      :id="s._id"
     />
   </div>
   <p v-else class="text-sm text-stone-500">No recent studies yet.</p>
