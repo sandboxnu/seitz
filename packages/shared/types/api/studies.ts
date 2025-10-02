@@ -7,7 +7,13 @@ type ListStudy = Pick<IStudy, "_id" | "name" | "description">;
 
 export type GETStudy = Pick<
   IStudy,
-  "_id" | "name" | "description" | "owner" | "variants" | "prefixServerCode"
+  | "_id"
+  | "name"
+  | "description"
+  | "owner"
+  | "variants"
+  | "prefixServerCode"
+  | "lastModified"
 > & {
   batteries: GETCustomizedTask[];
 };

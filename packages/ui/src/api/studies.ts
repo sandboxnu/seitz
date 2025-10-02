@@ -26,6 +26,11 @@ async function getStudies() {
   return response.data;
 }
 
+async function fetchRecentStudies() {
+  const studies = await axiosInstance.get<DTO<GETStudies>>("/studies/recent");
+  return studies.data;
+}
+
 async function getStudy(id: string) {
   const result = await axiosInstance.get<DTO<GETStudy>>(`studies/${id}`);
   return result.data;
@@ -69,4 +74,5 @@ export default {
   getStudy,
   saveStudy,
   createStudy,
+  fetchRecentStudies,
 };

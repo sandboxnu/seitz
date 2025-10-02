@@ -19,6 +19,11 @@ const userSchema = new Schema<IUser>({
     default: Role.BasicUser,
   },
   studies: [{ type: Schema.Types.ObjectId, ref: "Study" }],
+  // Ordering : [MostRecent, SecondMostRecent, ThirdMostRecent]
+  recentStudyIds: {
+    type: [String],
+    default: [],
+  },
   token: { type: String },
   verified: { type: Boolean, required: true, default: false },
 });
