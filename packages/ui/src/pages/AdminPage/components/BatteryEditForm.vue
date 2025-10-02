@@ -6,7 +6,7 @@ import AppButton from "../../../components/ui/AppButton.vue";
 import BatteryEditFormSection from "./BatteryEditFormSection.vue";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import taskAPI from "@/api/tasks";
-import { ElNotification } from "element-plus";
+import {ElNotification} from "element-plus";
 
 const store = useBatteryEditingStore();
 const { isLoading, isError, batteryData } = storeToRefs(store);
@@ -25,6 +25,12 @@ const deleteMutation = useMutation(taskAPI.deleteBattery, {
 });
 const nameInput = ref<HTMLInputElement>();
 const editingName = ref(false);
+
+const toggleFavorite = () => {
+  if (batteryData.value) {
+    batteryData.value.favorite = !batteryData.value.favorite;
+  }
+};
 </script>
 
 <template>
@@ -41,16 +47,16 @@ const editingName = ref(false);
           @blur="editingName = false"
         />
         <ElImage
-          v-if="!editingName"
-          src="/mdi_pencil.svg"
-          class="h-6 cursor-pointer"
-          @click="nameInput?.focus()"
+          :src="
+            batteryData.favorite
+              ? '/icons/favorite-star.svg'
+              : '/icons/star.svg'
+          "
+          class="h-5 w-5 cursor-pointer"
+          @click="toggleFavorite"
         />
       </div>
       <div class="grow"></div>
-      <AppButton @click="deleteMutation.mutate(batteryData._id)">
-        Delete Template
-      </AppButton>
     </div>
     <div class="flex-1 flex overflow-auto">
       <div class="xl:basis-72 basis-56 flex flex-col gap-9">
@@ -91,7 +97,10 @@ const editingName = ref(false);
       </div>
     </div>
     <div class="flex-none flex gap-5">
-      <AppButton @click="store.editingBatteryId = undefined">Cancel</AppButton>
+      <AppButton @click="deleteMutation.mutate(batteryData._id)">
+        Delete Template
+      </AppButton>
+      <!-- <AppButton @click="store.editingBatteryId = undefined">Cancel</AppButton> -->
       <div class="grow"></div>
       <AppButton> Preview Template </AppButton>
       <AppButton @click="store.save"> Save Template </AppButton>

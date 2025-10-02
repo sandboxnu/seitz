@@ -77,6 +77,7 @@ export const batterySchema = new Schema<IBattery>({
   imageUrl: { type: String, required: true },
   stages: [batteryStageSchema],
   deleted: { type: Boolean, default: false },
+  favorite: { type: Boolean, default: false },
 });
 
 export const Battery = model<IBattery>("Battery", batterySchema);

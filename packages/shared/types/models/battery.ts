@@ -67,6 +67,8 @@ export interface CreateBattery {
   imageUrl: string;
   stages: CreateBatteryStage[];
   deleted?: boolean;
+  updatedAt?: Date;
+  favorite?: boolean;
 }
 
 export interface IBattery extends Required<CreateBattery> {

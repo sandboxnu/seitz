@@ -37,6 +37,7 @@ export const useBatteryEditingStore = defineStore("batteryEditing", () => {
     saveMutation.mutate({
       batteryId: editingBatteryId.value,
       ...batteryData.value,
+      updatedAt: new Date().toISOString(),
     });
   }
 
