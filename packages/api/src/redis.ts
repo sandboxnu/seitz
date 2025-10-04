@@ -25,8 +25,3 @@ redisClient.on("end", () => {
 connectRedis().catch(console.error);
 
 export default redisClient;
-
-// Features Left:
-// Frontend integration
-// Fix overall logic of documents being replaced for studies (wording to keep things consistent)
-// Read over the studies and auth routes logic to check for any possible mistakes

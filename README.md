@@ -7,17 +7,17 @@
 ### Boot up Docker Infrastructure (Only if Redis is currently not running locally)
 
 ```bash
-npm run dev:infra
+pnpm run dev:infra
 ```
 
 ### Run the Program
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 ### Cleanup Infrastructure
 
 ```bash
-npm run dev:infra:stop
+pnpm run dev:infra:stop
 ```
