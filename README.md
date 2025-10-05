@@ -4,6 +4,12 @@
 
 ## To Run the Program
 
+### Install Node Modules
+
+```bash
+pnpm install
+```
+
 ### Boot up Docker Infrastructure (Only if Redis is currently not running locally)
 
 ```bash
