@@ -95,7 +95,7 @@ function setVariantId() {
 
         <!-- placeholder for variant description -->
         <div class="text-neutral-600 font-medium text-sm mb-4">
-          {{ variantData.description }}
+          {{ variantData.description || "No description" }}
         </div>
 
         <div class="w-full h-5/6 flex gap-6 overflow-x-auto bg-white pr-5">
@@ -147,7 +147,7 @@ function setVariantId() {
               class="items-start text-left text-sm overflow-hidden whitespace-nowrap text-ellipsis min-w-0"
               style="max-width: 30vw"
             >
-              {{ variantData.description }}
+              {{ variantData.description || "No description" }}
             </div>
           </div>
 

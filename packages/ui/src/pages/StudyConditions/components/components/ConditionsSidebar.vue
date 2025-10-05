@@ -85,7 +85,7 @@ function updateVariantName() {
         <div v-if="selectedOption === 'Details'" class="h-full flex flex-col">
           <div class="mb-2">
             <h2 class="font-bold mb-1">Description</h2>
-            <p>{{ studyBuilderStore.description }}</p>
+            <p>{{ variantData.description || "No description" }}</p>
           </div>
 
           <div class="mb-2">
