@@ -36,8 +36,8 @@ const variantData = computed({
 
 // Todo: make this actually draggable
 const draggableProps = {
-  chosenClass: "bg-gray-400",
-  dragClass: "bg-gray-400",
+  chosenClass: "bg-stone-200",
+  dragClass: "bg-stone-200",
   ghostClass: "invisible",
   animation: 100,
 };

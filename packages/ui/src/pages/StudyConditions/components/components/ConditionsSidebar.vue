@@ -8,8 +8,9 @@ const selectedOption = ref("Details");
 const studyBuilderStore = useStudyBuilderStore();
 
 const draggableProps = {
-  chosenClass: "bg-gray-100",
-  dragClass: "bg-gray-400",
+  chosenClass: "bg-stone-200",
+  dragClass: "bg-stone-200",
+  ghostClass: "invisible",
   animation: 100,
 };
 
