@@ -36,6 +36,8 @@ const variantData = computed({
 
 // Todo: make this actually draggable
 const draggableProps = {
+  chosenClass: "bg-gray-400",
+  dragClass: "bg-gray-400",
   ghostClass: "invisible",
   animation: 100,
 };
@@ -93,10 +95,7 @@ function setVariantId() {
 
         <!-- placeholder for variant description -->
         <div class="text-neutral-600 font-medium text-sm mb-4">
-          Participants are in control of the astronaut, Lerner, and are given a
-          sequence of flowers that appear one after another with a distraction
-          task in-between each presentation. When prompted, the participant must
-          recall the flowers in the order they were presented previously.
+          {{ variantData.description }}
         </div>
 
         <div class="w-full h-5/6 flex gap-6 overflow-x-auto bg-white pr-5">
@@ -148,11 +147,7 @@ function setVariantId() {
               class="items-start text-left text-sm overflow-hidden whitespace-nowrap text-ellipsis min-w-0"
               style="max-width: 30vw"
             >
-              Participants are in control of the astronaut, Lerner, and are
-              given a sequence of flowers that appear one after another with a
-              distraction task in-between each presentation. When prompted, the
-              participant must recall the flowers in the order they were
-              presented previously.
+              {{ variantData.description }}
             </div>
           </div>
 

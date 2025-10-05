@@ -22,6 +22,7 @@ export interface CreateStudyVariant {
   name: string;
   sessions: CreateSession[];
   serverCode: string;
+  description: string;
 }
 
 export interface IStudyVariant extends Required<CreateStudyVariant> {

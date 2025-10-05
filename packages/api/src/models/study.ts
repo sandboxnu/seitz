@@ -29,6 +29,7 @@ const variantSchema = new Schema<IStudyVariant>({
   name: { type: String, default: "" },
   sessions: [sessionSchema],
   serverCode: { type: String, default: "" },
+  description: { type: String, default: "" },
 });
 
 interface StudyDocumentProps {
@@ -54,6 +55,7 @@ studySchema.pre("save", async function (next) {
       name: "",
       sessions: [],
       serverCode: "",
+      description: "",
     });
   }
 
