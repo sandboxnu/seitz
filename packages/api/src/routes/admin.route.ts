@@ -67,4 +67,11 @@ router.put(
   )
 );
 
+router.post(
+  "/users/:id/favorite/:battery_id",
+  route((req) =>
+    adminService.toggleFavoriteBattery(req.params.id, req.params.battery_id)
+  )
+);
+
 export default router;

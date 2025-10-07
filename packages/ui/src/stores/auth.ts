@@ -2,12 +2,14 @@ import { defineStore } from "pinia";
 import { useStorage, StorageSerializers } from "@vueuse/core";
 import authAPI from "@/api/auth";
 import { Role } from "@seitz/shared";
+import { IBattery } from "@seitz/shared/types/models/battery";
 
 export interface IUser {
   _id: string;
   email: string;
   role: Role;
   studies: string[];
+  favorite_batteries: IBattery[];
 }
 
 export const useAuthStore = defineStore("auth", () => {

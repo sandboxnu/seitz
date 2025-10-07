@@ -4,9 +4,19 @@ import taskAPI from "@/api/tasks";
 import { ElNotification } from "element-plus";
 import { useBatteryEditingStore } from "../../../stores/admin.ts";
 import { computed, ref } from "vue";
+import adminAPI from "@/api/admin";
+import authAPI from "@/api/auth";
 
 const queryClient = useQueryClient();
 const batteryEditingStore = useBatteryEditingStore();
+
+const favoriteMutation = useMutation({
+  mutationFn: ({ userId, batteryId }: { userId: string; batteryId: string }) =>
+    adminAPI.toggleFavoriteBattery(userId, batteryId),
+  onSuccess: () => {
+    queryClient.invalidateQueries(["user"]);
+  },
+});
 
 const uploadMutation = useMutation(taskAPI.uploadBattery, {
   onSuccess: () => {
@@ -31,6 +41,11 @@ const { data } = useQuery({
   queryFn: taskAPI.getAllTasks,
 });
 
+const { data: currentUser } = useQuery({
+  queryKey: ["user"],
+  queryFn: authAPI.getCurrentUser,
+});
+
 function handleFileUpload(event: Event) {
   const target = event.target as HTMLInputElement;
   const file: File = (target.files as FileList)[0];
@@ -51,19 +66,15 @@ const filteredTasks = computed(() => {
 
   switch (activeTab.value) {
     case "favorites":
-      return data.value.filter(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (data: any) => data.favorite === true
+      return data.value?.filter(
+        (battery) =>
+          currentUser.value?.favorite_batteries?.some(
+            (favId) => favId.toString() === battery._id?.toString()
+          )
       );
+
     case "recents":
-      return data.value
-        .slice()
-        .sort(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (a: any, b: any) =>
-            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-        )
-        .slice(0, 0);
+      return data.value;
     case "all":
     default:
       return data.value;
@@ -74,13 +85,6 @@ const filteredTasks = computed(() => {
 const switchTab = (tab: string) => {
   activeTab.value = tab;
 };
-
-// // toggles favorite status of battery
-// const toggleFavorite = () => {
-//   if (batteryData.value) {
-//     batteryData.value.favorite = !batteryData.value.favorite;
-//   }
-// };
 </script>
 <template>
   <div class="w-[380px] px-8 py-9 rounded-r-2xl h-full bg-white shadow-2xl">
@@ -137,15 +141,15 @@ const switchTab = (tab: string) => {
       </thead>
       <ElScrollbar>
         <div class="flex-1 flex flex-col gap-4">
-          <div v-for="task in filteredTasks" :key="task._id">
+          <div v-for="task in filteredTasks" :key="task._id.toString()">
             <div
               :class="[
                 'flex gap-5 p-4 border rounded-2xl cursor-pointer',
-                batteryEditingStore.editingBatteryId === task._id
+                batteryEditingStore.editingBatteryId === task._id.toString()
                   ? 'bg-neutral-100 border-neutral-400'
                   : 'bg-neutral-10 border-neutral-300',
               ]"
-              @click="batteryEditingStore.select(task._id)"
+              @click="batteryEditingStore.select(task._id.toString())"
             >
               <ElImage
                 :src="task.imageUrl"
@@ -158,15 +162,24 @@ const switchTab = (tab: string) => {
                     {{ task.name }}
                   </div>
                   <div class="grow"></div>
-                  <!-- <ElImage
+                  <ElImage
                     :src="
-                      batteryData.favorite
+                      currentUser?.favorite_batteries?.some(
+                        (t) => t.toString() === task._id.toString()
+                      )
                         ? '/icons/favorite-star.svg'
                         : '/icons/star.svg'
                     "
                     class="h-5 w-5 cursor-pointer"
-                    @click="toggleFavorite"
-                  /> -->
+                    @click="
+                      currentUser?._id &&
+                        task._id &&
+                        favoriteMutation.mutate({
+                          userId: currentUser._id,
+                          batteryId: task._id.toString(),
+                        })
+                    "
+                  />
                 </div>
                 <div class="text-xs text-neutral-600 font-medium line-clamp-4">
                   {{ task.description }}

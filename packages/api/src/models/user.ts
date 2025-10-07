@@ -21,6 +21,7 @@ const userSchema = new Schema<IUser>({
   studies: [{ type: Schema.Types.ObjectId, ref: "Study" }],
   token: { type: String },
   verified: { type: Boolean, required: true, default: false },
+  favorite_batteries: [{ type: Schema.Types.ObjectId, ref: "Battery" }],
 });
 
 userSchema.methods.verifyPassword = function (password: string) {

@@ -4,13 +4,28 @@ import { storeToRefs } from "pinia";
 import { useBatteryEditingStore } from "../../../stores/admin";
 import AppButton from "../../../components/ui/AppButton.vue";
 import BatteryEditFormSection from "./BatteryEditFormSection.vue";
-import { useMutation, useQueryClient } from "@tanstack/vue-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import taskAPI from "@/api/tasks";
-import {ElNotification} from "element-plus";
+import { ElNotification } from "element-plus";
+import adminAPI from "@/api/admin";
+import authAPI from "@/api/auth";
 
 const store = useBatteryEditingStore();
 const { isLoading, isError, batteryData } = storeToRefs(store);
 const queryClient = useQueryClient();
+
+const favoriteMutation = useMutation({
+  mutationFn: ({ userId, batteryId }: { userId: string; batteryId: string }) =>
+    adminAPI.toggleFavoriteBattery(userId, batteryId),
+  onSuccess: () => {
+    queryClient.invalidateQueries(["user"]);
+  },
+});
+
+const { data: currentUser } = useQuery({
+  queryKey: ["user"],
+  queryFn: authAPI.getCurrentUser,
+});
 
 const deleteMutation = useMutation(taskAPI.deleteBattery, {
   onSuccess: () => {
@@ -25,12 +40,6 @@ const deleteMutation = useMutation(taskAPI.deleteBattery, {
 });
 const nameInput = ref<HTMLInputElement>();
 const editingName = ref(false);
-
-const toggleFavorite = () => {
-  if (batteryData.value) {
-    batteryData.value.favorite = !batteryData.value.favorite;
-  }
-};
 </script>
 
 <template>
@@ -48,12 +57,21 @@ const toggleFavorite = () => {
         />
         <ElImage
           :src="
-            batteryData.favorite
+            currentUser?.favorite_batteries?.some(
+              (t) => t.toString() === batteryData?._id?.toString()
+            )
               ? '/icons/favorite-star.svg'
               : '/icons/star.svg'
           "
           class="h-5 w-5 cursor-pointer"
-          @click="toggleFavorite"
+          @click="
+            currentUser?._id &&
+              batteryData._id &&
+              favoriteMutation.mutate({
+                userId: currentUser._id,
+                batteryId: batteryData._id.toString(),
+              })
+          "
         />
       </div>
       <div class="grow"></div>
