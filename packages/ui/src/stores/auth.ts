@@ -9,7 +9,7 @@ export interface IUser {
   email: string;
   role: Role;
   studies: string[];
-  favorite_batteries: IBattery[];
+  favoriteBatteries: IBattery[];
 }
 
 export const useAuthStore = defineStore("auth", () => {

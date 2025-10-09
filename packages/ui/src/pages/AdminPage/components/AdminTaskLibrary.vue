@@ -68,7 +68,7 @@ const filteredTasks = computed(() => {
     case "favorites":
       return data.value?.filter(
         (battery) =>
-          currentUser.value?.favorite_batteries?.some(
+          currentUser.value?.favoriteBatteries?.some(
             (favId) => favId.toString() === battery._id?.toString()
           )
       );
@@ -164,7 +164,7 @@ const switchTab = (tab: string) => {
                   <div class="grow"></div>
                   <ElImage
                     :src="
-                      currentUser?.favorite_batteries?.some(
+                      currentUser?.favoriteBatteries?.some(
                         (t) => t.toString() === task._id.toString()
                       )
                         ? '/icons/favorite-star.svg'

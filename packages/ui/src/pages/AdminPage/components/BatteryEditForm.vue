@@ -57,7 +57,7 @@ const editingName = ref(false);
         />
         <ElImage
           :src="
-            currentUser?.favorite_batteries?.some(
+            currentUser?.favoriteBatteries?.some(
               (t) => t.toString() === batteryData?._id?.toString()
             )
               ? '/icons/favorite-star.svg'

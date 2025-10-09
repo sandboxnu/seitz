@@ -175,14 +175,14 @@ export const toggleFavoriteBattery = async (
   if (!user) throw new HttpError(404, "User not found");
   if (!battery) throw new HttpError(404, "Battery not found");
 
-  const favIndex = user.favorite_batteries.findIndex(
+  const favIndex = user.favoriteBatteries.findIndex(
     (id) => id.toString() === batteryId
   );
 
   if (favIndex > -1) {
-    user.favorite_batteries.splice(favIndex, 1);
+    user.favoriteBatteries.splice(favIndex, 1);
   } else {
-    user.favorite_batteries.push(battery._id);
+    user.favoriteBatteries.push(battery._id);
   }
 
   await user.save();
