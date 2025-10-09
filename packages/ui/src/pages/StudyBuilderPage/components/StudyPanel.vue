@@ -4,7 +4,8 @@ import AppButton from "@/components/ui/AppButton.vue";
 import SessionCard from "./SessionCard.vue";
 import Draggable from "vuedraggable";
 import StudyServerCode from "./StudyServerCode.vue";
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import type { VariantFromQuery } from "@/api/studies";
 import { ArrowRight, ArrowLeft, Plus, Delete } from "@element-plus/icons-vue";
 
 const studyBuilderStore = useStudyBuilderStore();
@@ -50,6 +51,32 @@ const draggableProps = {
   handle: ".handle",
   animation: 200,
 };
+
+// current variant description
+type VariantWithDesc = VariantFromQuery & { description?: string };
+const currentVariantDescription = computed<string>({
+  get: () => {
+    const id = studyBuilderStore.currentVariantId || undefined;
+    const variant: VariantWithDesc | undefined = id
+      ? (studyBuilderStore.variants.find((v) => v._id === id) as
+          | VariantWithDesc
+          | undefined)
+      : (studyBuilderStore.variants[currentVariantIndex.value] as
+          | VariantWithDesc
+          | undefined);
+    return variant?.description ?? "Untitled Variant Description";
+  },
+  set: (val: string) => {
+    const id = studyBuilderStore.currentVariantId || undefined;
+    const idx = id
+      ? studyBuilderStore.variants.findIndex((v) => v._id === id)
+      : currentVariantIndex.value;
+    if (idx >= 0 && idx < studyBuilderStore.variants.length) {
+      const v = studyBuilderStore.variants[idx] as unknown as VariantWithDesc;
+      v.description = val;
+    }
+  },
+});
 </script>
 
 <template>
@@ -106,7 +133,13 @@ const draggableProps = {
       v-loading="studyBuilderStore.isStudyLoading"
       class="grow p-6 bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
     >
-      <div class="flex items-start items-center justify-between gap-4 pb-5">
+      <div class="flex items-center justify-between gap-4 pb-5">
+        <input
+          v-model="currentVariantDescription"
+          class="text-center w-full bg-transparent text-neutral-600 font-medium text-lg mx-5"
+          type="text"
+          placeholder="Untitled Variant Description"
+        />
         <div></div>
         <div class="flex gap-2 items-end justify-end min-w-[200px] flex-wrap">
           <StudyServerCode class="shrink grow-0 min-w-0" />
