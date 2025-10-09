@@ -16,6 +16,35 @@ import type {
 } from "@seitz/shared";
 import type { APIResponse } from "../util/handlers";
 
+export const getStudyPreview = async (
+  user: HydratedDocument<IUser>,
+  studyId: string
+): APIResponse<GETStudy> => {
+  const study = await Study.findOne({
+    _id: studyId,
+    owner: user._id,
+  })
+    .populate<{
+      batteries: GETCustomizedTask[];
+    }>({
+      path: "batteries",
+      populate: {
+        path: "battery",
+        model: "Battery",
+      },
+    })
+    .populate({
+      path: "variants.sessions.tasks.task",
+      populate: { path: "battery" },
+    });
+
+  if (!study) {
+    throw new HttpError(404);
+  }
+
+  return [200, study];
+};
+
 export const getMyStudies = async (
   user: HydratedDocument<IUser>
 ): APIResponse<GETStudies> => {

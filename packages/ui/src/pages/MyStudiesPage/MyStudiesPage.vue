@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import { useAuthStore } from "../../stores/auth";
 import { useRouter } from "vue-router";
 import MyStudiesItem from "./components/MyStudiesItem.vue";
-import { useQuery } from "@tanstack/vue-query";
+import { useQuery, useMutation } from "@tanstack/vue-query";
 import studiesAPI from "@/api/studies";
-import { useMutation } from "@tanstack/vue-query";
 import AppButton from "@/components/ui/AppButton.vue";
 import RecentStudies from "./components/RecentStudies.vue";
 
@@ -15,7 +15,7 @@ if (!authStore.currentUser) {
   router.push("/login");
 }
 
-const { data, refetch } = useQuery({
+const { data: studies, refetch } = useQuery({
   queryKey: ["studies"],
   queryFn: studiesAPI.getStudies,
 });
@@ -27,8 +27,15 @@ const { mutate, isLoading } = useMutation({
   },
 });
 
-const studies = data;
+const selectedStudyId = ref<string | null>(null);
+const showSidebar = ref<boolean>(false);
+
+const openSidebar = (study: string) => {
+  selectedStudyId.value = study;
+  showSidebar.value = true;
+};
 </script>
+
 <template>
   <div
     v-loading="isLoading"
@@ -44,12 +51,19 @@ const studies = data;
     <div class="flex flex-col">
       <MyStudiesItem
         v-for="study in studies"
-        :id="study._id"
-        :key="study._id"
+        :id="study._id.toString()"
+        :key="study._id.toString()"
         :name="study.name"
         :description="study.description"
         @deleted="refetch"
+        @dblclick="openSidebar(study._id.toString())"
       />
     </div>
   </div>
+
+  <StudyDetailsSidebar
+    :study-id="selectedStudyId"
+    :show="showSidebar"
+    @close="showSidebar = false"
+  />
 </template>
