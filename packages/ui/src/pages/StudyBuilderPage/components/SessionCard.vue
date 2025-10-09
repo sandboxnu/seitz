@@ -50,7 +50,6 @@ const draggableProps = {
         placeholder="Untitled Session"
       />
     </div>
-    <!-- previous @change: @change="(event) => studyBuilderStore.handleChange(sessionId, event)"-->
     <TransitionGroup>
       <Draggable
         key="draggable"

@@ -14,6 +14,7 @@ const { data: recentStudies } = useQuery({
   <div v-if="recentStudies?.length" class="flex flex-row gap-4">
     <RecentStudiesComponent
       v-for="s in recentStudies"
+      :id="s._id"
       :key="s._id"
       :title="s.name || 'Untitled Study'"
       :description="s.description"
@@ -21,7 +22,6 @@ const { data: recentStudies } = useQuery({
       :last-modified="
         (s as any).lastModified ? new Date((s as any).lastModified) : new Date()
       "
-      :id="s._id"
       status="Editing"
     />
   </div>
