@@ -140,16 +140,13 @@ const filteredUsers = computed(() => {
   );
 });
 
-// gets basic users
 const filteredBasicUsers = computed(() => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return allUsers.value?.filter((user: any) => user.role === Role.BasicUser);
 });
 
-// default active tab
 const activeTab = ref("superAdmin");
 
-// gets filtered admin and basic users
 const filteredAdminUsers = computed(() => {
   if (!adminUsers.value) return [];
 
@@ -172,7 +169,6 @@ const filteredAdminUsers = computed(() => {
   }
 });
 
-// handles tab switching
 const switchTab = (tab: string) => {
   activeTab.value = tab;
 };
@@ -371,10 +367,10 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
           <thead>
             <tr>
               <td colspan="4" class="p-0 border-b-2">
-                <div class="flex border-b">
+                <div class="flex border-b gap-x-4">
                   <button
                     :class="[
-                      'px-6 py-3 text-sm font-medium border-b-2 transition-colors',
+                      'px-2 py-2 text-sm font-medium border-b-2 transition-colors',
                       activeTab === 'superAdmin'
                         ? 'text-black'
                         : 'border-transparent',
@@ -390,7 +386,7 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
                   </button>
                   <button
                     :class="[
-                      'px-6 py-3 text-sm font-medium border-b-2 transition-colors',
+                      'px-2 py-2 text-sm font-medium border-b-2 transition-colors',
                       activeTab === 'basicAdmin'
                         ? 'text-black'
                         : 'border-transparent',
@@ -406,7 +402,7 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
                   </button>
                   <button
                     :class="[
-                      'px-6 py-3 text-sm font-medium border-b-2 transition-colors',
+                      'px-2 py-2 text-sm font-medium border-b-2 transition-colors',
                       activeTab === 'basicUser'
                         ? 'text-black'
                         : 'border-transparent',
