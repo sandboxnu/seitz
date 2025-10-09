@@ -95,7 +95,7 @@ function updateVariantName() {
           </div>
           <div class="mb-2">
             <h2 class="font-bold mt-2 mb-1">Condition Server Code</h2>
-            <p>and this lol</p>
+            <p>{{ variantData.serverCode || "No server code" }}</p>
           </div>
           <div class="mb-2">
             <h2 class="font-bold mt-2 mb-1">Tags</h2>
