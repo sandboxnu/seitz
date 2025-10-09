@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/vue-query";
 import studiesAPI from "@/api/studies";
 import { useMutation } from "@tanstack/vue-query";
 import AppButton from "@/components/ui/AppButton.vue";
+import RecentStudies from "./components/RecentStudies.vue";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -29,7 +30,11 @@ const { mutate, isLoading } = useMutation({
 const studies = data;
 </script>
 <template>
-  <div v-loading="isLoading" class="mt-14 mx-auto w-3/4 min-w-[600px]">
+  <div
+    v-loading="isLoading"
+    class="mt-14 mx-auto w-full min-w-[600px] px-4 sm:px-6 lg:px-10"
+  >
+    <RecentStudies />
     <div class="flex items-center">
       <h1 class="text-3xl font-bold">My Studies</h1>
       <div class="flex-1"></div>

@@ -12,7 +12,7 @@ router.post("/signup", (req, res, next) => authService.signUp(req, res, next));
 router.post(
   "/login",
   passport.authenticate("local", { failWithError: true }),
-  authRoute(() => authService.login())
+  authRoute((req) => authService.login(req))
 );
 
 router.post(

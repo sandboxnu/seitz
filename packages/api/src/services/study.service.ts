@@ -1,5 +1,6 @@
 import HttpError from "../types/errors";
 import { CustomizedBattery, Study } from "../models";
+import * as redisService from "./redis.service";
 
 import type { HydratedDocument, Types } from "mongoose";
 import type {
@@ -25,6 +26,49 @@ export const getMyStudies = async (
   ];
 };
 
+export const getRecentlyEditedStudies = async (
+  user: HydratedDocument<IUser>
+): APIResponse<GETStudies> => {
+  const recentStudyIds = await redisService.getRecentDocs(user._id.toString());
+
+  if (recentStudyIds.length === 0) {
+    return [200, []];
+  }
+  // Fetch only studies owned by the user and present in the recent list
+  interface RecentStudyProjection {
+    _id: Types.ObjectId;
+    name: string;
+    description: string;
+    variants: IStudy["variants"];
+    lastModified: Date;
+  }
+
+  const studies = (await Study.find(
+    {
+      _id: { $in: recentStudyIds },
+      owner: user._id,
+    },
+    // projection: only fields the UI currently needs
+    {
+      name: 1,
+      description: 1,
+      variants: 1,
+      lastModified: 1,
+    }
+  ).lean()) as unknown as RecentStudyProjection[];
+
+  // Preserve ordering based on recency list from Redis
+  const studiesById = new Map<string, RecentStudyProjection>(
+    studies.map((s) => [s._id.toString(), s])
+  );
+  const ordered: IStudy[] = recentStudyIds
+    .map((id) => studiesById.get(id))
+    .filter((s): s is RecentStudyProjection => Boolean(s))
+    .map((s) => s as unknown as IStudy); // cast back to shared type
+
+  return [200, ordered];
+};
+
 export const deleteStudy = async (
   user: HydratedDocument<IUser>,
   studyId: string
@@ -38,6 +82,8 @@ export const deleteStudy = async (
   study.deleteOne();
   user.studies.splice(studyIndex, 1);
   user.save();
+
+  await redisService.removeRecentDocs(user._id.toString(), studyId);
   return [200];
 };
 
@@ -68,9 +114,16 @@ export const getStudy = async (
 export const createBlankStudy = async (
   user: HydratedDocument<IUser>
 ): APIResponse<Types.ObjectId> => {
-  const study = await Study.create({ owner: user._id });
-
+  const study = await Study.create({
+    owner: user._id,
+    lastModified: new Date(),
+  });
   await user.updateOne({ $push: { studies: study._id } });
+  // Immediately add to recent documents so it appears in UI after creation
+  await redisService.addRecentDocument(
+    user._id.toString(),
+    study._id.toString()
+  );
   return [201, study._id];
 };
 
@@ -123,12 +176,13 @@ export const updateStudy = async (
 
   const study = await Study.findOneAndUpdate(
     { _id: studyId, owner: user._id },
-    studyData,
+    { ...studyData, lastModified: new Date() },
     { new: true }
   );
   if (!study) {
     throw new HttpError(404);
   }
+  await redisService.addRecentDocument(user._id.toString(), studyId);
   return [200, study];
 };
 

@@ -36,6 +36,7 @@ export interface CreateStudy {
   owner: Types.ObjectId;
   prefixServerCode: string;
   variants: CreateStudyVariant[];
+  lastModified?: Date;
 }
 
 export interface IStudy extends Required<CreateStudy> {
