@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import taskAPI from "@/api/tasks";
-import { ElNotification } from "element-plus";
+import { ElImage, ElNotification } from "element-plus";
 import { useBatteryEditingStore } from "../../../stores/admin.ts";
+import { ref } from "vue";
 
 const queryClient = useQueryClient();
 const batteryEditingStore = useBatteryEditingStore();
+
+const filterMenu = ref(false);
+
+function toggleMenu() {
+  filterMenu.value = !filterMenu.value;
+}
 
 const uploadMutation = useMutation(taskAPI.uploadBattery, {
   onSuccess: () => {
@@ -62,6 +69,17 @@ function handleFileUpload(event: Event) {
           Upload File</label
         >
       </div>
+      <div>
+        <ElImage
+          src="/icons/filter.svg"
+          class="self-center"
+          @click="toggleMenu"
+        />
+      </div>
+      <!-- <div v-if="filterMenu" class="flex gap-2">
+        <ElImage src="/icons/unchecked-box.svg" class="self-center" @click="" />
+        <ElImage src="/icons/checked-box.svg" class="self-center" @click="" />
+      </div> -->
       <ElScrollbar>
         <div class="flex-1 flex flex-col gap-4">
           <div v-for="task in data" :key="task._id">

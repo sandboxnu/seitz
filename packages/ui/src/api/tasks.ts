@@ -73,6 +73,10 @@ async function editBattery(id: string, data: Record<string, any>) {
   return await axiosInstance.put(`/admin/battery/${id}`, data);
 }
 
+async function publishBattery(id: string) {
+  return await axiosInstance.post(`/tasks/${id}/publish`);
+}
+
 export default {
   getAllTasks,
   getTask,
@@ -83,4 +87,5 @@ export default {
   deleteBattery,
   uploadBattery,
   editBattery,
+  publishBattery,
 };

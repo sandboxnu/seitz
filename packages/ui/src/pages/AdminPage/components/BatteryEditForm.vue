@@ -23,6 +23,14 @@ const deleteMutation = useMutation(taskAPI.deleteBattery, {
     store.deselect();
   },
 });
+
+const publishBattery = async () => {
+  if (batteryData.value) {
+    await taskAPI.publishBattery(batteryData.value._id);
+    batteryData.value.published = !batteryData.value.published;
+  }
+};
+
 const nameInput = ref<HTMLInputElement>();
 const editingName = ref(false);
 </script>
@@ -93,6 +101,9 @@ const editingName = ref(false);
     <div class="flex-none flex gap-5">
       <AppButton @click="store.editingBatteryId = undefined">Cancel</AppButton>
       <div class="grow"></div>
+      <AppButton @click="publishBattery">
+        {{ batteryData.published ? "Unpublish" : "Publish" }}
+      </AppButton>
       <AppButton> Preview Template </AppButton>
       <AppButton @click="store.save"> Save Template </AppButton>
     </div>
