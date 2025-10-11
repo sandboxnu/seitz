@@ -36,13 +36,6 @@ async function getStudy(id: string) {
   return result.data;
 }
 
-async function getStudyPreview(id: string) {
-  const result = await axiosInstance.get<DTO<GETStudy>>(
-    `studies/${id}/preview`
-  );
-  return result.data;
-}
-
 async function createStudy() {
   const response = await axiosInstance.post<DTO<string>>("/studies/new");
   return response.data;
@@ -79,7 +72,6 @@ export default {
   getStudies,
   deleteStudy,
   getStudy,
-  getStudyPreview,
   saveStudy,
   createStudy,
   fetchRecentStudies,

@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { useAuthStore } from "../../stores/auth";
 import { useRouter } from "vue-router";
 import MyStudiesItem from "./components/MyStudiesItem.vue";
+import StudyDetailsSidebar from "./components/StudyDetailsSidebar.vue";
 import { useQuery, useMutation } from "@tanstack/vue-query";
 import studiesAPI from "@/api/studies";
 import AppButton from "@/components/ui/AppButton.vue";
@@ -30,8 +31,8 @@ const { mutate, isLoading } = useMutation({
 const selectedStudyId = ref<string | null>(null);
 const showSidebar = ref<boolean>(false);
 
-const openSidebar = (study: string) => {
-  selectedStudyId.value = study;
+const openSidebar = (studyId: string) => {
+  selectedStudyId.value = studyId;
   showSidebar.value = true;
 };
 </script>
@@ -56,7 +57,7 @@ const openSidebar = (study: string) => {
         :name="study.name"
         :description="study.description"
         @deleted="refetch"
-        @dblclick="openSidebar(study._id.toString())"
+        @open="openSidebar"
       />
     </div>
   </div>

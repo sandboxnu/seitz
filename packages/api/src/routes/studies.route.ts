@@ -66,12 +66,6 @@ router.get(
   route((req) => studyService.getVariant(req.params.serverCode))
 );
 
-router.get(
-  "/:id/preview",
-  isAuthenticated,
-  authRoute((req, user) => studyService.getStudyPreview(user, req.params.id))
-);
-
 // create new variant in study
 router.post(
   "/:studyId/variants/new",

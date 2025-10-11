@@ -21,7 +21,7 @@ const { data: study, isLoading } = useQuery({
   queryKey: ["study-preview", props.studyId] as const,
   queryFn: async () => {
     if (!props.studyId) return null;
-    return await studiesAPI.getStudyPreview(props.studyId);
+    return await studiesAPI.getStudy(props.studyId);
   },
   enabled: !!props.studyId,
 });
@@ -146,11 +146,11 @@ const toggleSession = (variantIndex: number, sessionIndex: number) => {
                 class="ml-4 space-y-1"
               >
                 <div
-                  v-for="(task, tIdx) in session.tasks"
+                  v-for="(taskInstance, tIdx) in session.tasks"
                   :key="tIdx"
                   class="p-2 text-sm text-gray-700"
                 >
-                  {{ task || `Task ${tIdx + 1}` }}
+                  { taskInstance.task? || `Task ${tIdx + 1}` }
                 </div>
               </div>
             </div>
