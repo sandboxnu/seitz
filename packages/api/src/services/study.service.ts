@@ -107,7 +107,8 @@ export const getStudy = async (
     .populate({
       path: "variants.sessions.tasks.task",
       populate: { path: "battery" },
-    });
+    })
+    .lean();
 
   if (!study) {
     throw new HttpError(404);
