@@ -19,23 +19,17 @@ const expandedSessions = ref<Set<string>>(new Set());
 
 const fetchStudy = async () => {
   if (!props.studyId) {
-    console.log("No studyId provided");
     return;
   }
-
-  console.log("Fetching study:", props.studyId);
   isLoading.value = true;
   error.value = null;
-
   try {
     const data = await studiesAPI.getStudy(props.studyId);
-    console.log("Study data received:", data);
     study.value = data;
   } catch (err: any) {
     const errorMsg =
       err?.response?.data?.message || err?.message || "Failed to load study";
     error.value = errorMsg;
-    console.error("Error fetching study:", err);
     console.error("Error details:", {
       status: err?.response?.status,
       data: err?.response?.data,
@@ -98,14 +92,12 @@ const getTaskName = (taskInstance: any) => {
   return "Session Element";
 };
 
-// Handle escape key press
 const handleEscape = (event: KeyboardEvent) => {
   if (event.key === "Escape" && props.show) {
     emit("close");
   }
 };
 
-// Add/remove escape listener
 onMounted(() => {
   document.addEventListener("keydown", handleEscape);
 });
@@ -167,24 +159,12 @@ onUnmounted(() => {
             class="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded transition-colors"
             @click="toggleVariant(vIdx)"
           >
-            <!-- Orange Icon -->
-            <div
-              class="w-5 h-5 rounded bg-orange-500 flex items-center justify-center flex-shrink-0"
-            >
-              <svg
-                class="w-3 h-3 text-white"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"
-                />
-              </svg>
-            </div>
             <!-- Variant Label -->
             <span class="font-medium flex-1 text-left text-gray-900">
               Variant {{ vIdx + 1 }}
             </span>
+
+            <!-- Chevron -->
             <svg
               class="w-4 h-4 text-gray-400 transition-transform"
               :class="{ 'rotate-90': expandedVariants.has(vIdx) }"
@@ -245,6 +225,7 @@ onUnmounted(() => {
                 >
                   {{ getTaskName(taskInstance) }}
                 </div>
+
                 <!-- Empty state for sessions with no tasks -->
                 <div
                   v-if="!session.tasks || session.tasks.length === 0"
