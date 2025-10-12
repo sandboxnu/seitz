@@ -1,8 +1,8 @@
-<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from "vue";
 import AppButton from "@/components/ui/AppButton.vue";
 import studiesAPI from "@/api/studies";
+import type { GETStudy } from "@seitz/shared";
 
 const props = defineProps<{
   studyId: string | null;
@@ -11,7 +11,7 @@ const props = defineProps<{
 
 const emit = defineEmits(["close"]);
 
-const study = ref<any>(null);
+const study = ref<GETStudy | null>(null);
 const isLoading = ref(false);
 const error = ref<string | null>(null);
 const expandedVariants = ref<Set<number>>(new Set([0]));
@@ -25,16 +25,13 @@ const fetchStudy = async () => {
   error.value = null;
   try {
     const data = await studiesAPI.getStudy(props.studyId);
-    study.value = data;
-  } catch (err: any) {
-    const errorMsg =
-      err?.response?.data?.message || err?.message || "Failed to load study";
-    error.value = errorMsg;
-    console.error("Error details:", {
-      status: err?.response?.status,
-      data: err?.response?.data,
-      message: err?.message,
-    });
+    study.value = data as unknown as GETStudy;
+  } catch (err) {
+    if (err instanceof Error) {
+      error.value = err.message;
+    } else {
+      error.value = "Failed to load study";
+    }
   } finally {
     isLoading.value = false;
   }
@@ -82,12 +79,15 @@ const toggleSession = (variantIndex: number, sessionIndex: number) => {
   expandedSessions.value = newSet;
 };
 
-const getTaskName = (taskInstance: any) => {
-  if (taskInstance.task?.battery?.name) {
-    return taskInstance.task.battery.name;
+const getTaskName = (taskInstance: unknown) => {
+  const task = taskInstance as {
+    task?: { battery?: { name?: string }; name?: string };
+  };
+  if (task.task?.battery?.name) {
+    return task.task.battery.name;
   }
-  if (taskInstance.task?.name) {
-    return taskInstance.task.name;
+  if (task.task?.name) {
+    return task.task.name;
   }
   return "Session Element";
 };
@@ -117,7 +117,6 @@ onUnmounted(() => {
       class="fixed right-0 top-0 h-full w-[370px] bg-white shadow-2xl flex flex-col"
       @click.stop
     >
-      <!-- Header -->
       <div
         class="border-b border-gray-200 p-6 flex items-start justify-between"
       >
@@ -136,35 +135,28 @@ onUnmounted(() => {
         </AppButton>
       </div>
 
-      <!-- Loading State -->
       <div v-if="isLoading" class="flex-1 flex items-center justify-center">
         <div class="text-gray-500">Loading...</div>
       </div>
 
-      <!-- Error State -->
       <div v-else-if="error" class="flex-1 flex items-center justify-center">
         <div class="text-red-500">{{ error }}</div>
       </div>
 
-      <!-- Content -->
       <div v-else class="flex-1 overflow-y-auto p-4">
-        <!-- Variants -->
         <div
           v-for="(variant, vIdx) in study?.variants || []"
-          :key="variant._id || vIdx"
+          :key="String(variant._id) || vIdx"
           class="mb-2"
         >
-          <!-- Variant Header -->
           <button
             class="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded transition-colors"
             @click="toggleVariant(vIdx)"
           >
-            <!-- Variant Label -->
             <span class="font-medium flex-1 text-left text-gray-900">
               Variant {{ vIdx + 1 }}
             </span>
 
-            <!-- Chevron -->
             <svg
               class="w-4 h-4 text-gray-400 transition-transform"
               :class="{ 'rotate-90': expandedVariants.has(vIdx) }"
@@ -181,13 +173,11 @@ onUnmounted(() => {
             </svg>
           </button>
 
-          <!-- Sessions (when variant is expanded) -->
           <div v-if="expandedVariants.has(vIdx)" class="ml-8 mt-1">
             <div
               v-for="(session, sIdx) in variant.sessions || []"
-              :key="session._id || sIdx"
+              :key="String(session._id) || sIdx"
             >
-              <!-- Session Header -->
               <button
                 class="w-full flex items-center gap-2 p-2 hover:bg-gray-50 rounded transition-colors"
                 @click="toggleSession(vIdx, sIdx)"
@@ -213,20 +203,18 @@ onUnmounted(() => {
                 </svg>
               </button>
 
-              <!-- Tasks (when session is expanded) -->
               <div
                 v-if="expandedSessions.has(`${vIdx}-${sIdx}`)"
                 class="ml-4 space-y-1"
               >
                 <div
                   v-for="(taskInstance, tIdx) in session.tasks || []"
-                  :key="taskInstance._id || tIdx"
+                  :key="String((taskInstance as { _id?: unknown })._id) || tIdx"
                   class="p-2 text-sm text-gray-700 hover:bg-gray-50 rounded"
                 >
                   {{ getTaskName(taskInstance) }}
                 </div>
 
-                <!-- Empty state for sessions with no tasks -->
                 <div
                   v-if="!session.tasks || session.tasks.length === 0"
                   class="p-2 text-sm text-gray-400 italic"
@@ -236,7 +224,6 @@ onUnmounted(() => {
               </div>
             </div>
 
-            <!-- Empty state for variants with no sessions -->
             <div
               v-if="!variant.sessions || variant.sessions.length === 0"
               class="p-2 text-sm text-gray-400 italic"
@@ -246,7 +233,6 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <!-- Empty state for studies with no variants -->
         <div
           v-if="!study?.variants || study.variants.length === 0"
           class="p-4 text-center text-gray-400 italic"
