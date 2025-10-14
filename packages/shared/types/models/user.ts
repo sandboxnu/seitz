@@ -15,6 +15,7 @@ export interface CreateUser {
   role: Role;
   studies?: Types.ObjectId[];
   favoriteBatteries?: Types.ObjectId[];
+  recentStudyIds?: string[] | null;
 }
 
 export interface IUser extends Required<CreateUser> {

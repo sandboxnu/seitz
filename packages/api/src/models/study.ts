@@ -53,6 +53,7 @@ const studySchema = new Schema<IStudy, StudyModelType>({
     type: [variantSchema],
     default: [],
   },
+  lastModified: { type: Date, default: Date.now },
 });
 
 studySchema.pre("save", async function (next) {
