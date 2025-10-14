@@ -60,7 +60,6 @@ function handleFileUpload(event: Event) {
 
 const activeTab = ref("all");
 
-//gets filtered tasks
 const filteredTasks = computed(() => {
   if (!data.value) return [];
 
@@ -81,7 +80,6 @@ const filteredTasks = computed(() => {
   }
 });
 
-// handles tab switching
 const switchTab = (tab: string) => {
   activeTab.value = tab;
 };
