@@ -3,7 +3,7 @@ import { ref } from "vue";
 import { useAuthStore } from "../../stores/auth";
 import { useRouter } from "vue-router";
 import MyStudiesItem from "./components/MyStudiesItem.vue";
-import StudyDetailsSidebar from "./components/StudyDetailsSidebar.vue";
+import StudyDetailsSidebar from "./components/StudyDetailsSideBar.vue";
 import { useQuery, useMutation } from "@tanstack/vue-query";
 import studiesAPI from "@/api/studies";
 import AppButton from "@/components/ui/AppButton.vue";

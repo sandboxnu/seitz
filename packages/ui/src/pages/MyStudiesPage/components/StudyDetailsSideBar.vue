@@ -24,7 +24,7 @@ const fetchStudy = async () => {
   isLoading.value = true;
   error.value = null;
   try {
-    const data = await studiesAPI.getStudy(props.studyId);
+    const data = await studiesAPI.getStudyPreview(props.studyId);
     study.value = data as unknown as GETStudy;
   } catch (err) {
     if (err instanceof Error) {
