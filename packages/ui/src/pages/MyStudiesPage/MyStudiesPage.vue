@@ -19,6 +19,8 @@ if (!authStore.currentUser) {
 const { data: studies, refetch } = useQuery({
   queryKey: ["studies"],
   queryFn: studiesAPI.getStudies,
+  refetchOnMount: "always",
+  staleTime: 0,
 });
 
 const { mutate, isLoading } = useMutation({
