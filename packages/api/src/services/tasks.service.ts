@@ -96,11 +96,3 @@ export const createCustomizedTask = async (
   );
   return [201, populated];
 };
-
-export const publishTask = async (taskId: string): APIResponse<IBattery> => {
-  const task = await Battery.findById(taskId);
-  if (!task) throw new HttpError(404);
-  task.published = !task.published;
-  await task.save();
-  return [200, task];
-};

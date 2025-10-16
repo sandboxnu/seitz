@@ -13,6 +13,7 @@ import {
   type IUser,
 } from "@seitz/shared";
 import { parseVisibility } from "../util/validation.utils";
+import * as redisService from "./redis.service";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -67,12 +68,18 @@ export const createBattery = async (json: any): APIResponse<IBattery> => {
   };
 
   const data = await Battery.create(bat);
+  await redisService.addRecentDocument(
+    json["userId"],
+    data._id.toString(),
+    "recent_batteries"
+  );
   return [201, data];
 };
 
 export const editBattery = async (
   updates: any,
-  id: any
+  id: any,
+  userId: string
 ): APIResponse<UpdateWriteOpResult> => {
   updates = updates as Record<string, any>;
   const battery = await Battery.findById(id);
@@ -82,11 +89,20 @@ export const editBattery = async (
   const newBattery = await Battery.updateOne({ _id: id }, updates, {
     new: true,
   });
+  await redisService.addRecentDocument(userId, id, "recent_batteries");
   return [200, newBattery];
 };
 
-export const deleteBattery = async (batteryId: string): APIResponse<void> => {
+export const deleteBattery = async (
+  batteryId: string,
+  userId: string
+): APIResponse<void> => {
   await Battery.updateOne({ _id: batteryId }, { deleted: true });
+  await User.findOneAndUpdate(
+    { _id: userId },
+    { $pull: { favoriteBatteries: batteryId } }
+  );
+  await redisService.removeRecentDocs(userId, batteryId, "recent_batteries");
   return [200];
 };
 
@@ -162,6 +178,55 @@ function parseOptions(s: any): CreateOption[] {
     return acc;
   }, []);
 }
+
+export const recentBatteries = async (
+  userId: string
+): APIResponse<IBattery[]> => {
+  const recentBatteries = await redisService.getRecentDocs(
+    userId,
+    "recent_batteries"
+  );
+  if (recentBatteries.length === 0) {
+    return [200, []];
+  }
+
+  const batteries = await Battery.find({
+    _id: { $in: recentBatteries },
+  }).lean();
+
+  const batteryMap = new Map(batteries.map((b) => [b._id.toString(), b]));
+  const sortedBatteries = recentBatteries
+    .map((id) => batteryMap.get(id))
+    .filter((b): b is IBattery => b !== undefined);
+
+  return [200, sortedBatteries];
+};
+
+export const toggleFavoriteBattery = async (
+  userId: string,
+  batteryId: string
+): APIResponse<IUser> => {
+  const [user, battery] = await Promise.all([
+    User.findById(userId),
+    Battery.findById(batteryId),
+  ]);
+
+  if (!user) throw new HttpError(404, "User not found");
+  if (!battery) throw new HttpError(404, "Battery not found");
+
+  const favIndex = user.favoriteBatteries.findIndex(
+    (id) => id.toString() === batteryId
+  );
+
+  if (favIndex > -1) {
+    user.favoriteBatteries.splice(favIndex, 1);
+  } else {
+    user.favoriteBatteries.push(battery._id);
+  }
+
+  await user.save();
+  return [200, user];
+};
 
 export const updateAdminVisibility = async (
   batteryId: string,

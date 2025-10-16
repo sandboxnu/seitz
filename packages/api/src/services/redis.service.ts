@@ -1,14 +1,27 @@
 import { User } from "../models";
 import redisClient from "../redis";
 
-const QUEUE_SIZE = 3;
-const initLowAndHighPointers = (): [number, number] => {
-  return [0, QUEUE_SIZE - 1];
-};
-const [LOW, HIGH] = initLowAndHighPointers();
+const DEFAULT_QUEUE_SIZE = 3;
 
-const getRecentDocsKey = (userId: string): string => {
-  return `user:${userId}:recent_docs`;
+const getQueueSize = (type: string): number => {
+  switch (type) {
+    case "recent_docs":
+      return DEFAULT_QUEUE_SIZE;
+    case "recent_batteries":
+      return 5;
+    default:
+      throw new Error(`Unknown recent document type: ${type}`);
+  }
+};
+
+const getQueueBounds = (
+  queueSize: number = DEFAULT_QUEUE_SIZE
+): [number, number] => {
+  return [0, queueSize - 1];
+};
+
+const getRecentDocsKey = (userId: string, type: string): string => {
+  return `user:${userId}:${type}`;
 };
 
 /**
@@ -17,14 +30,26 @@ const getRecentDocsKey = (userId: string): string => {
  */
 export const loadFromDatabase = async (userId: string): Promise<void> => {
   try {
-    const user = await User.findById(userId).select("recentStudyIds");
+    const user = await User.findById(userId).select([
+      "recentStudyIds",
+      "recentBatteries",
+    ]);
 
     if (user?.recentStudyIds?.length) {
-      const key = getRecentDocsKey(userId);
+      const key = getRecentDocsKey(userId, "recent_docs");
       await redisClient.del(key);
       const studyIds = user.recentStudyIds;
       for (let i = studyIds.length - 1; i >= 0; i--) {
         await redisClient.lPush(key, studyIds[i]);
+      }
+    }
+
+    if (user?.recentBatteries?.length) {
+      const batteryKey = getRecentDocsKey(userId, "recent_batteries");
+      await redisClient.del(batteryKey);
+      const recentBatteries = user.recentBatteries;
+      for (let i = user.recentBatteries.length - 1; i >= 0; i--) {
+        await redisClient.lPush(batteryKey, recentBatteries[i].toString());
       }
     }
   } catch (error) {
@@ -39,13 +64,16 @@ export const loadFromDatabase = async (userId: string): Promise<void> => {
  * the queue is popped off and the specified documentId is added to the back of the queue.
  * @param userId the user whose cache is to be updated with the new document.
  * @param documentId the id of the document to add to the specified user's cache.
+ * @param type the type of recent document queue to update (default is recent studies).
  */
 export const addRecentDocument = async (
   userId: string,
-  documentId: string
+  documentId: string,
+  type = "recent_docs"
 ): Promise<void> => {
   try {
-    const key = getRecentDocsKey(userId);
+    const key = getRecentDocsKey(userId, type);
+    const [LOW, HIGH] = getQueueBounds(getQueueSize(type));
     await redisClient.lRem(key, LOW, documentId);
     await redisClient.lPush(key, documentId);
     await redisClient.lTrim(key, LOW, HIGH);
@@ -60,12 +88,20 @@ export const addRecentDocument = async (
  * documents are returned, then it can be assumed the user has not accessed 3 or more documents
  * before.
  * @param userId the id of the user whose most recent documents are to be fetched.
+ * @param type the type of recent document queue to get (default is recent studies).
  * @returns the list of the id's of the most recent documents associated with the given user.
  */
-export const getRecentDocs = async (userId: string): Promise<string[]> => {
+export const getRecentDocs = async (
+  userId: string,
+  type = "recent_docs"
+): Promise<string[]> => {
   try {
-    const key = getRecentDocsKey(userId);
-    const documentIds = await redisClient.lRange(key, 0, 2);
+    const key = getRecentDocsKey(userId, type);
+    const documentIds = await redisClient.lRange(
+      key,
+      0,
+      getQueueSize(type) - 1
+    );
     return documentIds;
   } catch (error) {
     console.error(
@@ -80,13 +116,15 @@ export const getRecentDocs = async (userId: string): Promise<string[]> => {
  * that name exists, then this will throw an error.
  * @param userId the id of the user whose current cache of recent documents is to be updated.
  * @param documentId the id of the document to be removed from the specified user's cache.
+ * @param type the type of recent document queue to remove from (default is recent studies).
  */
 export const removeRecentDocs = async (
   userId: string,
-  documentId: string
+  documentId: string,
+  type = "recent_docs"
 ): Promise<void> => {
   try {
-    const key = getRecentDocsKey(userId);
+    const key = getRecentDocsKey(userId, type);
     await redisClient.lRem(key, 0, documentId);
   } catch (error) {
     console.log(
@@ -95,15 +133,18 @@ export const removeRecentDocs = async (
     throw error;
   }
 };
-
 /**
  * Clear all of the recent documents with respect to the user provided. This will throw an error if
  * no user exits as specified by the inputs.
  * @param userId the user whose recent documents are to be deleted.
+ * @param type the type of recent document queue to clear (default is recent studies).
  */
-export const clearRecentDocs = async (userId: string): Promise<void> => {
+export const clearRecentDocs = async (
+  userId: string,
+  type = "recent_docs"
+): Promise<void> => {
   try {
-    const key = getRecentDocsKey(userId);
+    const key = getRecentDocsKey(userId, type);
     await redisClient.del(key);
   } catch (error) {
     console.log(
@@ -121,10 +162,11 @@ export const clearRecentDocs = async (userId: string): Promise<void> => {
  */
 export const saveToDatabase = async (userId: string): Promise<void> => {
   try {
-    const recentDocIds = await getRecentDocs(userId);
+    const recentDocIds = await getRecentDocs(userId, "recent_docs");
+    const recentBatteries = await getRecentDocs(userId, "recent_batteries");
     await User.findByIdAndUpdate(
       userId,
-      { recentStudyIds: recentDocIds },
+      { recentStudyIds: recentDocIds, recentBatteries: recentBatteries },
       { new: true }
     );
   } catch (error) {

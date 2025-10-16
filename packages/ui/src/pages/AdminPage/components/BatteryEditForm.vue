@@ -4,15 +4,32 @@ import { storeToRefs } from "pinia";
 import { useBatteryEditingStore } from "../../../stores/admin";
 import AppButton from "../../../components/ui/AppButton.vue";
 import BatteryEditFormSection from "./BatteryEditFormSection.vue";
-import { useMutation, useQueryClient } from "@tanstack/vue-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import taskAPI from "@/api/tasks";
 import { ElNotification } from "element-plus";
+import adminAPI from "@/api/admin";
+import authAPI from "@/api/auth";
 
 const store = useBatteryEditingStore();
 const { isLoading, isError, batteryData } = storeToRefs(store);
 const queryClient = useQueryClient();
 
-const deleteMutation = useMutation(taskAPI.deleteBattery, {
+const favoriteMutation = useMutation({
+  mutationFn: ({ userId, batteryId }: { userId: string; batteryId: string }) =>
+    adminAPI.toggleFavoriteBattery(userId, batteryId),
+  onSuccess: () => {
+    queryClient.invalidateQueries(["user"]);
+  },
+});
+
+const { data: currentUser } = useQuery({
+  queryKey: ["user"],
+  queryFn: authAPI.getCurrentUser,
+});
+
+const deleteMutation = useMutation({
+  mutationFn: ({ batteryId, userId }: { batteryId: string; userId: string }) =>
+    taskAPI.deleteBattery(batteryId, userId),
   onSuccess: () => {
     queryClient.invalidateQueries(["tasks"]);
     ElNotification({
@@ -26,7 +43,6 @@ const deleteMutation = useMutation(taskAPI.deleteBattery, {
 
 const publishBattery = async () => {
   if (batteryData.value) {
-    await taskAPI.publishBattery(batteryData.value._id);
     batteryData.value.published = !batteryData.value.published;
   }
 };
@@ -49,16 +65,25 @@ const editingName = ref(false);
           @blur="editingName = false"
         />
         <ElImage
-          v-if="!editingName"
-          src="/mdi_pencil.svg"
-          class="h-6 cursor-pointer"
-          @click="nameInput?.focus()"
+          :src="
+            currentUser?.favoriteBatteries?.some(
+              (t) => t.toString() === batteryData?._id?.toString()
+            )
+              ? '/icons/favorite-star.svg'
+              : '/icons/star.svg'
+          "
+          class="h-5 w-5 cursor-pointer"
+          @click="
+            currentUser?._id &&
+              batteryData._id &&
+              favoriteMutation.mutate({
+                userId: currentUser._id,
+                batteryId: batteryData._id.toString(),
+              })
+          "
         />
       </div>
       <div class="grow"></div>
-      <AppButton @click="deleteMutation.mutate(batteryData._id)">
-        Delete Template
-      </AppButton>
     </div>
     <div class="flex-1 flex overflow-auto">
       <div class="xl:basis-72 basis-56 flex flex-col gap-9">
@@ -99,7 +124,16 @@ const editingName = ref(false);
       </div>
     </div>
     <div class="flex-none flex gap-5">
-      <AppButton @click="store.editingBatteryId = undefined">Cancel</AppButton>
+      <AppButton
+        @click="
+          deleteMutation.mutate({
+            batteryId: batteryData._id,
+            userId: currentUser?._id.toString() || '',
+          })
+        "
+      >
+        Delete Template
+      </AppButton>
       <div class="grow"></div>
       <AppButton @click="publishBattery">
         {{ batteryData.published ? "Unpublish" : "Publish" }}
