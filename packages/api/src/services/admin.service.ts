@@ -163,6 +163,32 @@ function parseOptions(s: any): CreateOption[] {
   }, []);
 }
 
+export const toggleFavoriteBattery = async (
+  userId: string,
+  batteryId: string
+): APIResponse<IUser> => {
+  const [user, battery] = await Promise.all([
+    User.findById(userId),
+    Battery.findById(batteryId),
+  ]);
+
+  if (!user) throw new HttpError(404, "User not found");
+  if (!battery) throw new HttpError(404, "Battery not found");
+
+  const favIndex = user.favoriteBatteries.findIndex(
+    (id) => id.toString() === batteryId
+  );
+
+  if (favIndex > -1) {
+    user.favoriteBatteries.splice(favIndex, 1);
+  } else {
+    user.favoriteBatteries.push(battery._id);
+  }
+
+  await user.save();
+  return [200, user];
+};
+
 export const updateAdminVisibility = async (
   batteryId: string,
   visibility: string

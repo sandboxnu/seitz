@@ -14,6 +14,7 @@ export interface CreateUser {
   password: string;
   role: Role;
   studies?: Types.ObjectId[];
+  favoriteBatteries?: Types.ObjectId[];
   recentStudyIds?: string[] | null;
 }
 
