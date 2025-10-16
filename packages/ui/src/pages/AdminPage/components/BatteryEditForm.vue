@@ -118,7 +118,6 @@ const editingName = ref(false);
       <AppButton @click="deleteMutation.mutate(batteryData._id)">
         Delete Template
       </AppButton>
-      <!-- <AppButton @click="store.editingBatteryId = undefined">Cancel</AppButton> -->
       <div class="grow"></div>
       <AppButton> Preview Template </AppButton>
       <AppButton @click="store.save"> Save Template </AppButton>
