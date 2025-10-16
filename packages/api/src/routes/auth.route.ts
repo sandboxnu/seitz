@@ -27,6 +27,12 @@ router.get(
   authRoute((req) => authService.getUser(req))
 );
 
+router.put(
+  "/user",
+  isAuthenticated,
+  authRoute((req) => authService.updateUser(req))
+);
+
 router.get(
   "/users",
   isAuthenticated,

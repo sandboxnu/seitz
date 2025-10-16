@@ -26,4 +26,13 @@ async function getCurrentUser() {
   return result.data;
 }
 
-export default { logIn, signUp, logOut, getCurrentUser };
+async function updateCurrentUser(
+  data: Partial<Omit<IUser, "password" | "verifyPassword">> & {
+    password?: string;
+  }
+) {
+  const result = await axiosInstance.put<GETUserResponse>("auth/user", data);
+  return result.data;
+}
+
+export default { logIn, signUp, logOut, getCurrentUser, updateCurrentUser };
