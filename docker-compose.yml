@@ -8,5 +8,16 @@ services:
     command: redis-server --appendonly yes
     restart: unless-stopped
 
+  mongodb:
+    image: mongodb/mongodb-community-server:6.0-ubi8
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=devuser
+      - MONGO_INITDB_ROOT_PASSWORDdevpassword123=
+    volumes:
+      - mongodb_data:/data/db
+
 volumes:
   redis_data:
+  mongodb_data:
