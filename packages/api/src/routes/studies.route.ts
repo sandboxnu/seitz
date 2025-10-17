@@ -25,6 +25,12 @@ router.delete(
 );
 
 router.get(
+  "/:id/preview",
+  isAuthenticated,
+  authRoute((req, user) => studyService.getStudyPreview(user, req.params.id))
+);
+
+router.get(
   "/:id",
   isAuthenticated,
   authRoute((req, user) => studyService.getStudy(user, req.params.id))
