@@ -87,6 +87,36 @@ export const deleteStudy = async (
   return [200];
 };
 
+export const getStudyPreview = async (
+  user: HydratedDocument<IUser>,
+  studyId: string
+): APIResponse<GETStudy> => {
+  const study = await Study.findOne({
+    _id: studyId,
+    owner: user._id,
+  })
+    .populate<{
+      batteries: GETCustomizedTask[];
+    }>({
+      path: "batteries",
+      populate: {
+        path: "battery",
+        model: "Battery",
+      },
+    })
+    .populate({
+      path: "variants.sessions.tasks.task",
+      populate: { path: "battery" },
+    })
+    .lean();
+
+  if (!study) {
+    throw new HttpError(404);
+  }
+
+  return [200, study];
+};
+
 export const getStudy = async (
   user: HydratedDocument<IUser>,
   studyId: string
@@ -103,11 +133,9 @@ export const getStudy = async (
       model: "Battery",
     },
   });
-
   if (!study) {
     throw new HttpError(404);
   }
-
   return [200, study];
 };
 
