@@ -66,6 +66,7 @@ export interface CreateBattery {
   description: string;
   imageUrl: string;
   stages: CreateBatteryStage[];
+  published?: boolean;
   deleted?: boolean;
 }
 

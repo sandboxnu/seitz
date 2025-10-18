@@ -35,7 +35,10 @@ const studyBuilderStore = useStudyBuilderStore();
       </template>
       <template #default>
         <div class="grid grid-cols-2 gap-3">
-          <div v-for="task in data" :key="task._id">
+          <div
+            v-for="task in data?.filter((task) => task.published) || []"
+            :key="task._id"
+          >
             <TaskLibraryItem
               :name="task.name"
               :description="task.description"

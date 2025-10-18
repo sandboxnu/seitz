@@ -16,6 +16,7 @@ export interface CreateUser {
   studies?: Types.ObjectId[];
   favoriteBatteries?: Types.ObjectId[];
   recentStudyIds?: string[] | null;
+  recentBatteries?: Types.ObjectId[];
 }
 
 export interface IUser extends Required<CreateUser> {

@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import taskAPI from "@/api/tasks";
+import authAPI from "@/api/auth";
 import { ElNotification } from "element-plus";
 import type { DTO, IBattery } from "@seitz/shared";
 
@@ -12,15 +13,20 @@ export const useBatteryEditingStore = defineStore("batteryEditing", () => {
   const isLoading = ref(false);
   const isError = ref(false);
   const batteryData = ref<DTO<IBattery>>();
-
   const queryClient = useQueryClient();
 
   const saveMutation = useMutation({
-    mutationFn: ({
+    mutationFn: async ({
       batteryId,
       ...batteryDTO
     }: { batteryId: string } & Record<string, any>) => {
-      return taskAPI.editBattery(batteryId, batteryDTO);
+      const currentUser = await authAPI.getCurrentUser();
+      const response = await taskAPI.editBattery(
+        batteryId,
+        batteryDTO,
+        currentUser._id
+      );
+      return response;
     },
     onSuccess: () => {
       ElNotification({

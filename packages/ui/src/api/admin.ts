@@ -1,4 +1,4 @@
-import { Role } from "@seitz/shared";
+import { DTO, Role, GETTasks } from "@seitz/shared";
 import axios from "axios";
 
 const axiosInstance = axios.create({
@@ -83,6 +83,13 @@ async function toggleFavoriteBattery(userId: string, battery_id: string) {
   );
 }
 
+async function recentBatteries(userId: string) {
+  const tasks = await axiosInstance.get<DTO<GETTasks>>(
+    `admin/users/${userId}/recent`
+  );
+  return tasks.data;
+}
+
 export default {
   getStages,
   getAdminUsers,
@@ -90,4 +97,5 @@ export default {
   assignAdminRole,
   removeUserAsAdmin,
   toggleFavoriteBattery,
+  recentBatteries,
 };

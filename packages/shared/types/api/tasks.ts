@@ -1,10 +1,13 @@
 import type { IBattery, ICustomizedBattery } from "../models";
 
-type ListTask = Pick<IBattery, "_id" | "name" | "description" | "imageUrl">;
+type ListTask = Pick<
+  IBattery,
+  "_id" | "name" | "description" | "imageUrl" | "published"
+>;
 
 export type GETTask = Pick<
   IBattery,
-  "_id" | "name" | "description" | "imageUrl" | "stages"
+  "_id" | "name" | "description" | "imageUrl" | "stages" | "published"
 >;
 
 export type GETTasks = ListTask[];

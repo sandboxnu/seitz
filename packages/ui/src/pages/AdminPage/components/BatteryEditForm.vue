@@ -27,7 +27,9 @@ const { data: currentUser } = useQuery({
   queryFn: authAPI.getCurrentUser,
 });
 
-const deleteMutation = useMutation(taskAPI.deleteBattery, {
+const deleteMutation = useMutation({
+  mutationFn: ({ batteryId, userId }: { batteryId: string; userId: string }) =>
+    taskAPI.deleteBattery(batteryId, userId),
   onSuccess: () => {
     queryClient.invalidateQueries(["tasks"]);
     ElNotification({
@@ -38,6 +40,22 @@ const deleteMutation = useMutation(taskAPI.deleteBattery, {
     store.deselect();
   },
 });
+
+const publishMutation = useMutation({
+  mutationFn: taskAPI.publishBattery,
+  onSuccess: () => {
+    queryClient.invalidateQueries(["tasks"]);
+    store.select(batteryData.value?._id?.toString() || "");
+    ElNotification({
+      title: "Success",
+      message: `Battery successfully ${
+        batteryData.value?.published ? "un" : ""
+      }published`,
+      type: "success",
+    });
+  },
+});
+
 const nameInput = ref<HTMLInputElement>();
 const editingName = ref(false);
 </script>
@@ -75,6 +93,9 @@ const editingName = ref(false);
         />
       </div>
       <div class="grow"></div>
+      <AppButton @click="publishMutation.mutate(batteryData._id)">
+        {{ batteryData.published ? "Unpublish" : "Publish" }}
+      </AppButton>
     </div>
     <div class="flex-1 flex overflow-auto">
       <div class="xl:basis-72 basis-56 flex flex-col gap-9">
@@ -115,7 +136,14 @@ const editingName = ref(false);
       </div>
     </div>
     <div class="flex-none flex gap-5">
-      <AppButton @click="deleteMutation.mutate(batteryData._id)">
+      <AppButton
+        @click="
+          deleteMutation.mutate({
+            batteryId: batteryData._id,
+            userId: currentUser?._id.toString() || '',
+          })
+        "
+      >
         Delete Template
       </AppButton>
       <div class="grow"></div>
