@@ -44,7 +44,6 @@ const filteredTasks = computed(() => {
       tasks = recentBatteries.value || [];
       break;
   }
-  // Filter by published status
   if (!showUnpublished.value && !showPublished.value) {
     return [];
   }
