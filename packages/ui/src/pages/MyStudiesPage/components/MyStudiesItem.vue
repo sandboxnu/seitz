@@ -39,6 +39,6 @@ const handleDoubleClick = () => {
     <RouterLink :to="{ name: 'study', params: { id } }">
       <AppButton @click.stop>Edit</AppButton>
     </RouterLink>
-    <AppButton @click.stop="mutate">Delete</AppButton>
+    <AppButton @click="mutate">Delete</AppButton>
   </div>
 </template>
