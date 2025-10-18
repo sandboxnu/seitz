@@ -16,15 +16,20 @@ def start_infrastructure():
     subprocess.run(["docker", "compose", "up", "-d"], check=True)
   except subprocess.CalledProcessError:
     print("Error starting docker infrastructure!")
-    sys.exit(1)
+    cleanup()
 
 def signal_handler(sig, frame):
   cleanup()
   sys.exit(0)
 
 signal.signal(signal.SIGINT, signal_handler)
+
 start_infrastructure()
 try:
-  subprocess.run(["python3", "scripts/start.py"], check=True)
-finally:
-  cleanup()
+  subprocess.run(
+    ["python3", "scripts/start.py"], 
+    check=True,  
+    stderr=subprocess.PIPE
+  )
+except (KeyboardInterrupt, subprocess.CalledProcessError):
+  pass
