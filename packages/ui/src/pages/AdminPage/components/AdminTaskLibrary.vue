@@ -165,6 +165,7 @@ const switchTab = (tab: string) => {
               >
                 Favorites
               </button>
+              <div class="grow"></div>
               <div class="relative inline-block">
                 <ElImage
                   src="/icons/filter.svg"
