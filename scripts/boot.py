@@ -16,7 +16,7 @@ def start_infrastructure():
     subprocess.run(["docker", "compose", "up", "-d"], check=True)
   except subprocess.CalledProcessError:
     print("Error starting docker infrastructure!")
-    exit(1)
+    sys.exit(1)
 
 def signal_handler(sig, frame):
   cleanup()
@@ -25,6 +25,6 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGINT, signal_handler)
 start_infrastructure()
 try:
-  subprocess.run(["python3", "./start.py"], check=True)
+  subprocess.run(["python3", "scripts/start.py"], check=True)
 finally:
   cleanup()
