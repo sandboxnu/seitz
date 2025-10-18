@@ -1,6 +1,6 @@
 import subprocess
 
-def init():
+def init() -> None:
   try:
     subprocess.run(["pnpm", "--stream", "-r", "dev"], check=True)
   except subprocess.CalledProcessError:

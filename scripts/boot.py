@@ -1,6 +1,10 @@
 import subprocess
 
-def cleanup():
+def cleanup() -> None:
+  """
+  Shuts down any docker infrastructure that is currently running. Does not propagate any errors, only error messages if there are issues shutting down the infrastructure.
+  """
+
   print("Shutting down docker infrastructure...")
   try:
     subprocess.run(["docker", "compose", "down"], check=True)
@@ -8,7 +12,10 @@ def cleanup():
   except subprocess.CalledProcessError:
     print("Error shutting down docker infrastructure!")
 
-def start_infrastructure():
+def start_infrastructure() -> None:
+  """
+  Starts the Docker infrastructure such that both redis and mongodb containers are launched. Does not propagate any errors, only prints an error message and than exits with an error code.
+  """
   print("Booting up redis and mongodb...")
   try:
     subprocess.run(["docker", "compose", "up", "-d"], check=True)
