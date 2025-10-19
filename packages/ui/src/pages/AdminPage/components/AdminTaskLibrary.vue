@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import taskAPI from "@/api/tasks";
-import { ElNotification } from "element-plus";
+import { ElImage, ElNotification } from "element-plus";
 import { useBatteryEditingStore } from "../../../stores/admin.ts";
 import { computed, ref } from "vue";
 import adminAPI from "@/api/admin";
@@ -9,6 +9,52 @@ import authAPI from "@/api/auth";
 
 const queryClient = useQueryClient();
 const batteryEditingStore = useBatteryEditingStore();
+
+const filterMenu = ref(false);
+const showUnpublished = ref(true);
+const showPublished = ref(true);
+
+function toggleMenu() {
+  filterMenu.value = !filterMenu.value;
+}
+
+function toggleUnpublished() {
+  showUnpublished.value = !showUnpublished.value;
+}
+
+function togglePublished() {
+  showPublished.value = !showPublished.value;
+}
+
+const filteredTasks = computed(() => {
+  let tasks = data.value;
+  if (!tasks) return [];
+
+  switch (activeTab.value) {
+    case "favorites":
+      tasks = tasks.filter(
+        (battery) =>
+          currentUser.value?.favoriteBatteries?.some(
+            (favId) => favId.toString() === battery._id?.toString()
+          )
+      );
+      break;
+    case "recent":
+      queryClient.invalidateQueries(["tasks", "recent"]);
+      tasks = recentBatteries.value || [];
+      break;
+  }
+  if (!showUnpublished.value && !showPublished.value) {
+    return [];
+  }
+  if (showUnpublished.value && showPublished.value) {
+    return tasks;
+  }
+  return tasks.filter((task) => {
+    if (showPublished.value) return task.published === true;
+    if (showUnpublished.value) return task.published === false;
+  });
+});
 
 const favoriteMutation = useMutation({
   mutationFn: ({ userId, batteryId }: { userId: string; batteryId: string }) =>
@@ -36,6 +82,8 @@ const uploadMutation = useMutation(taskAPI.uploadBattery, {
   },
 });
 
+const activeTab = ref("all");
+
 const { data } = useQuery({
   queryKey: ["tasks"],
   queryFn: taskAPI.getAllTasks,
@@ -46,6 +94,11 @@ const { data: currentUser } = useQuery({
   queryFn: authAPI.getCurrentUser,
 });
 
+const { data: recentBatteries } = useQuery({
+  queryKey: ["tasks", "recent"],
+  queryFn: () => adminAPI.recentBatteries(currentUser.value?._id || ""),
+});
+
 function handleFileUpload(event: Event) {
   const target = event.target as HTMLInputElement;
   const file: File = (target.files as FileList)[0];
@@ -54,31 +107,9 @@ function handleFileUpload(event: Event) {
   reader.onload = (readerEvent) => {
     const content = readerEvent.target?.result as string;
     const parsedContent = JSON.parse(content);
-    uploadMutation.mutate(parsedContent);
+    uploadMutation.mutate({ userId: currentUser.value?._id, ...parsedContent });
   };
 }
-
-const activeTab = ref("all");
-
-const filteredTasks = computed(() => {
-  if (!data.value) return [];
-
-  switch (activeTab.value) {
-    case "favorites":
-      return data.value?.filter(
-        (battery) =>
-          currentUser.value?.favoriteBatteries?.some(
-            (favId) => favId.toString() === battery._id?.toString()
-          )
-      );
-
-    case "recents":
-      return data.value;
-    case "all":
-    default:
-      return data.value;
-  }
-});
 
 const switchTab = (tab: string) => {
   activeTab.value = tab;
@@ -133,6 +164,45 @@ const switchTab = (tab: string) => {
               >
                 Favorites
               </button>
+              <div class="grow"></div>
+              <div class="relative inline-block">
+                <ElImage
+                  src="/icons/filter.svg"
+                  class="self-center"
+                  @click="toggleMenu"
+                />
+                <div
+                  v-if="filterMenu"
+                  class="absolute top-full -translate-x-[-6px] -translate-y-[12px] z-50 flex flex-col gap-2 rounded-lg bg-white shadow-[0_2px_8px_rgba(15,20,31,0.15)] p-3 w-[140px]"
+                >
+                  <div
+                    class="flex items-center gap-2 cursor-pointer"
+                    @click="toggleUnpublished"
+                  >
+                    <ElImage
+                      :src="
+                        showUnpublished
+                          ? '/icons/checked-box.svg'
+                          : '/icons/unchecked-box.svg'
+                      "
+                      class="self-center"
+                    />Unpublished
+                  </div>
+                  <div
+                    class="flex items-center gap-2 cursor-pointer"
+                    @click="togglePublished"
+                  >
+                    <ElImage
+                      :src="
+                        showPublished
+                          ? '/icons/checked-box.svg'
+                          : '/icons/unchecked-box.svg'
+                      "
+                      class="self-center"
+                    />Published
+                  </div>
+                </div>
+              </div>
             </div>
           </td>
         </tr>
