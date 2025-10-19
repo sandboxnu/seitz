@@ -1,4 +1,5 @@
 import subprocess
+import sys
 
 def cleanup() -> None:
   """
@@ -25,7 +26,7 @@ def start_infrastructure() -> None:
 
 start_infrastructure()
 try:
-  subprocess.run(["python3", "scripts/start.py"], check=True)
+  subprocess.run([sys.executable, "scripts/start.py"], check=True)
 except (KeyboardInterrupt, subprocess.CalledProcessError):
   pass
 finally:
