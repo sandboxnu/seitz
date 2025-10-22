@@ -1,11 +1,16 @@
-import { User } from "@/models";
+import { User } from "../models";
 import redisClient from "../redis";
 
 class RedisService {
   private readonly queueSizes: Map<string, number>;
+  private readonly cacheTypes: Map<string, string>;
 
-  constructor(queueSizes: Map<string, number>) {
+  constructor(
+    queueSizes: Map<string, number>,
+    cacheTypes: Map<string, string>
+  ) {
     this.queueSizes = queueSizes;
+    this.cacheTypes = cacheTypes;
   }
 
   /**
@@ -138,24 +143,26 @@ class RedisService {
     }
   }
 
+  /**
+   * Loads recent items from MongoDB into Redis for specified queue types.
+   * @param attribute the scope attribute (e.g., 'user', 'project')
+   * @param userId the id of the user whose information is to be loaded into Redis
+   * @param queueTypes variable number of queue type names to load from the database
+   */
   async loadFromDatabase(
     attribute: string,
     userId: string,
     ...queueTypes: string[]
   ): Promise<void> {
     try {
-      const selectFields = queueTypes.map((type) =>
-        this.getFieldNameForType(type)
-      );
-      const user = await User.findById(userId).select(selectFields);
+      const user = await User.findById(userId).select(queueTypes);
 
       if (!user) {
         throw new Error(`User ${userId} not found`);
       }
 
       for (const type of queueTypes) {
-        const fieldName = this.getFieldNameForType(type) as keyof typeof user;
-        const items = user[fieldName];
+        const items = user[type as keyof typeof user];
 
         if (Array.isArray(items) && items.length) {
           const itemStrings = items.map((item) => String(item));
@@ -188,8 +195,7 @@ class RedisService {
 
       for (const type of queueTypes) {
         const items = await this.getRecentItems(attribute, userId, type);
-        const fieldName = this.getFieldNameForType(type);
-        updateFields[fieldName] = items;
+        updateFields[type] = items;
       }
 
       await User.findByIdAndUpdate(userId, updateFields, { new: true });
@@ -204,21 +210,18 @@ class RedisService {
   }
 
   /**
-   * Maps queue type names to their corresponding database field names.
-   * @param type the queue type name
-   * @returns the corresponding field name in the User model
+   * Fetches the cache type associated with the given name.
+   * @param name the name of the cache type we are looking for.
+   * @returns the specific cache name used in the Redis cache when referring to the given name.
+   * For example: "studies" => "recent_studies".
+   * @throws Error if the given name is not associated with any cache types.
    */
-  private getFieldNameForType(type: string): string {
-    const fieldMapping: Record<string, string> = {
-      recent_docs: "recentStudyIds",
-      recent_batteries: "recentBatteries",
-    };
-
-    const fieldName = fieldMapping[type];
-    if (!fieldName) {
-      throw new Error(`Unknown field mapping for queue type: ${type}`);
+  cacheTypeOf(name: string): string {
+    const cacheType = this.cacheTypes.get(name);
+    if (cacheType === undefined) {
+      throw new Error(`No such cache type with the name: ${name}`);
     }
-    return fieldName;
+    return cacheType;
   }
 
   /**
@@ -248,8 +251,13 @@ class RedisService {
 }
 
 const queueSizes = new Map<string, number>([
-  ["recent_docs", 3],
+  ["recent_studies", 3],
   ["recent_batteries", 5],
 ]);
 
-export default new RedisService(queueSizes);
+const cacheTypes = new Map<string, string>([
+  ["studies", "recent_studies"],
+  ["batteries", "recent_batteries"],
+]);
+
+export default new RedisService(queueSizes, cacheTypes);

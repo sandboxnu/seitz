@@ -13,7 +13,7 @@ import {
   type IUser,
 } from "@seitz/shared";
 import { parseVisibility } from "../util/validation.utils";
-import * as redisService from "./redis.service";
+import RedisService from "./redis.service";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -68,10 +68,11 @@ export const createBattery = async (json: any): APIResponse<IBattery> => {
   };
 
   const data = await Battery.create(bat);
-  await redisService.addRecentDocument(
-    json["userId"],
+  await RedisService.addRecentItem(
+    "user",
+    json["userid"],
     data._id.toString(),
-    "recent_batteries"
+    RedisService.cacheTypeOf("batteries")
   );
   return [201, data];
 };
@@ -89,7 +90,12 @@ export const editBattery = async (
   const newBattery = await Battery.updateOne({ _id: id }, updates, {
     new: true,
   });
-  await redisService.addRecentDocument(userId, id, "recent_batteries");
+  await RedisService.addRecentItem(
+    "user",
+    userId,
+    id,
+    RedisService.cacheTypeOf("batteries")
+  );
   return [200, newBattery];
 };
 
@@ -102,7 +108,12 @@ export const deleteBattery = async (
     { _id: userId },
     { $pull: { favoriteBatteries: batteryId } }
   );
-  await redisService.removeRecentDocs(userId, batteryId, "recent_batteries");
+  await RedisService.removeRecentItem(
+    "user",
+    userId,
+    batteryId,
+    RedisService.cacheTypeOf("batteries")
+  );
   return [200];
 };
 
@@ -182,9 +193,10 @@ function parseOptions(s: any): CreateOption[] {
 export const recentBatteries = async (
   userId: string
 ): APIResponse<IBattery[]> => {
-  const recentBatteries = await redisService.getRecentDocs(
+  const recentBatteries = await RedisService.getRecentItems(
+    "user",
     userId,
-    "recent_batteries"
+    RedisService.cacheTypeOf("batteries")
   );
   if (recentBatteries.length === 0) {
     return [200, []];
