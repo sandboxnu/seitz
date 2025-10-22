@@ -1,6 +1,31 @@
 import { User } from "../models";
 import redisClient from "../redis";
 
+class RedisService {
+  private readonly queue_sizes: Map<string, number>;
+
+  constructor(queue_sizes: Map<string, number>) {
+    this.queue_sizes = queue_sizes;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async addRecentItem(userId: string, itemId: string) {}
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async loadFromDatabase(userId: string, itemId: string) {}
+
+  /**
+   * Fetches the key name with respect to the given parameters in the form below.
+   * @param attribute the attribute under which this key is to be stored (user, public, ...).
+   * @param userId the id of the user whose information this is stored for.
+   * @param type the type of information which is being stored.
+   * @returns a string formatted as the following: attribute:userId:type.
+   */
+  private getKey(attribute: string, userId: string, type: string): string {
+    return `${attribute}:${userId}:${type}`;
+  }
+}
+
 const DEFAULT_QUEUE_SIZE = 3;
 
 const getQueueSize = (type: string): number => {
@@ -176,3 +201,13 @@ export const saveToDatabase = async (userId: string): Promise<void> => {
     throw error;
   }
 };
+
+const queue_sizes = new Map<string, number>();
+const sizes = [3, 5];
+const queue_names = ["recent_docs", "recent_batteries"];
+
+for (let i = 0; i < sizes.length; i++) {
+  queue_sizes.set(queue_names[i], sizes[i]);
+}
+
+export default new RedisService(queue_sizes);
