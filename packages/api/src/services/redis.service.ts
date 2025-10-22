@@ -1,213 +1,255 @@
-import { User } from "../models";
+import { User } from "@/models";
 import redisClient from "../redis";
 
 class RedisService {
-  private readonly queue_sizes: Map<string, number>;
+  private readonly queueSizes: Map<string, number>;
 
-  constructor(queue_sizes: Map<string, number>) {
-    this.queue_sizes = queue_sizes;
+  constructor(queueSizes: Map<string, number>) {
+    this.queueSizes = queueSizes;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async addRecentItem(userId: string, itemId: string) {}
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async loadFromDatabase(userId: string, itemId: string) {}
+  /**
+   * Adds an item to a recent items queue. Removes duplicates and maintains queue size.
+   * @param attribute the scope attribute (e.g., 'user', 'project')
+   * @param userId the id of the entity this queue belongs to
+   * @param type the type of queue (must be configured in queueSizes)
+   * @param itemId the id of the item to add
+   */
+  async addRecentItem(
+    attribute: string,
+    userId: string,
+    type: string,
+    itemId: string
+  ): Promise<void> {
+    try {
+      const key = this.getKey(attribute, userId, type);
+      const [LOW, HIGH] = this.getQueueBounds(type);
+      await redisClient.lRem(key, 0, itemId);
+      await redisClient.lPush(key, itemId);
+      await redisClient.lTrim(key, LOW, HIGH);
+    } catch (error) {
+      console.error(
+        `Error adding recent item to queue [${type}] for ${userId}: ${error}`
+      );
+      throw error;
+    }
+  }
 
   /**
-   * Fetches the key name with respect to the given parameters in the form below.
-   * @param attribute the attribute under which this key is to be stored (user, public, ...).
-   * @param userId the id of the user whose information this is stored for.
-   * @param type the type of information which is being stored.
-   * @returns a string formatted as the following: attribute:userId:type.
+   * Fetches recent items from a queue.
+   * @param attribute the scope attribute (e.g., 'user', 'project')
+   * @param userId the id of the entity this queue belongs to
+   * @param type the type of queue to fetch from
+   * @returns array of item ids in the queue (most recent first)
+   */
+  async getRecentItems(
+    attribute: string,
+    userId: string,
+    type: string
+  ): Promise<string[]> {
+    try {
+      const key = this.getKey(attribute, userId, type);
+      const queueSize = this.queueSizes.get(type);
+
+      if (queueSize === undefined) {
+        throw new Error(`Unknown queue type: ${type}`);
+      }
+
+      const itemIds = await redisClient.lRange(key, 0, queueSize - 1);
+      return itemIds;
+    } catch (error) {
+      console.error(
+        `Error fetching recent items for ${attribute}:${userId}:${type}: ${error}`
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Removes a specific item from a recent items queue.
+   * @param attribute the scope attribute (e.g., 'user', 'project')
+   * @param userId the id of the entity this queue belongs to
+   * @param type the type of queue to remove from
+   * @param itemId the id of the item to remove
+   */
+  async removeRecentItem(
+    attribute: string,
+    userId: string,
+    type: string,
+    itemId: string
+  ): Promise<void> {
+    try {
+      const key = this.getKey(attribute, userId, type);
+      await redisClient.lRem(key, 0, itemId);
+    } catch (error) {
+      console.error(
+        `Error removing item from queue [${type}] for ${userId}: ${error}`
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Clears all items from a recent items queue.
+   * @param attribute the scope attribute (e.g., 'user', 'project')
+   * @param userId the id of the entity this queue belongs to
+   * @param type the type of queue to clear
+   */
+  async clearRecentItems(
+    attribute: string,
+    userId: string,
+    type: string
+  ): Promise<void> {
+    try {
+      const key = this.getKey(attribute, userId, type);
+      await redisClient.del(key);
+    } catch (error) {
+      console.error(`Error clearing queue [${type}] for ${userId}: ${error}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Loads items into a Redis queue, replacing any existing items.
+   * Items are added in reverse order to maintain correct ordering (most recent first).
+   * @param attribute the scope attribute (e.g., 'user', 'project')
+   * @param userId the id of the entity this queue belongs to
+   * @param type the type of queue to load into
+   * @param items array of item ids to load (should be in order from oldest to newest)
+   */
+  async loadItems(
+    attribute: string,
+    userId: string,
+    type: string,
+    items: string[]
+  ): Promise<void> {
+    try {
+      const key = this.getKey(attribute, userId, type);
+      await redisClient.del(key);
+
+      for (let i = items.length - 1; i >= 0; i--) {
+        await redisClient.lPush(key, items[i]);
+      }
+    } catch (error) {
+      console.error(
+        `Error loading items into queue [${type}] for ${userId}: ${error}`
+      );
+      throw error;
+    }
+  }
+
+  async loadFromDatabase(
+    attribute: string,
+    userId: string,
+    ...queueTypes: string[]
+  ): Promise<void> {
+    try {
+      const selectFields = queueTypes.map((type) =>
+        this.getFieldNameForType(type)
+      );
+      const user = await User.findById(userId).select(selectFields);
+
+      if (!user) {
+        throw new Error(`User ${userId} not found`);
+      }
+
+      for (const type of queueTypes) {
+        const fieldName = this.getFieldNameForType(type) as keyof typeof user;
+        const items = user[fieldName];
+
+        if (Array.isArray(items) && items.length) {
+          const itemStrings = items.map((item) => String(item));
+          await this.loadItems(attribute, userId, type, itemStrings);
+        }
+      }
+    } catch (error) {
+      console.error(
+        `Error loading queue types [${queueTypes.join(
+          ", "
+        )}] from database for ${userId}: ${error}`
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Saves recent items from Redis to MongoDB for specified queue types.
+   * @param attribute the scope attribute (e.g., 'user', 'project')
+   * @param userId the id of the user whose recent items are to be saved
+   * @param queueTypes variable number of queue type names to save to the database
+   */
+  async saveToDatabase(
+    attribute: string,
+    userId: string,
+    ...queueTypes: string[]
+  ): Promise<void> {
+    try {
+      const updateFields: Record<string, string[]> = {};
+
+      for (const type of queueTypes) {
+        const items = await this.getRecentItems(attribute, userId, type);
+        const fieldName = this.getFieldNameForType(type);
+        updateFields[fieldName] = items;
+      }
+
+      await User.findByIdAndUpdate(userId, updateFields, { new: true });
+    } catch (error) {
+      console.error(
+        `Error saving queue types [${queueTypes.join(
+          ", "
+        )}] to database for ${userId}: ${error}`
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Maps queue type names to their corresponding database field names.
+   * @param type the queue type name
+   * @returns the corresponding field name in the User model
+   */
+  private getFieldNameForType(type: string): string {
+    const fieldMapping: Record<string, string> = {
+      recent_docs: "recentStudyIds",
+      recent_batteries: "recentBatteries",
+    };
+
+    const fieldName = fieldMapping[type];
+    if (!fieldName) {
+      throw new Error(`Unknown field mapping for queue type: ${type}`);
+    }
+    return fieldName;
+  }
+
+  /**
+   * Fetches the key name with respect to the given parameters.
+   * @param attribute the attribute under which this key is stored (user, public, etc.)
+   * @param userId the id of the entity this queue belongs to
+   * @param type the type of information being stored
+   * @returns a string formatted as: attribute:userId:type
    */
   private getKey(attribute: string, userId: string, type: string): string {
     return `${attribute}:${userId}:${type}`;
   }
+
+  /**
+   * Gets the bounds [LOW, HIGH] for a queue based on its configured size.
+   * @param queueName the name/type of the queue
+   * @returns tuple of [0, size-1] representing the Redis list range
+   */
+  private getQueueBounds(queueName: string): [number, number] {
+    const upperBound = this.queueSizes.get(queueName);
+
+    if (upperBound === undefined) {
+      throw new Error(`Unknown queue type: ${queueName}`);
+    }
+    return [0, upperBound - 1];
+  }
 }
 
-const DEFAULT_QUEUE_SIZE = 3;
+const queueSizes = new Map<string, number>([
+  ["recent_docs", 3],
+  ["recent_batteries", 5],
+]);
 
-const getQueueSize = (type: string): number => {
-  switch (type) {
-    case "recent_docs":
-      return DEFAULT_QUEUE_SIZE;
-    case "recent_batteries":
-      return 5;
-    default:
-      throw new Error(`Unknown recent document type: ${type}`);
-  }
-};
-
-const getQueueBounds = (
-  queueSize: number = DEFAULT_QUEUE_SIZE
-): [number, number] => {
-  return [0, queueSize - 1];
-};
-
-const getRecentDocsKey = (userId: string, type: string): string => {
-  return `user:${userId}:${type}`;
-};
-
-/**
- * Load the recent documents from MongoDB into Redis on the user Login.
- * @param userId the id of the user whose information is to be loaded into Redis.
- */
-export const loadFromDatabase = async (userId: string): Promise<void> => {
-  try {
-    const user = await User.findById(userId).select([
-      "recentStudyIds",
-      "recentBatteries",
-    ]);
-
-    if (user?.recentStudyIds?.length) {
-      const key = getRecentDocsKey(userId, "recent_docs");
-      await redisClient.del(key);
-      const studyIds = user.recentStudyIds;
-      for (let i = studyIds.length - 1; i >= 0; i--) {
-        await redisClient.lPush(key, studyIds[i]);
-      }
-    }
-
-    if (user?.recentBatteries?.length) {
-      const batteryKey = getRecentDocsKey(userId, "recent_batteries");
-      await redisClient.del(batteryKey);
-      const recentBatteries = user.recentBatteries;
-      for (let i = user.recentBatteries.length - 1; i >= 0; i--) {
-        await redisClient.lPush(batteryKey, recentBatteries[i].toString());
-      }
-    }
-  } catch (error) {
-    console.error(`Error loading recent documents from database:`, error);
-    throw error;
-  }
-};
-
-/**
- * Adds the given document to the Queue of recent documents specified for the given user. If the
- * length of the specified user's cache goes over (HIGH - LOW + 1), then the item at the front of
- * the queue is popped off and the specified documentId is added to the back of the queue.
- * @param userId the user whose cache is to be updated with the new document.
- * @param documentId the id of the document to add to the specified user's cache.
- * @param type the type of recent document queue to update (default is recent studies).
- */
-export const addRecentDocument = async (
-  userId: string,
-  documentId: string,
-  type = "recent_docs"
-): Promise<void> => {
-  try {
-    const key = getRecentDocsKey(userId, type);
-    const [LOW, HIGH] = getQueueBounds(getQueueSize(type));
-    await redisClient.lRem(key, LOW, documentId);
-    await redisClient.lPush(key, documentId);
-    await redisClient.lTrim(key, LOW, HIGH);
-  } catch (error) {
-    console.error(`Error adding recent document: ${error}`);
-    throw error;
-  }
-};
-
-/**
- * Fetches the recent documents associated with the given user. If less than (HIGH - LOW + 1)
- * documents are returned, then it can be assumed the user has not accessed 3 or more documents
- * before.
- * @param userId the id of the user whose most recent documents are to be fetched.
- * @param type the type of recent document queue to get (default is recent studies).
- * @returns the list of the id's of the most recent documents associated with the given user.
- */
-export const getRecentDocs = async (
-  userId: string,
-  type = "recent_docs"
-): Promise<string[]> => {
-  try {
-    const key = getRecentDocsKey(userId, type);
-    const documentIds = await redisClient.lRange(
-      key,
-      0,
-      getQueueSize(type) - 1
-    );
-    return documentIds;
-  } catch (error) {
-    console.error(
-      `Error getting recent documents for user ${userId}: ${error}`
-    );
-    throw error;
-  }
-};
-
-/**
- * Removes the specified document from the specified user's most recent docs. If no document by
- * that name exists, then this will throw an error.
- * @param userId the id of the user whose current cache of recent documents is to be updated.
- * @param documentId the id of the document to be removed from the specified user's cache.
- * @param type the type of recent document queue to remove from (default is recent studies).
- */
-export const removeRecentDocs = async (
-  userId: string,
-  documentId: string,
-  type = "recent_docs"
-): Promise<void> => {
-  try {
-    const key = getRecentDocsKey(userId, type);
-    await redisClient.lRem(key, 0, documentId);
-  } catch (error) {
-    console.log(
-      `Error removing the recent document from ${userId} documents: ${error}`
-    );
-    throw error;
-  }
-};
-/**
- * Clear all of the recent documents with respect to the user provided. This will throw an error if
- * no user exits as specified by the inputs.
- * @param userId the user whose recent documents are to be deleted.
- * @param type the type of recent document queue to clear (default is recent studies).
- */
-export const clearRecentDocs = async (
-  userId: string,
-  type = "recent_docs"
-): Promise<void> => {
-  try {
-    const key = getRecentDocsKey(userId, type);
-    await redisClient.del(key);
-  } catch (error) {
-    console.log(
-      `Error clearing the recent documents cache from ${userId} documents: ${error}`
-    );
-    throw error;
-  }
-};
-
-/**
- * Saves the information stored within the give user to the database, such that the relative
- * ordering is maintained. This will also throw an error when the given userid is not currently
- * stored within the redis cache.
- * @param userId the user whose recent documents are to be saved to the database.
- */
-export const saveToDatabase = async (userId: string): Promise<void> => {
-  try {
-    const recentDocIds = await getRecentDocs(userId, "recent_docs");
-    const recentBatteries = await getRecentDocs(userId, "recent_batteries");
-    await User.findByIdAndUpdate(
-      userId,
-      { recentStudyIds: recentDocIds, recentBatteries: recentBatteries },
-      { new: true }
-    );
-  } catch (error) {
-    console.error(
-      `Error saving recent documents for ${userId} to database: ${error}`
-    );
-    throw error;
-  }
-};
-
-const queue_sizes = new Map<string, number>();
-const sizes = [3, 5];
-const queue_names = ["recent_docs", "recent_batteries"];
-
-for (let i = 0; i < sizes.length; i++) {
-  queue_sizes.set(queue_names[i], sizes[i]);
-}
-
-export default new RedisService(queue_sizes);
+export default new RedisService(queueSizes);
