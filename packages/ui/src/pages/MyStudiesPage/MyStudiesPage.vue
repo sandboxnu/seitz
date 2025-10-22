@@ -4,13 +4,14 @@ import { useAuthStore } from "../../stores/auth";
 import { useRouter } from "vue-router";
 import MyStudiesItem from "./components/MyStudiesItem.vue";
 import StudyDetailsSidebar from "./components/StudyDetailsSideBar.vue";
-import { useQuery, useMutation } from "@tanstack/vue-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/vue-query";
 import studiesAPI from "@/api/studies";
 import AppButton from "@/components/ui/AppButton.vue";
 import RecentStudies from "./components/RecentStudies.vue";
 
 const router = useRouter();
 const authStore = useAuthStore();
+const queryClient = useQueryClient();
 
 if (!authStore.currentUser) {
   router.push("/login");
@@ -37,6 +38,11 @@ const openSidebar = (studyId: string) => {
   selectedStudyId.value = studyId;
   showSidebar.value = true;
 };
+
+const handleStudyDeleted = async () => {
+  await refetch();
+  await queryClient.invalidateQueries({ queryKey: ["studies", "recent"] });
+};
 </script>
 
 <template>
@@ -58,7 +64,7 @@ const openSidebar = (studyId: string) => {
         :key="study._id.toString()"
         :name="study.name"
         :description="study.description"
-        @deleted="refetch"
+        @deleted="handleStudyDeleted"
         @open="openSidebar"
       />
     </div>
