@@ -125,6 +125,29 @@ export const updateUser = async (req: any): APIResponse<IUser> => {
   return [200, user];
 };
 
+export const changePassword = async (req: any): APIResponse<void> => {
+  const user = req.user;
+  if (!user) throw new HttpError(401, "Unauthorized");
+
+  const { oldPassword, newPassword } = req.body as {
+    oldPassword?: string;
+    newPassword?: string;
+  };
+
+  if (typeof oldPassword !== "string" || typeof newPassword !== "string") {
+    throw new HttpError(400, "Must provide oldPassword and newPassword");
+  }
+
+  const ok = await user.verifyPassword(oldPassword);
+  if (!ok) {
+    throw new HttpError(401, "Old password is incorrect");
+  }
+
+  user.password = newPassword;
+  await user.save();
+  return [200];
+};
+
 export const verifyToken = async (req: any): APIResponse<string> => {
   const token = req.params.token;
   try {

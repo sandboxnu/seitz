@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { ElNotification } from "element-plus";
 import { useAuthStore } from "@/stores/auth";
 import type { IUser as SharedUser } from "@seitz/shared";
@@ -7,6 +7,7 @@ import authAPI from "@/api/auth";
 import type { DTO } from "@seitz/shared";
 import type { IUser as StoreUser } from "@/stores/auth";
 import { isAxiosError } from "axios";
+import ConfirmPasswordModal from "./ConfirmPasswordModal.vue";
 const activeTab = ref("account");
 const authStore = useAuthStore();
 
@@ -23,6 +24,7 @@ const email = ref("");
 const initialized = ref(false);
 const saving = ref(false);
 const password = ref("");
+const showPasswordModal = ref(false);
 
 watch(
   user,
@@ -41,6 +43,23 @@ watch(
 );
 
 const roleLabel = computed(() => user.value?.role ?? "");
+
+// Ensure name is loaded from API on entry (store user doesn't include name)
+onMounted(async () => {
+  try {
+    const apiUser = await authAPI.getCurrentUser();
+    const full = (apiUser.name ?? "").trim();
+    const parts = full.length ? full.split(/\s+/) : [];
+    fullName.value = full;
+    firstName.value = parts[0] ?? "";
+    lastName.value = parts.slice(1).join(" ");
+    email.value = apiUser.email ?? email.value;
+  } catch {
+    // ignore if unauthenticated or request fails; fields remain as-is
+  } finally {
+    initialized.value = true;
+  }
+});
 async function onSave() {
   const trimmedFirst = firstName.value.trim();
   const trimmedLast = lastName.value.trim();
@@ -124,7 +143,7 @@ async function onSave() {
         </div>
       </div>
       <button
-        class="border border-neutral-200 px-4 py-2 rounded-lg text-sm bg-neutral-50 hover:bg-gray-50 transition disabled:opacity-60 disabled:cursor-not-allowed"
+        class="border border-neutral-200 px-4 py-2 rounded-lg text-sm bg-neutral-600 hover:bg-neutral-400 transition disabled:opacity-60 disabled:cursor-not-allowed text-neutral-10"
         :disabled="saving"
         @click="onSave"
       >
@@ -183,7 +202,7 @@ async function onSave() {
         />
       </div>
 
-      <div class="flex flex-col sm:col-span-2">
+      <div class="flex flex-col">
         <label class="text-sm text-gray-500 mb-1">Email</label>
         <input
           v-model="email"
@@ -193,15 +212,28 @@ async function onSave() {
         />
       </div>
 
-      <div class="flex flex-col sm:col-span-2">
-        <label class="text-sm text-gray-500 mb-1">New Password</label>
-        <input
-          v-model="password"
-          type="password"
-          placeholder="Enter a new password (optional)"
-          class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-400 focus:outline-none"
-        />
+      <div class="flex sm:col-span-1 self-stretch justify-end items-end">
+        <button
+          type="button"
+          class="px-4 py-2 rounded-lg text-sm border border-neutral-200 hover:bg-neutral-200 bg-neutral-100 text-neutral-500"
+          @click="showPasswordModal = true"
+        >
+          Change Password
+        </button>
       </div>
     </div>
+
+    <ConfirmPasswordModal
+      v-model="showPasswordModal"
+      @changed="
+        () =>
+          ElNotification({
+            title: 'Success',
+            message: 'Password updated.',
+            type: 'success',
+            duration: 2000,
+          })
+      "
+    />
   </div>
 </template>

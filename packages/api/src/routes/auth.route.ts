@@ -33,6 +33,12 @@ router.put(
   authRoute((req) => authService.updateUser(req))
 );
 
+router.post(
+  "/user/password",
+  isAuthenticated,
+  authRoute((req) => authService.changePassword(req))
+);
+
 router.get(
   "/users",
   isAuthenticated,
