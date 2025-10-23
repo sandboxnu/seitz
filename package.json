@@ -16,6 +16,7 @@
     "husky": "^8.0.0",
     "typescript": "^5.0.2"
   },
+  "type": "module",
   "scripts": {
     "lint": "eslint . --ext .ts,.vue",
     "lint:fix": "eslint . --fix --ext .ts,.vue",
@@ -23,7 +24,7 @@
     "prettier:fix": "prettier . --write",
     "format": "pnpm prettier:fix && pnpm lint:fix",
     "prepare": "husky install",
-    "dev": "python3 ./scripts/boot.py"
+    "dev": "node ./scripts/wrapper.js ./scripts/boot.py"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
