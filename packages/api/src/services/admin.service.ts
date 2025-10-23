@@ -71,15 +71,15 @@ export const createBattery = async (json: any): APIResponse<IBattery> => {
   await RedisService.addRecentItem(
     "user",
     json["userid"],
-    data._id.toString(),
-    RedisService.cacheTypeOf("batteries")
+    RedisService.cacheTypeOf("batteries"),
+    data._id.toString()
   );
   return [201, data];
 };
 
 export const editBattery = async (
   updates: any,
-  id: any,
+  id: string,
   userId: string
 ): APIResponse<UpdateWriteOpResult> => {
   updates = updates as Record<string, any>;
@@ -93,8 +93,8 @@ export const editBattery = async (
   await RedisService.addRecentItem(
     "user",
     userId,
-    id,
-    RedisService.cacheTypeOf("batteries")
+    RedisService.cacheTypeOf("batteries"),
+    id
   );
   return [200, newBattery];
 };
@@ -111,8 +111,8 @@ export const deleteBattery = async (
   await RedisService.removeRecentItem(
     "user",
     userId,
-    batteryId,
-    RedisService.cacheTypeOf("batteries")
+    RedisService.cacheTypeOf("batteries"),
+    batteryId
   );
   return [200];
 };
