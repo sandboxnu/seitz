@@ -5,9 +5,13 @@ import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import ConditionPanel from "./components/ConditionPanel.vue";
 import ConditionsSidebar from "./components/ConditionsSidebar.vue";
+import { computed, ref } from "vue";
 
 const router = useRouter();
 const authStore = useAuthStore();
+
+const collapsePressed = ref(false);
+const isCollapsed = computed(() => collapsePressed.value);
 
 onMounted(() => {
   if (!authStore.currentUser) {
@@ -17,12 +21,16 @@ onMounted(() => {
 </script>
 <template>
   <div class="flex flex-row">
-    <div class="w-3/4">
-      <ConditionPanel />
+    <div
+      class="transition-all"
+      :style="{ width: `calc(100% - ${isCollapsed ? '4rem' : '300px'})` }"
+    >
+      <ConditionPanel @open-sidebar="collapsePressed = false" />
     </div>
 
-    <div class="w-1/5">
-      <ConditionsSidebar />
-    </div>
+    <ConditionsSidebar
+      :collapsed="isCollapsed"
+      @collapse-change="(v: boolean) => (collapsePressed = v)"
+    />
   </div>
 </template>

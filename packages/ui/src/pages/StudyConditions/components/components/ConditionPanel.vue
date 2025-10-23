@@ -3,6 +3,7 @@ import { useStudyBuilderStore } from "@/stores/studyBuilder";
 import ConditionCard from "./ConditionCard.vue";
 
 const studyBuilderStore = useStudyBuilderStore();
+const emit = defineEmits<(e: "open-sidebar") => void>();
 </script>
 
 <template>
@@ -39,6 +40,7 @@ const studyBuilderStore = useStudyBuilderStore();
       :key="variant._id"
       :variant-id="variant._id"
       :draggable="true"
+      @click="emit('open-sidebar')"
     />
   </div>
 </template>

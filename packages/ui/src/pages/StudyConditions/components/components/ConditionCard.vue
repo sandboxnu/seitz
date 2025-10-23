@@ -56,15 +56,15 @@ function setVariantId() {
 </script>
 
 <template>
-  <div class="flex flex-col overflow-x-hidden px-5 py-2">
+  <div class="w-full flex flex-col overflow-x-hidden px-5 py-2">
     <Transition name="fade" mode="out-in">
       <div
         v-if="isOpen === true"
         v-loading="studyBuilderStore.isStudyLoading"
-        class="grow p-6 bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
+        class="w-full p-6 bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
         @click="setVariantId"
       >
-        <div class="flex items-start justify-between gap-4 pb-5">
+        <div class="flex items-start justify-between gap-4 pb-3">
           <div class="flex items-center gap-2.5">
             <ElImage
               v-if="props.draggable"
@@ -86,7 +86,12 @@ function setVariantId() {
               {{ variantData.serverCode || "00000" }}
             </div>
             <div class="flex items-end justify-end flex-wrap">
-              <RouterLink :to="{ name: 'study', params: { id } }">
+              <RouterLink
+                :to="{
+                  name: 'study',
+                  params: { id: studyBuilderStore.studyId },
+                }"
+              >
                 <AppButton>Edit</AppButton>
               </RouterLink>
             </div>
@@ -125,7 +130,7 @@ function setVariantId() {
       <div
         v-else
         v-loading="studyBuilderStore.isStudyLoading"
-        class="grow p-6 bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
+        class="w-full p-6 bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
         @click="setVariantId"
       >
         <div class="flex items-start justify-between gap-4 pb-5">
@@ -157,7 +162,12 @@ function setVariantId() {
               sca-vi1
             </div>
             <div class="flex items-end justify-end flex-wrap">
-              <RouterLink :to="{ name: 'study', params: { id } }">
+              <RouterLink
+                :to="{
+                  name: 'study',
+                  params: { id: studyBuilderStore.studyId },
+                }"
+              >
                 <AppButton>Edit</AppButton>
               </RouterLink>
             </div>
