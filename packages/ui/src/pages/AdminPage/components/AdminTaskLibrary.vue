@@ -33,7 +33,7 @@ const filteredTasks = computed(() => {
   switch (activeTab.value) {
     case "favorites":
       tasks = tasks.filter(
-        (battery) =>
+        (battery: { _id: { toString: () => string } }) =>
           currentUser.value?.favoriteBatteries?.some(
             (favId) => favId.toString() === battery._id?.toString()
           )
@@ -50,7 +50,7 @@ const filteredTasks = computed(() => {
   if (showUnpublished.value && showPublished.value) {
     return tasks;
   }
-  return tasks.filter((task) => {
+  return tasks.filter((task: { published: boolean }) => {
     if (showPublished.value) return task.published === true;
     if (showUnpublished.value) return task.published === false;
   });
@@ -238,7 +238,7 @@ const switchTab = (tab: string) => {
                         ? '/icons/favorite-star.svg'
                         : '/icons/star.svg'
                     "
-                    class="h-5 w-5 cursor-pointer"
+                    class="h-5 w-5 cursor-pointer flex-shrink-0"
                     @click="
                       currentUser?._id &&
                         task._id &&

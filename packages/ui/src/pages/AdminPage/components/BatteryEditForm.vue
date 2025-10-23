@@ -9,6 +9,8 @@ import taskAPI from "@/api/tasks";
 import { ElNotification } from "element-plus";
 import adminAPI from "@/api/admin";
 import authAPI from "@/api/auth";
+import DeleteButton from "../../../components/ui/DeleteButton.vue";
+import SecondaryButton from "../../../components/ui/SecondaryButton.vue";
 
 const store = useBatteryEditingStore();
 const { isLoading, isError, batteryData } = storeToRefs(store);
@@ -135,8 +137,8 @@ const editingName = ref(false);
         </template>
       </div>
     </div>
-    <div class="flex-none flex gap-5">
-      <AppButton
+    <div class="flex-none flex gap-5 border-black font-black">
+      <DeleteButton
         @click="
           deleteMutation.mutate({
             batteryId: batteryData._id,
@@ -144,10 +146,10 @@ const editingName = ref(false);
           })
         "
       >
-        Delete Template
-      </AppButton>
+        Delete
+      </DeleteButton>
       <div class="grow"></div>
-      <AppButton> Preview Template </AppButton>
+      <SecondaryButton> Preview Template </SecondaryButton>
       <AppButton @click="store.save"> Save Template </AppButton>
     </div>
   </div>
