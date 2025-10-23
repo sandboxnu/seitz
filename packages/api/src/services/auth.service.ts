@@ -6,7 +6,7 @@ import { Strategy as LocalStrategy } from "passport-local";
 import sgMail from "@sendgrid/mail";
 import crypto from "crypto";
 import { IUser } from "@seitz/shared";
-import * as redisService from "./redis.service";
+import RedisService from "./redis.service";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -81,7 +81,14 @@ export const signUp = async (req: any, res: any, next: any): Promise<void> => {
 
 export const login = async (req: any): APIResponse<void> => {
   const user = req.user;
-  await redisService.loadFromDatabase(user._id.toString());
+
+  await RedisService.loadFromDatabase(
+    "user",
+    user._id,
+    RedisService.cacheTypeOf("studies"),
+    RedisService.cacheTypeOf("batteries")
+  );
+
   return [200];
 };
 
@@ -89,7 +96,18 @@ export const logout = async (req: any): APIResponse<void> => {
   const userId = req.user?._id;
 
   if (userId) {
-    await redisService.saveToDatabase(userId.toString());
+    await RedisService.saveToDatabase(
+      "user",
+      userId,
+      RedisService.cacheTypeOf("studies"),
+      RedisService.cacheTypeOf("batteries")
+    );
+    await RedisService.clearRecentItems(
+      "user",
+      userId,
+      RedisService.cacheTypeOf("studies"),
+      RedisService.cacheTypeOf("batteries")
+    );
   }
   req.logout((err: any) => {
     if (err) {
