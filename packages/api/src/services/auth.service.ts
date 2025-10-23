@@ -102,6 +102,12 @@ export const logout = async (req: any): APIResponse<void> => {
       RedisService.cacheTypeOf("studies"),
       RedisService.cacheTypeOf("batteries")
     );
+    await RedisService.clearRecentItems(
+      "user",
+      userId,
+      RedisService.cacheTypeOf("studies"),
+      RedisService.cacheTypeOf("batteries")
+    );
   }
   req.logout((err: any) => {
     if (err) {

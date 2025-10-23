@@ -103,13 +103,17 @@ class RedisService {
   async clearRecentItems(
     attribute: string,
     userId: string,
-    type: string
+    ...types: string[]
   ): Promise<void> {
     try {
-      const key = this.getKey(attribute, userId, type);
-      await redisClient.del(key);
+      for (const t in types) {
+        const key = this.getKey(attribute, userId, t);
+        await redisClient.del(key);
+      }
     } catch (error) {
-      console.error(`Error clearing queue [${type}] for ${userId}: ${error}`);
+      console.error(
+        `Error clearing queue of types [${types}] for ${userId}: ${error}`
+      );
       throw error;
     }
   }
