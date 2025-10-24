@@ -1,6 +1,5 @@
 import subprocess
 import sys
-from time import sleep
 
 def cleanup() -> None:
   """
