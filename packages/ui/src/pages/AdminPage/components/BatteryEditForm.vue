@@ -10,6 +10,7 @@ import { ElNotification } from "element-plus";
 import adminAPI from "@/api/admin";
 import authAPI from "@/api/auth";
 import DeleteButton from "../../../components/ui/DeleteButton.vue";
+import TertiaryButton from "../../../components/ui/TertiaryButton.vue";
 import SecondaryButton from "../../../components/ui/SecondaryButton.vue";
 
 const store = useBatteryEditingStore();
@@ -95,9 +96,9 @@ const editingName = ref(false);
         />
       </div>
       <div class="grow"></div>
-      <AppButton @click="publishMutation.mutate(batteryData._id)">
-        {{ batteryData.published ? "Unpublish" : "Publish" }}
-      </AppButton>
+      <SecondaryButton @click="publishMutation.mutate(batteryData._id)">
+        {{ batteryData.published ? "Unpublish Template" : "Publish Template" }}
+      </SecondaryButton>
     </div>
     <div class="flex-1 flex overflow-auto">
       <div class="xl:basis-72 basis-56 flex flex-col gap-9">
@@ -137,7 +138,7 @@ const editingName = ref(false);
         </template>
       </div>
     </div>
-    <div class="flex-none flex gap-5 border-black font-black">
+    <div class="flex-none flex gap-2 border-black font-black">
       <DeleteButton
         @click="
           deleteMutation.mutate({
@@ -149,8 +150,8 @@ const editingName = ref(false);
         Delete
       </DeleteButton>
       <div class="grow"></div>
-      <SecondaryButton> Preview Template </SecondaryButton>
-      <AppButton @click="store.save"> Save Template </AppButton>
+      <TertiaryButton>Preview</TertiaryButton>
+      <AppButton @click="store.save">Save Changes</AppButton>
     </div>
   </div>
 </template>
