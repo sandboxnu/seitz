@@ -10,26 +10,14 @@
 pnpm install
 ```
 
-### Boot the Infrastructure (Redis Server)
-
-```bash
-pnpm run dev:infra
-```
-
 ### Run the Program
 
 ```bash
 pnpm run dev
 ```
 
-### Cleanup Docker Infrastructure
+### To see if you have any containers currently running
 
 ```bash
-pnpm run dev:infra:stop
-```
-
-### To see if you have a Docker container currently running
-
-```bash
-docker ps
+docker compose ps
 ```
