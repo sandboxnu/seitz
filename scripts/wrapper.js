@@ -33,3 +33,7 @@ process.on("SIGINT", () => {
 process.on("SIGTERM", () => {
   pythonProcess.kill("SIGTERM");
 });
+
+process.on("SIGBREAK", () => {
+  pythonProcess.kill("SIGBREAK");
+});
