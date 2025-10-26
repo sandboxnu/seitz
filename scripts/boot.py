@@ -12,7 +12,6 @@ def cleanup() -> None:
     print("Docker infrastructure stopped successfully!")
   except subprocess.CalledProcessError:
     print("Error shutting down docker infrastructure!")
-    raise subprocess.CalledProcessError()
 
 def start_infrastructure() -> None:
   """
@@ -24,7 +23,6 @@ def start_infrastructure() -> None:
     subprocess.run(["docker", "compose", "up", "-d"], check=True)
   except subprocess.CalledProcessError:
     print("Error starting docker infrastructure!")
-    raise subprocess.CalledProcessError()
 
 start_infrastructure()
 try:
