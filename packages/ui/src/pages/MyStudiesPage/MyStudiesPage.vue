@@ -57,17 +57,17 @@ const openSidebar = (studyId: string) => {
         <thead>
           <tr>
             <th
-              class="text-black text-left py-2 pl-6 pr-6 border-b-2 bg-neutral-50"
+              class="text-black text-left py-4 pl-6 pr-6 border-b-2 bg-neutral-50"
             >
               Name
             </th>
             <th
-              class="text-black text-left py-2 pl-4 pr-6 border-b-2 bg-neutral-50"
+              class="text-black text-left py-4 pl-4 pr-6 border-b-2 bg-neutral-50"
             >
               Description
             </th>
             <th
-              class="text-black text-left py-2 px-4 border-b-2 bg-neutral-50"
+              class="text-black text-left py-4 px-4 border-b-2 bg-neutral-50"
             ></th>
           </tr>
         </thead>

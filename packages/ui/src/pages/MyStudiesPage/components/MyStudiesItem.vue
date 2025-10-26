@@ -28,17 +28,17 @@ const handleDoubleClick = () => {
   >
     <td
       :class="[
-        'py-2 pl-6 pr-6 max-w-xs transition-colors',
+        'py-4 pl-6 pr-6 max-w-xs transition-colors',
         isHovered ? 'bg-gray-100' : 'bg-white',
       ]"
     >
-      <h1 class="whitespace-nowrap text-xl">
+      <h1 class="whitespace-nowrap text-lg">
         {{ name }}
       </h1>
     </td>
     <td
       :class="[
-        'py-2 pl-4 pr-6 max-w-xs transition-colors',
+        'py-4 pl-4 pr-6 max-w-xs transition-colors',
         isHovered ? 'bg-gray-100' : 'bg-white',
       ]"
     >
@@ -48,7 +48,7 @@ const handleDoubleClick = () => {
     </td>
     <td
       :class="[
-        'py-2 pl-4 pr-6 max-w-xs transition-colors',
+        'py-4 pl-4 pr-6 max-w-xs transition-colors',
         isHovered ? 'bg-gray-100' : 'bg-white',
       ]"
     >
