@@ -20,25 +20,44 @@ const handleDoubleClick = () => {
 };
 </script>
 <template>
-  <div
-    :class="[
-      'flex border-b border-neutral-300 py-6 items-center gap-6 cursor-pointer transition-colors px-2 -mx-2',
-      isHovered ? 'bg-gray-300' : 'bg-white',
-    ]"
+  <tr
+    class="border-b-2 cursor-pointer transition-colors"
     @dblclick="handleDoubleClick"
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
   >
-    <h1 class="whitespace-nowrap text-2xl">
-      {{ name }}
-    </h1>
-    <h2 class="text-base text-gray-500 truncate">
-      {{ description }}
-    </h2>
-    <div class="flex-1"></div>
-    <RouterLink :to="{ name: 'study', params: { id } }">
-      <AppButton @click.stop>Edit</AppButton>
-    </RouterLink>
-    <AppButton @click="mutate">Delete</AppButton>
-  </div>
+    <td
+      :class="[
+        'py-2 pl-6 pr-6 max-w-xs transition-colors',
+        isHovered ? 'bg-gray-100' : 'bg-white',
+      ]"
+    >
+      <h1 class="whitespace-nowrap text-xl">
+        {{ name }}
+      </h1>
+    </td>
+    <td
+      :class="[
+        'py-2 pl-4 pr-6 max-w-xs transition-colors',
+        isHovered ? 'bg-gray-100' : 'bg-white',
+      ]"
+    >
+      <h2 class="text-base text-gray-500 truncate">
+        {{ description }}
+      </h2>
+    </td>
+    <td
+      :class="[
+        'py-2 pl-4 pr-6 max-w-xs transition-colors',
+        isHovered ? 'bg-gray-100' : 'bg-white',
+      ]"
+    >
+      <div class="flex gap-2 justify-end whitespace-nowrap">
+        <RouterLink :to="{ name: 'study', params: { id } }">
+          <AppButton @click.stop>Edit</AppButton>
+        </RouterLink>
+        <AppButton @click="mutate">Delete</AppButton>
+      </div>
+    </td>
+  </tr>
 </template>

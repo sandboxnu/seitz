@@ -44,24 +44,46 @@ const openSidebar = (studyId: string) => {
     v-loading="isLoading"
     class="mt-14 mx-auto w-full min-w-[600px] px-4 sm:px-6 lg:px-10"
   >
-    <RecentStudies />
+    <h1 class="text-3xl font-bold mb-4 -mt-4">My Studies</h1>
     <div class="flex items-center">
-      <h1 class="text-3xl font-bold">My Studies</h1>
+      <h1 class="mt-4">Recents</h1>
       <div class="flex-1"></div>
-      <AppButton @click="mutate">+ New Study</AppButton>
+      <AppButton @click="mutate">+ New</AppButton>
     </div>
+    <RecentStudies />
 
-    <div class="flex flex-col">
-      <MyStudiesItem
-        v-for="study in studies"
-        :id="study._id.toString()"
-        :key="study._id.toString()"
-        :name="study.name"
-        :description="study.description"
-        @deleted="refetch"
-        @open="openSidebar"
-      />
-    </div>
+    <ElCard class="rounded-xl shadow-sm" :body-style="{ padding: 0 }">
+      <table class="w-full table-auto border-collapse">
+        <thead>
+          <tr>
+            <th
+              class="text-black text-left py-2 pl-6 pr-6 border-b-2 bg-neutral-50"
+            >
+              Name
+            </th>
+            <th
+              class="text-black text-left py-2 pl-4 pr-6 border-b-2 bg-neutral-50"
+            >
+              Description
+            </th>
+            <th
+              class="text-black text-left py-2 px-4 border-b-2 bg-neutral-50"
+            ></th>
+          </tr>
+        </thead>
+        <tbody>
+          <MyStudiesItem
+            v-for="study in studies"
+            :id="study._id.toString()"
+            :key="study._id.toString()"
+            :name="study.name"
+            :description="study.description"
+            @deleted="refetch"
+            @open="openSidebar"
+          />
+        </tbody>
+      </table>
+    </ElCard>
   </div>
 
   <StudyDetailsSidebar
