@@ -7,17 +7,25 @@ services:
       - redis_data:/data
     command: redis-server --appendonly yes
     restart: unless-stopped
-
-  mongodb:
-    image: mongodb/mongodb-community-server:6.0-ubi8
-    ports:
-      - "27017:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=devuser
-      - MONGO_INITDB_ROOT_PASSWORDdevpassword123=
-    volumes:
-      - mongodb_data:/data/db
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - app-network
 
 volumes:
   redis_data:
-  mongodb_data:
+
+networks:
+  app-network:
+    driver: bridge
