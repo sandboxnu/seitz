@@ -3,7 +3,9 @@ import studiesAPI from "@/api/studies";
 import { useMutation } from "@tanstack/vue-query";
 import AppButton from "@/components/ui/AppButton.vue";
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const emit = defineEmits(["deleted", "open"]);
 const props = defineProps<{ name: string; description: string; id: string }>();
 const isHovered = ref(false);
@@ -15,13 +17,26 @@ const { mutate } = useMutation({
   },
 });
 
+let clickTimer: ReturnType<typeof setTimeout> | null = null;
+
+const handleClick = () => {
+  clickTimer = setTimeout(() => {
+    emit("open", props.id);
+  }, 250);
+};
+
 const handleDoubleClick = () => {
-  emit("open", props.id);
+  if (clickTimer) {
+    clearTimeout(clickTimer);
+    clickTimer = null;
+  }
+  router.push({ name: "study", params: { id: props.id } });
 };
 </script>
 <template>
   <tr
     class="border-b-2 cursor-pointer transition-colors"
+    @click="handleClick"
     @dblclick="handleDoubleClick"
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
