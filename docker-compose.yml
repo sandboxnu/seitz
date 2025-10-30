@@ -22,6 +22,8 @@ services:
         max-file: "3"
     networks:
       - app-network
+  backend:
+  frontend:
 
 volumes:
   redis_data:
