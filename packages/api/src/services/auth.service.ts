@@ -6,6 +6,7 @@ import { Strategy as LocalStrategy } from "passport-local";
 import sgMail from "@sendgrid/mail";
 import crypto from "crypto";
 import { IUser } from "@seitz/shared";
+import RedisService from "./redis.service";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -40,12 +41,16 @@ passport.deserializeUser((id, done) =>
 );
 
 export const signUp = async (req: any, res: any, next: any): Promise<void> => {
-  const { email, password } = req.body;
-  if (typeof email !== "string" || typeof password !== "string") {
-    next(new HttpError(400, "Must have fields email and password"));
+  const { name, email, password } = req.body;
+  if (
+    typeof email !== "string" ||
+    typeof password !== "string" ||
+    typeof name !== "string"
+  ) {
+    next(new HttpError(400, "Must have fields name, email, and password"));
   } else {
     const token = crypto.randomBytes(20).toString("hex");
-    User.create({ email, password, token })
+    User.create({ name, email, password, token })
       .then(async (user) => {
         sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
         const URL = `http://localhost:4000/auth/verify/${user.token}`;
@@ -74,11 +79,36 @@ export const signUp = async (req: any, res: any, next: any): Promise<void> => {
   }
 };
 
-export const login = async (): APIResponse<void> => {
+export const login = async (req: any): APIResponse<void> => {
+  const user = req.user;
+
+  await RedisService.loadFromDatabase(
+    "user",
+    user._id,
+    RedisService.cacheTypeOf("studies"),
+    RedisService.cacheTypeOf("batteries")
+  );
+
   return [200];
 };
 
 export const logout = async (req: any): APIResponse<void> => {
+  const userId = req.user?._id;
+
+  if (userId) {
+    await RedisService.saveToDatabase(
+      "user",
+      userId,
+      RedisService.cacheTypeOf("studies"),
+      RedisService.cacheTypeOf("batteries")
+    );
+    await RedisService.clearRecentItems(
+      "user",
+      userId,
+      RedisService.cacheTypeOf("studies"),
+      RedisService.cacheTypeOf("batteries")
+    );
+  }
   req.logout((err: any) => {
     if (err) {
       throw new HttpError(500);

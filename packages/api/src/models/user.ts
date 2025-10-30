@@ -1,15 +1,33 @@
 import { Schema, model } from "mongoose";
 import { ENCRYPTION_CONSTANTS as EC } from "../util/constants";
 import bcrypt from "bcrypt";
-import type { IUser } from "@seitz/shared";
+import { Role, type IUser } from "@seitz/shared";
 
 const userSchema = new Schema<IUser>({
+  name: {
+    type: String,
+    required: function () {
+      return this.verified === true;
+    },
+  },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  isAdmin: { type: Boolean, required: true, default: false },
+  role: {
+    type: String,
+    enum: Object.values(Role),
+    required: true,
+    default: Role.BasicUser,
+  },
   studies: [{ type: Schema.Types.ObjectId, ref: "Study" }],
+  // Ordering : [MostRecent, SecondMostRecent, ThirdMostRecent]
+  recentStudyIds: {
+    type: [String],
+    default: [],
+  },
   token: { type: String },
   verified: { type: Boolean, required: true, default: false },
+  favoriteBatteries: [{ type: Schema.Types.ObjectId, ref: "Battery" }],
+  recentBatteries: [{ type: Schema.Types.ObjectId, ref: "Battery" }],
 });
 
 userSchema.methods.verifyPassword = function (password: string) {

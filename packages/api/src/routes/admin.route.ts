@@ -1,50 +1,57 @@
 import { Router } from "express";
 
 import * as adminService from "../services/admin.service";
-import { isAdmin } from "../middleware/auth";
+import {
+  isStudyManager,
+  isSuperAdmin,
+  isUserManager,
+  roleUpdateIsValid,
+} from "../middleware/auth";
 import { route } from "../util/handlers";
 
 const router = Router();
 
 router.post(
   "/users/:id",
-  isAdmin,
-  route((req) => adminService.promoteToAdmin(req.params.id))
+  roleUpdateIsValid,
+  route((req) => adminService.updateRole(req.params.id, req.body.role))
 );
 
 router.post(
   "/battery",
-  isAdmin,
+  isStudyManager,
   route((req) => adminService.createBattery(req.body))
 );
 
 router.put(
   "/battery/:id",
-  isAdmin,
-  route((req) => adminService.editBattery(req.body, req.params.id))
+  isStudyManager,
+  route((req) =>
+    adminService.editBattery(req.body, req.params.id, req.body.userId)
+  )
 );
 
 router.delete(
   "/battery/:id",
-  isAdmin,
-  route((req) => adminService.deleteBattery(req.params.id))
+  isStudyManager,
+  route((req) => adminService.deleteBattery(req.params.id, req.body.userId))
 );
 
 router.get(
   "/users",
-  isAdmin,
+  isUserManager,
   route(() => adminService.getAdminUsers())
 );
 
 router.delete(
   "/users/:id",
-  isAdmin,
+  isSuperAdmin,
   route((req) => adminService.removeUserAsAdmin(req.params.id))
 );
 
 router.put(
   "/battery/:id/stage/:stageId/visibility/:status",
-  isAdmin,
+  isStudyManager,
   route((req) =>
     adminService.updateStageVisibility(
       req.params.id,
@@ -56,10 +63,22 @@ router.put(
 
 router.put(
   "/battery/:id/visibility/:status",
-  isAdmin,
+  isStudyManager,
   route((req) =>
     adminService.updateAdminVisibility(req.params.id, req.params.status)
   )
+);
+
+router.post(
+  "/users/:id/favorite/:battery_id",
+  route((req) =>
+    adminService.toggleFavoriteBattery(req.params.id, req.params.battery_id)
+  )
+);
+
+router.get(
+  "/users/:id/recent",
+  route((req) => adminService.recentBatteries(req.params.id))
 );
 
 export default router;

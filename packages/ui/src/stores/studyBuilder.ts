@@ -377,6 +377,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
       batteries: taskBank.value.map((id) => taskData.value[id]), // TODO: fix this
       variants: updatedVariants,
       owner: authStore.currentUser._id,
+      prefixServerCode: serverCode.value,
     });
   }
 

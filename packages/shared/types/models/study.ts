@@ -35,7 +35,9 @@ export interface CreateStudy {
   description?: string;
   batteries?: Types.ObjectId[];
   owner: Types.ObjectId;
+  prefixServerCode: string;
   variants: CreateStudyVariant[];
+  lastModified?: Date;
 }
 
 export interface IStudy extends Required<CreateStudy> {

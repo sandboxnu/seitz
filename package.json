@@ -14,7 +14,6 @@
     "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-vue": "^9.17.0",
     "husky": "^8.0.0",
-    "prettier": "^3.0.3",
     "typescript": "^5.0.2"
   },
   "scripts": {
@@ -24,12 +23,17 @@
     "prettier:fix": "prettier . --write",
     "format": "pnpm prettier:fix && pnpm lint:fix",
     "prepare": "husky install",
-    "dev": "pnpm --stream -r dev"
+    "dev": "pnpm --stream -r dev",
+    "dev:infra": "docker-compose up -d redis",
+    "dev:infra:stop": "docker-compose down redis"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
     "@sendgrid/mail": "^8.1.1",
+    "@types/redis": "^4.0.10",
     "mongoose": "^7.5.2",
+    "prettier": "3.0.3",
+    "redis": "^5.8.2",
     "short-unique-id": "^5.0.3"
   }
 }

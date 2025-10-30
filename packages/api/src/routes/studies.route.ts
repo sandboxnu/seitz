@@ -12,10 +12,22 @@ router.get(
   authRoute((_, user) => studyService.getMyStudies(user))
 );
 
+router.get(
+  "/recent",
+  isAuthenticated,
+  authRoute((_, user) => studyService.getRecentlyEditedStudies(user))
+);
+
 router.delete(
   "/:id",
   isAuthenticated,
   authRoute((req, user) => studyService.deleteStudy(user, req.params.id))
+);
+
+router.get(
+  "/:id/preview",
+  isAuthenticated,
+  authRoute((req, user) => studyService.getStudyPreview(user, req.params.id))
 );
 
 router.get(
@@ -88,6 +100,13 @@ router.put(
       req.params.studyId,
       req.params.variantId,
       req.body
+router.post(
+  "/:studyId/validate-prefix-server-code",
+  isAuthenticated,
+  authRoute((req) =>
+    studyService.validateAndUpdatePrefixServerCode(
+      req.params.studyId,
+      req.body.prefixServerCode
     )
   )
 );

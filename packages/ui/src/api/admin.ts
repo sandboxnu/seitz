@@ -1,3 +1,4 @@
+import { DTO, Role, GETTasks } from "@seitz/shared";
 import axios from "axios";
 
 const axiosInstance = axios.create({
@@ -68,18 +69,33 @@ async function getAllUsers() {
   return result.data;
 }
 
-async function addUserAsAdmin(userId: string) {
-  return await axiosInstance.post(`admin/users/${userId}`);
+async function assignAdminRole(userId: string, role: Role) {
+  return await axiosInstance.post(`admin/users/${userId}`, { role });
 }
 
 async function removeUserAsAdmin(userId: string) {
   return await axiosInstance.delete(`admin/users/${userId}`);
 }
 
+async function toggleFavoriteBattery(userId: string, battery_id: string) {
+  return await axiosInstance.post(
+    `admin/users/${userId}/favorite/${battery_id}`
+  );
+}
+
+async function recentBatteries(userId: string) {
+  const tasks = await axiosInstance.get<DTO<GETTasks>>(
+    `admin/users/${userId}/recent`
+  );
+  return tasks.data;
+}
+
 export default {
   getStages,
   getAdminUsers,
   getAllUsers,
-  addUserAsAdmin,
+  assignAdminRole,
   removeUserAsAdmin,
+  toggleFavoriteBattery,
+  recentBatteries,
 };

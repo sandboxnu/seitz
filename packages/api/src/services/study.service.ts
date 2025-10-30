@@ -1,5 +1,6 @@
 import HttpError from "../types/errors";
 import { CustomizedBattery, Study } from "../models";
+import RedisService from "./redis.service";
 
 import type { HydratedDocument, Types } from "mongoose";
 import type {
@@ -25,6 +26,53 @@ export const getMyStudies = async (
   ];
 };
 
+export const getRecentlyEditedStudies = async (
+  user: HydratedDocument<IUser>
+): APIResponse<GETStudies> => {
+  const recentStudyIds = await RedisService.getRecentItems(
+    "user",
+    user._id.toString(),
+    RedisService.cacheTypeOf("studies")
+  );
+
+  if (recentStudyIds.length === 0) {
+    return [200, []];
+  }
+  // Fetch only studies owned by the user and present in the recent list
+  interface RecentStudyProjection {
+    _id: Types.ObjectId;
+    name: string;
+    description: string;
+    variants: IStudy["variants"];
+    lastModified: Date;
+  }
+
+  const studies = (await Study.find(
+    {
+      _id: { $in: recentStudyIds },
+      owner: user._id,
+    },
+    // projection: only fields the UI currently needs
+    {
+      name: 1,
+      description: 1,
+      variants: 1,
+      lastModified: 1,
+    }
+  ).lean()) as unknown as RecentStudyProjection[];
+
+  // Preserve ordering based on recency list from Redis
+  const studiesById = new Map<string, RecentStudyProjection>(
+    studies.map((s) => [s._id.toString(), s])
+  );
+  const ordered: IStudy[] = recentStudyIds
+    .map((id) => studiesById.get(id))
+    .filter((s): s is RecentStudyProjection => Boolean(s))
+    .map((s) => s as unknown as IStudy); // cast back to shared type
+
+  return [200, ordered];
+};
+
 export const deleteStudy = async (
   user: HydratedDocument<IUser>,
   studyId: string
@@ -38,7 +86,44 @@ export const deleteStudy = async (
   study.deleteOne();
   user.studies.splice(studyIndex, 1);
   user.save();
+
+  await RedisService.removeRecentItem(
+    "user",
+    user._id.toString(),
+    RedisService.cacheTypeOf("studies"),
+    studyId
+  );
   return [200];
+};
+
+export const getStudyPreview = async (
+  user: HydratedDocument<IUser>,
+  studyId: string
+): APIResponse<GETStudy> => {
+  const study = await Study.findOne({
+    _id: studyId,
+    owner: user._id,
+  })
+    .populate<{
+      batteries: GETCustomizedTask[];
+    }>({
+      path: "batteries",
+      populate: {
+        path: "battery",
+        model: "Battery",
+      },
+    })
+    .populate({
+      path: "variants.sessions.tasks.task",
+      populate: { path: "battery" },
+    })
+    .lean();
+
+  if (!study) {
+    throw new HttpError(404);
+  }
+
+  return [200, study];
 };
 
 export const getStudy = async (
@@ -57,20 +142,28 @@ export const getStudy = async (
       model: "Battery",
     },
   });
-
   if (!study) {
     throw new HttpError(404);
   }
-
   return [200, study];
 };
 
 export const createBlankStudy = async (
   user: HydratedDocument<IUser>
 ): APIResponse<Types.ObjectId> => {
-  const study = await Study.create({ owner: user._id });
-
+  const study = await Study.create({
+    owner: user._id,
+    lastModified: new Date(),
+  });
   await user.updateOne({ $push: { studies: study._id } });
+
+  await RedisService.addRecentItem(
+    "user",
+    user._id.toString(),
+    RedisService.cacheTypeOf("studies"),
+    study._id.toString()
+  );
+
   return [201, study._id];
 };
 
@@ -83,6 +176,20 @@ export const updateStudy = async (
   const studyServerCodes = studyData.variants.map(
     (variant) => variant.serverCode
   );
+
+  if (studyData.prefixServerCode) {
+    const existingStudy = await Study.findOne({
+      _id: { $ne: studyId },
+      prefixServerCode: studyData.prefixServerCode,
+    });
+
+    if (existingStudy) {
+      throw new HttpError(
+        409,
+        "This prefix is already in use by another study. Please choose a different prefix."
+      );
+    }
+  }
 
   // Check if the serverCodes in the current study are unique
   if (studyServerCodes.length !== new Set(studyServerCodes).size) {
@@ -109,12 +216,20 @@ export const updateStudy = async (
 
   const study = await Study.findOneAndUpdate(
     { _id: studyId, owner: user._id },
-    studyData,
+    { ...studyData, lastModified: new Date() },
     { new: true }
   );
   if (!study) {
     throw new HttpError(404);
   }
+
+  await RedisService.addRecentItem(
+    "user",
+    user._id.toString(),
+    RedisService.cacheTypeOf("studies"),
+    studyId
+  );
+
   return [200, study];
 };
 
@@ -265,4 +380,43 @@ export const deleteVariant = async (
   if (!study) throw new HttpError(404);
 
   return [200];
+};
+
+export const validateAndUpdatePrefixServerCode = async (
+  studyId: string,
+  newPrefixServerCode: string
+): APIResponse<IStudy> => {
+  if (!newPrefixServerCode) {
+    throw new HttpError(400, "Prefix server code cannot be empty");
+  }
+
+  try {
+    // check if the study exists and user owns it
+    const study = await Study.findOne({ _id: studyId });
+    if (!study) {
+      throw new HttpError(404, "Study not found");
+    }
+
+    const existingStudy = await Study.findOne({
+      _id: { $ne: studyId },
+      prefixServerCode: newPrefixServerCode,
+    });
+
+    if (existingStudy) {
+      throw new HttpError(
+        409,
+        "This prefix is already in use by another study. Please choose a different prefix."
+      );
+    }
+
+    await study.updateOne({ prefixServerCode: newPrefixServerCode });
+
+    return [200];
+  } catch (error) {
+    console.error("Error validating/updating prefix server code:", error);
+    throw new HttpError(
+      500,
+      "An internal error occured while updating the prefix server code"
+    );
+  }
 };
