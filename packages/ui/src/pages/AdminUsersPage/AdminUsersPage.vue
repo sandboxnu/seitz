@@ -18,6 +18,7 @@ const usersToAdd = ref<string[]>([]); // IDs of the users to be added as new adm
 const rolesToAdd = ref<Record<string, Role>>({}); // The roles of the new admins to be added
 const rolesToUpdate = ref<Record<string, Role>>({}); // The roles of the existing admins to be updated
 const showErrorAlert = ref(false);
+const dropdownResetKey = ref(0);
 
 const searchQuery = ref("");
 const { data: adminUsers, isLoading: isAdminsLoading } = useQuery(
@@ -48,6 +49,7 @@ const addAdmin = useMutation(
     },
     onError: (error: { response: { data: { message: string } } }) => {
       console.error(error);
+      dropdownResetKey.value++;
       if (
         error.response.data.message === "Cannot demote the only super admin"
       ) {
@@ -213,6 +215,12 @@ const saveChanges = () => {
   if (Object.keys(rolesToUpdate.value).length) {
     addAdmin.mutate(rolesToUpdate.value);
     rolesToUpdate.value = {};
+  } else {
+    ElNotification({
+      title: "No changes",
+      message: "No changes to save",
+      type: "info",
+    });
   }
 };
 
@@ -365,7 +373,7 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
           <h2 class="font-bold text-xl mb-4 ml-3">Users</h2>
           <!-- Handle button click -->
           <AppButton
-            class="mb-4 bg-[#fafafa] !text-black border border-[#e6e6e6] rounded-md hover:bg-[#f3f3f3] ml-auto px-4"
+            class="mb-4 !bg-[#fafafa] !text-[#000000] border !border-[#e6e6e6] rounded-md hover:bg-[#f3f3f3] ml-auto px-4"
             @click="saveChanges"
           >
             Save Changes
@@ -468,7 +476,11 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
                 {{ user.email }}
               </td>
               <td class="py-2 px-4 border-b text-left">
-                <RolesDropdown :user="user" @role-changed="updateRoles" />
+                <RolesDropdown
+                  :key="dropdownResetKey"
+                  :user="user"
+                  @role-changed="updateRoles"
+                />
               </td>
               <td class="py-2 px-4 border-b text-right">
                 <ElButton
