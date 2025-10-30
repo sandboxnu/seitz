@@ -36,8 +36,8 @@ const handleDoubleClick = () => {
       {{ description }}
     </h2>
     <div class="flex-1"></div>
-    <RouterLink :to="{ name: 'study', params: { id } }">
-      <AppButton @click.stop>Edit</AppButton>
+    <RouterLink :to="{ name: 'conditions', params: { id } }">
+      <AppButton>Edit</AppButton>
     </RouterLink>
     <AppButton @click="mutate">Delete</AppButton>
   </div>

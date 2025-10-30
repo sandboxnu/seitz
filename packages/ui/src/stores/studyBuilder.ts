@@ -57,7 +57,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   });
 
   function routeStudyId() {
-    if (route.name !== "study") return "";
+    if (route.name !== "study" && route.name !== "conditions") return "";
     const idParam = route.params.id;
     return typeof idParam === "string" ? idParam : idParam[0];
   }
@@ -77,7 +77,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const serverCode = ref<string>("");
 
   function initialize() {
-    if (route.name !== "study") return;
+    if (route.name !== "study" && route.name !== "conditions") return;
 
     studyId.value = routeStudyId();
     isStudyLoading.value = true;
@@ -209,6 +209,10 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     }
   }
 
+  function getTaskName(taskId: string) {
+    return taskData.value[taskId]?.name ?? "Task not found";
+  }
+
   function addSession() {
     const newSession = {
       _id: new mongoose.Types.ObjectId().toString(),
@@ -245,6 +249,19 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     } else {
       addVariant();
     }
+  }
+
+  function changeVariant(
+    variantId: string,
+    event: ChangeEvent<string | DTO<ISession>, DTO<ISession>>
+  ) {
+    console.log(event);
+    const variant = variants.value.find((v) => v._id === variantId);
+
+    if (!variant || !authStore.currentUser) return;
+
+    // COMMENT THIS LINE BELOW TO DISABLE DATABASE UPDATE
+    studiesAPI.updateVariant(studyId.value, variantId, variant);
   }
 
   function handleChange(
@@ -360,5 +377,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     removeCustomizedTaskOrInstance,
     addVariant,
     deleteVariant,
+    getTaskName,
+    changeVariant,
   };
 });
