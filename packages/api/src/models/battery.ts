@@ -76,6 +76,7 @@ export const batterySchema = new Schema<IBattery>({
   description: String,
   imageUrl: { type: String, required: true },
   stages: [batteryStageSchema],
+  published: { type: Boolean, default: false },
   deleted: { type: Boolean, default: false },
 });
 
