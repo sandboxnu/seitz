@@ -159,7 +159,7 @@ function setVariantId() {
           <div class="flex items-center gap-2.5">
             <!-- placeholder for variant id -->
             <div class="border rounded px-2 py-1 whitespace-nowrap">
-              sca-vi1
+              {{ variantData.serverCode || "00000" }}
             </div>
             <div class="flex items-end justify-end flex-wrap">
               <RouterLink

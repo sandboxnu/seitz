@@ -100,6 +100,10 @@ router.put(
       req.params.studyId,
       req.params.variantId,
       req.body
+    )
+  )
+);
+
 router.post(
   "/:studyId/validate-prefix-server-code",
   isAuthenticated,

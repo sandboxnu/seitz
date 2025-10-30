@@ -258,35 +258,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     console.log(event);
     const variant = variants.value.find((v) => v._id === variantId);
 
-    // function sessionAdded(sessionIndex: number, element: DTO<ISession>) {
-    //   if (!variant) return;
-    //   variant.sessions.splice(sessionIndex, 0, element);
-    // }
-
-    // function sessionRemoved(sessionIndex: number) {
-    //   if (!variant) return;
-    //   variant.sessions.splice(sessionIndex, 1);
-    // }
-
     if (!variant || !authStore.currentUser) return;
-
-    // if ("added" in event) {
-    //   const element = event.added.element;
-    //   const session =
-    //     typeof element === "string"
-    //       ? {
-    //           _id: new mongoose.Types.ObjectId().toString(),
-    //           name: "",
-    //           tasks: [],
-    //         }
-    //       : element;
-    //   sessionAdded(event.added.newIndex, session);
-    // } else if ("removed" in event) {
-    //   sessionRemoved(event.removed.oldIndex);
-    // } else {
-    //   sessionRemoved(event.moved.oldIndex);
-    //   sessionAdded(event.moved.newIndex, event.moved.element);
-    // }
 
     // COMMENT THIS LINE BELOW TO DISABLE DATABASE UPDATE
     studiesAPI.updateVariant(studyId.value, variantId, variant);

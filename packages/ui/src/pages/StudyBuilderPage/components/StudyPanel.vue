@@ -133,10 +133,10 @@ const currentVariantDescription = computed<string>({
       v-loading="studyBuilderStore.isStudyLoading"
       class="grow p-6 bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
     >
-      <div class="flex items-center justify-between gap-4 pb-5">
+      <div class="flex-2 items-center justify-between gap-4 pb-5">
         <input
           v-model="currentVariantDescription"
-          class="text-center w-full bg-transparent text-neutral-600 font-medium text-lg mx-5"
+          class="text-center w-full bg-transparent text-neutral-600 font-medium text-lg"
           type="text"
           placeholder="Untitled Variant Description"
         />
@@ -152,7 +152,9 @@ const currentVariantDescription = computed<string>({
         </div>
       </div>
 
-      <div class="w-full h-5/6 flex gap-6 overflow-x-auto bg-white pr-5">
+      <div
+        class="w-full h-fill min-h-[300px] flex gap-6 overflow-x-auto bg-white pr-5"
+      >
         <TransitionGroup>
           <Draggable
             key="draggable"
