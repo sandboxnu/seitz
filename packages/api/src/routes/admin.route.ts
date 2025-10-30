@@ -26,13 +26,15 @@ router.post(
 router.put(
   "/battery/:id",
   isStudyManager,
-  route((req) => adminService.editBattery(req.body, req.params.id))
+  route((req) =>
+    adminService.editBattery(req.body, req.params.id, req.body.userId)
+  )
 );
 
 router.delete(
   "/battery/:id",
   isStudyManager,
-  route((req) => adminService.deleteBattery(req.params.id))
+  route((req) => adminService.deleteBattery(req.params.id, req.body.userId))
 );
 
 router.get(
@@ -65,6 +67,18 @@ router.put(
   route((req) =>
     adminService.updateAdminVisibility(req.params.id, req.params.status)
   )
+);
+
+router.post(
+  "/users/:id/favorite/:battery_id",
+  route((req) =>
+    adminService.toggleFavoriteBattery(req.params.id, req.params.battery_id)
+  )
+);
+
+router.get(
+  "/users/:id/recent",
+  route((req) => adminService.recentBatteries(req.params.id))
 );
 
 export default router;

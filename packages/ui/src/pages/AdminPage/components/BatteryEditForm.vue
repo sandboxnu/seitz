@@ -4,15 +4,35 @@ import { storeToRefs } from "pinia";
 import { useBatteryEditingStore } from "../../../stores/admin";
 import AppButton from "../../../components/ui/AppButton.vue";
 import BatteryEditFormSection from "./BatteryEditFormSection.vue";
-import { useMutation, useQueryClient } from "@tanstack/vue-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import taskAPI from "@/api/tasks";
 import { ElNotification } from "element-plus";
+import adminAPI from "@/api/admin";
+import authAPI from "@/api/auth";
+import DeleteButton from "../../../components/ui/DeleteButton.vue";
+import TertiaryButton from "../../../components/ui/TertiaryButton.vue";
+import SecondaryButton from "../../../components/ui/SecondaryButton.vue";
 
 const store = useBatteryEditingStore();
 const { isLoading, isError, batteryData } = storeToRefs(store);
 const queryClient = useQueryClient();
 
-const deleteMutation = useMutation(taskAPI.deleteBattery, {
+const favoriteMutation = useMutation({
+  mutationFn: ({ userId, batteryId }: { userId: string; batteryId: string }) =>
+    adminAPI.toggleFavoriteBattery(userId, batteryId),
+  onSuccess: () => {
+    queryClient.invalidateQueries(["user"]);
+  },
+});
+
+const { data: currentUser } = useQuery({
+  queryKey: ["user"],
+  queryFn: authAPI.getCurrentUser,
+});
+
+const deleteMutation = useMutation({
+  mutationFn: ({ batteryId, userId }: { batteryId: string; userId: string }) =>
+    taskAPI.deleteBattery(batteryId, userId),
   onSuccess: () => {
     queryClient.invalidateQueries(["tasks"]);
     ElNotification({
@@ -23,6 +43,22 @@ const deleteMutation = useMutation(taskAPI.deleteBattery, {
     store.deselect();
   },
 });
+
+const publishMutation = useMutation({
+  mutationFn: taskAPI.publishBattery,
+  onSuccess: () => {
+    queryClient.invalidateQueries(["tasks"]);
+    store.select(batteryData.value?._id?.toString() || "");
+    ElNotification({
+      title: "Success",
+      message: `Battery successfully ${
+        batteryData.value?.published ? "un" : ""
+      }published`,
+      type: "success",
+    });
+  },
+});
+
 const nameInput = ref<HTMLInputElement>();
 const editingName = ref(false);
 </script>
@@ -41,16 +77,28 @@ const editingName = ref(false);
           @blur="editingName = false"
         />
         <ElImage
-          v-if="!editingName"
-          src="/mdi_pencil.svg"
-          class="h-6 cursor-pointer"
-          @click="nameInput?.focus()"
+          :src="
+            currentUser?.favoriteBatteries?.some(
+              (t) => t.toString() === batteryData?._id?.toString()
+            )
+              ? '/icons/favorite-star.svg'
+              : '/icons/star.svg'
+          "
+          class="h-5 w-5 cursor-pointer"
+          @click="
+            currentUser?._id &&
+              batteryData._id &&
+              favoriteMutation.mutate({
+                userId: currentUser._id,
+                batteryId: batteryData._id.toString(),
+              })
+          "
         />
       </div>
       <div class="grow"></div>
-      <AppButton @click="deleteMutation.mutate(batteryData._id)">
-        Delete Template
-      </AppButton>
+      <SecondaryButton @click="publishMutation.mutate(batteryData._id)">
+        {{ batteryData.published ? "Unpublish Template" : "Publish Template" }}
+      </SecondaryButton>
     </div>
     <div class="flex-1 flex overflow-auto">
       <div class="xl:basis-72 basis-56 flex flex-col gap-9">
@@ -90,11 +138,20 @@ const editingName = ref(false);
         </template>
       </div>
     </div>
-    <div class="flex-none flex gap-5">
-      <AppButton @click="store.editingBatteryId = undefined">Cancel</AppButton>
+    <div class="flex-none flex gap-2 border-black font-black">
+      <DeleteButton
+        @click="
+          deleteMutation.mutate({
+            batteryId: batteryData._id,
+            userId: currentUser?._id.toString() || '',
+          })
+        "
+      >
+        Delete
+      </DeleteButton>
       <div class="grow"></div>
-      <AppButton> Preview Template </AppButton>
-      <AppButton @click="store.save"> Save Template </AppButton>
+      <TertiaryButton>Preview</TertiaryButton>
+      <AppButton @click="store.save">Save Changes</AppButton>
     </div>
   </div>
 </template>

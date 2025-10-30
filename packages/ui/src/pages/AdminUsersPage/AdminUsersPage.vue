@@ -145,6 +145,34 @@ const filteredBasicUsers = computed(() => {
   return allUsers.value?.filter((user: any) => user.role === Role.BasicUser);
 });
 
+const activeTab = ref("superAdmin");
+
+const filteredAdminUsers = computed(() => {
+  if (!adminUsers.value) return [];
+
+  switch (activeTab.value) {
+    case "basicUser":
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return allUsers.value.filter((user: any) => user.role === Role.BasicUser);
+    case "basicAdmin":
+      return adminUsers.value.filter(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (user: any) =>
+          user.role === Role.StudyManager || user.role === Role.UserManager
+      );
+    case "superAdmin":
+    default:
+      return adminUsers.value.filter(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (user: any) => user.role === Role.SuperAdmin
+      );
+  }
+});
+
+const switchTab = (tab: string) => {
+  activeTab.value = tab;
+};
+
 const selectedUsers = computed(() => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return allUsers.value?.filter((user: any) =>
@@ -319,7 +347,7 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
     <ElCard class="rounded-xl shadow-md m-10">
       <div class="m-4">
         <div class="flex justify-between items-center">
-          <h2 class="font-bold text-xl mb-4 ml-3">Administrators</h2>
+          <h2 class="font-bold text-xl mb-4 ml-3">Users</h2>
           <!-- Handle button click -->
           <AppButton
             class="mb-4 bg-[#fafafa] !text-black border border-[#e6e6e6] rounded-md hover:bg-[#f3f3f3] ml-auto px-4"
@@ -333,9 +361,71 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
             >Add Administrator</AppButton
           >
         </div>
+
+        <table class="w-full table-auto border-collapse">
+          <!-- Navigation Bar Row -->
+          <thead>
+            <tr>
+              <td colspan="4" class="p-0 border-b-2">
+                <div class="flex border-b gap-x-4">
+                  <button
+                    :class="[
+                      'px-2 py-2 text-sm font-medium border-b-2 transition-colors',
+                      activeTab === 'superAdmin'
+                        ? 'text-black'
+                        : 'border-transparent',
+                    ]"
+                    :style="
+                      activeTab === 'superAdmin'
+                        ? { borderBottomColor: '#BA3B2A' }
+                        : {}
+                    "
+                    @click="switchTab('superAdmin')"
+                  >
+                    Super Admin
+                  </button>
+                  <button
+                    :class="[
+                      'px-2 py-2 text-sm font-medium border-b-2 transition-colors',
+                      activeTab === 'basicAdmin'
+                        ? 'text-black'
+                        : 'border-transparent',
+                    ]"
+                    :style="
+                      activeTab === 'basicAdmin'
+                        ? { borderBottomColor: '#BA3B2A' }
+                        : {}
+                    "
+                    @click="switchTab('basicAdmin')"
+                  >
+                    Basic Admin
+                  </button>
+                  <button
+                    :class="[
+                      'px-2 py-2 text-sm font-medium border-b-2 transition-colors',
+                      activeTab === 'basicUser'
+                        ? 'text-black'
+                        : 'border-transparent',
+                    ]"
+                    :style="
+                      activeTab === 'basicUser'
+                        ? { borderBottomColor: '#BA3B2A' }
+                        : {}
+                    "
+                    @click="switchTab('basicUser')"
+                  >
+                    Basic User
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </thead>
+        </table>
+
+        <!-- User Data Info Table -->
         <table
           v-if="!isAdminsLoading && adminUsers.length > 0"
-          class="w-full table-auto border-collapse"
+          class="w-full table-auto border-collapse mt-4"
         >
           <thead>
             <tr>
@@ -348,7 +438,7 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="user in adminUsers" :key="user._id">
+            <tr v-for="user in filteredAdminUsers" :key="user._id">
               <td class="py-2 px-6 border-b text-left">{{ user.name }}</td>
               <td class="py-2 px-12 border-b">
                 {{ user.email }}

@@ -1,6 +1,6 @@
 import HttpError from "../types/errors";
 import { CustomizedBattery, Study } from "../models";
-import * as redisService from "./redis.service";
+import RedisService from "./redis.service";
 
 import type { HydratedDocument, Types } from "mongoose";
 import type {
@@ -29,7 +29,11 @@ export const getMyStudies = async (
 export const getRecentlyEditedStudies = async (
   user: HydratedDocument<IUser>
 ): APIResponse<GETStudies> => {
-  const recentStudyIds = await redisService.getRecentDocs(user._id.toString());
+  const recentStudyIds = await RedisService.getRecentItems(
+    "user",
+    user._id.toString(),
+    RedisService.cacheTypeOf("studies")
+  );
 
   if (recentStudyIds.length === 0) {
     return [200, []];
@@ -83,8 +87,43 @@ export const deleteStudy = async (
   user.studies.splice(studyIndex, 1);
   user.save();
 
-  await redisService.removeRecentDocs(user._id.toString(), studyId);
+  await RedisService.removeRecentItem(
+    "user",
+    user._id.toString(),
+    RedisService.cacheTypeOf("studies"),
+    studyId
+  );
   return [200];
+};
+
+export const getStudyPreview = async (
+  user: HydratedDocument<IUser>,
+  studyId: string
+): APIResponse<GETStudy> => {
+  const study = await Study.findOne({
+    _id: studyId,
+    owner: user._id,
+  })
+    .populate<{
+      batteries: GETCustomizedTask[];
+    }>({
+      path: "batteries",
+      populate: {
+        path: "battery",
+        model: "Battery",
+      },
+    })
+    .populate({
+      path: "variants.sessions.tasks.task",
+      populate: { path: "battery" },
+    })
+    .lean();
+
+  if (!study) {
+    throw new HttpError(404);
+  }
+
+  return [200, study];
 };
 
 export const getStudy = async (
@@ -103,11 +142,9 @@ export const getStudy = async (
       model: "Battery",
     },
   });
-
   if (!study) {
     throw new HttpError(404);
   }
-
   return [200, study];
 };
 
@@ -119,11 +156,14 @@ export const createBlankStudy = async (
     lastModified: new Date(),
   });
   await user.updateOne({ $push: { studies: study._id } });
-  // Immediately add to recent documents so it appears in UI after creation
-  await redisService.addRecentDocument(
+
+  await RedisService.addRecentItem(
+    "user",
     user._id.toString(),
+    RedisService.cacheTypeOf("studies"),
     study._id.toString()
   );
+
   return [201, study._id];
 };
 
@@ -182,7 +222,14 @@ export const updateStudy = async (
   if (!study) {
     throw new HttpError(404);
   }
-  await redisService.addRecentDocument(user._id.toString(), studyId);
+
+  await RedisService.addRecentItem(
+    "user",
+    user._id.toString(),
+    RedisService.cacheTypeOf("studies"),
+    studyId
+  );
+
   return [200, study];
 };
 

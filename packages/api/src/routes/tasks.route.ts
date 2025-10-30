@@ -36,4 +36,10 @@ router.post(
   )
 );
 
+router.post(
+  "/:id/publish",
+  isAuthenticated,
+  authRoute((req) => tasksService.publishTask(req.params.id))
+);
+
 export default router;
