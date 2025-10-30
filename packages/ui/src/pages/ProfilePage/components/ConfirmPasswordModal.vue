@@ -127,8 +127,8 @@ function onClose() {
           <button
             type="button"
             class="px-4 py-2 rounded-lg text-sm border border-gray-200 hover:bg-gray-50"
-            @click="onClose"
             :disabled="saving"
+            @click="onClose"
           >
             Cancel
           </button>
