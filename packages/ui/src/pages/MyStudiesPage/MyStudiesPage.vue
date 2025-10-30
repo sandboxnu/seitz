@@ -44,12 +44,12 @@ const openSidebar = (studyId: string) => {
     v-loading="isLoading"
     class="mt-14 mx-auto w-full min-w-[600px] px-4 sm:px-6 lg:px-10"
   >
-    <h1 class="text-3xl font-bold mb-4 -mt-4">My Studies</h1>
     <div class="flex items-center">
-      <h1 class="mt-4">Recents</h1>
+      <h1 class="text-3xl font-bold mb-4 -mt-4">My Studies</h1>
       <div class="flex-1"></div>
-      <AppButton @click="mutate">+ New</AppButton>
+      <AppButton class="mb-4 -mt-4" @click="mutate">+ New</AppButton>
     </div>
+    <h1 class="mt-4">Recents</h1>
     <RecentStudies />
 
     <ElCard class="rounded-xl shadow-sm" :body-style="{ padding: 0 }">
