@@ -7,6 +7,7 @@ import AdminPage from "./pages/AdminPage/AdminPage.vue";
 import StudyBuilderPage from "./pages/StudyBuilderPage/StudyBuilderPage.vue";
 import AdminUsersPage from "./pages/AdminUsersPage/AdminUsersPage.vue";
 import StudyConditions from "./pages/StudyConditions/components/StudyConditions.vue";
+import ProfilePage from "./pages/ProfilePage/ProfilePage.vue";
 
 const routes: RouteRecordRaw[] = [
   { path: "/", name: "home", redirect: "/studies" },
@@ -18,6 +19,7 @@ const routes: RouteRecordRaw[] = [
   { path: "/admin/users", name: "adminUsers", component: AdminUsersPage },
   { path: "/study/:id", name: "study", component: StudyBuilderPage },
   { path: "/conditions/:id", name: "conditions", component: StudyConditions },
+  { path: "/profile", name: "profile", component: ProfilePage },
 ];
 
 const router = createRouter({
