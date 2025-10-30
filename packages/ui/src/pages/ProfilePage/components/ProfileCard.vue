@@ -134,7 +134,11 @@ async function onSave() {
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
       <div class="flex items-center gap-4">
-        <div class="w-20 h-20 rounded-full bg-gray-100"></div>
+        <div
+          class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden"
+        >
+          <img src="/default-user.svg" class="w-fill h-fill object-contain" />
+        </div>
         <div>
           <h2 class="text-2xl font-semibold text-gray-900">
             {{ fullName }}
@@ -151,6 +155,7 @@ async function onSave() {
       </button>
     </div>
 
+    <!-- TODO: gonna keep this tab switching functionality for now in case we want to add more tabs?-->
     <!-- Switch Tab -->
     <div class="flex gap-6 border-b border-gray-200 mt-8">
       <button
@@ -163,17 +168,6 @@ async function onSave() {
         @click="activeTab = 'account'"
       >
         Account
-      </button>
-      <button
-        class="pb-2 font-medium"
-        :class="
-          activeTab === 'studies'
-            ? 'border-b-2 border-primary-300 text-gray-900'
-            : 'text-gray-500 hover:text-gray-700'
-        "
-        @click="activeTab = 'studies'"
-      >
-        My Studies
       </button>
     </div>
 

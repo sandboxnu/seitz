@@ -80,7 +80,7 @@ function onClose() {
       v-if="props.modelValue"
       class="fixed inset-0 z-[1000] flex items-center justify-center"
     >
-      <div class="absolute inset-0 bg-black/30" @click="onClose" />
+      <div class="absolute inset-0 bg-black/30" @click="onClose"></div>
 
       <div class="relative bg-white rounded-xl shadow-lg w-full max-w-md p-6">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">
@@ -125,6 +125,7 @@ function onClose() {
 
         <div class="mt-6 flex justify-end gap-3">
           <button
+            type="button"
             class="px-4 py-2 rounded-lg text-sm border border-gray-200 hover:bg-gray-50"
             @click="onClose"
             :disabled="saving"
@@ -132,6 +133,7 @@ function onClose() {
             Cancel
           </button>
           <button
+            type="button"
             class="px-4 py-2 rounded-lg text-sm bg-neutral-600 text-neutral-10 disabled:opacity-60 disabled:cursor-not-allowed"
             :disabled="!isValid || saving"
             @click="onSubmit"
