@@ -17,6 +17,7 @@ const queryClient = useQueryClient();
 const usersToAdd = ref<string[]>([]); // IDs of the users to be added as new admins
 const rolesToAdd = ref<Record<string, Role>>({}); // The roles of the new admins to be added
 const rolesToUpdate = ref<Record<string, Role>>({}); // The roles of the existing admins to be updated
+const showErrorAlert = ref(false);
 
 const searchQuery = ref("");
 const { data: adminUsers, isLoading: isAdminsLoading } = useQuery(
@@ -45,13 +46,19 @@ const addAdmin = useMutation(
         type: "success",
       });
     },
-    onError: (error) => {
+    onError: (error: { response: { data: { message: string } } }) => {
       console.error(error);
-      ElNotification({
-        title: "Error",
-        message: "Failed to update admin roles",
-        type: "error",
-      });
+      if (
+        error.response.data.message === "Cannot demote the only super admin"
+      ) {
+        showErrorAlert.value = true;
+      } else {
+        ElNotification({
+          title: "Error",
+          message: "Failed to update admin roles",
+          type: "error",
+        });
+      }
     },
   }
 );
@@ -421,7 +428,16 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
             </tr>
           </thead>
         </table>
-
+        <div
+          v-if="showErrorAlert && activeTab === 'superAdmin'"
+          class="flex items-center p-2 mb-2 text-[#BA3B2A] rounded-lg bg-red-50"
+        >
+          <img src="/icons/warning.svg" class="w-3 h-3 mr-2 ml-2" />
+          <span class="text-sm"
+            >Must have one super admin at all times. Add one before removing
+            one.</span
+          >
+        </div>
         <!-- User Data Info Table -->
         <table
           v-if="!isAdminsLoading && adminUsers.length > 0"
@@ -450,7 +466,13 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
                 <ElButton
                   :text="true"
                   type="danger"
-                  class="hover:bg-red-100 text-red-600 underline"
+                  :class="{
+                    'hover:bg-red-100 text-red-600 underline':
+                      user._id !== authStore.currentUser?._id,
+                    'text-gray-400 cursor-not-allowed':
+                      user._id === authStore.currentUser?._id,
+                  }"
+                  :disabled="user._id === authStore.currentUser?._id"
                   @click="handleRemoveAdmin(user.email, user._id)"
                   >Remove</ElButton
                 >
