@@ -89,7 +89,7 @@ watch(showErrorAlert, (show) => {
   if (show) {
     setTimeout(() => {
       showErrorAlert.value = false;
-    }, 2000);
+    }, 3000);
   }
 });
 
