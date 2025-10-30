@@ -66,7 +66,7 @@ export const roleUpdateIsValid: RequestHandler = async (req, res, next) => {
     );
   }
 
-  if (req.params.id === user?._id?.toString()) {
+  if (userRole == Role.SuperAdmin && req.params.id === user?._id?.toString()) {
     const superAdminCount = await User.countDocuments({
       role: Role.SuperAdmin,
     });
