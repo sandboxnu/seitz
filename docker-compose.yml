@@ -21,13 +21,42 @@ services:
         max-size: "10m"
         max-file: "3"
     networks:
-      - app-network
-  backend:
+      - seitz-network
+  api:
+    build:
+      context: ./packages/
+      dockerfile: ./api/Dockerfile
+    container_name: seitz-api
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis
+    volumes:
+      - ./api:/app
+    networks:
+      - seitz-network
+
   frontend:
+    build:
+      context: ./packages/
+      dockerfile: ./ui/Dockerfile
+    container_name: seitz-frontend
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - api
+    volumes:
+      - ./frontend:/app
+    networks:
+      - seitz-network
 
 volumes:
   redis_data:
+  frontend_data:
+  api_data:
 
 networks:
-  app-network:
+  seitz-network:
     driver: bridge

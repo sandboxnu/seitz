@@ -3,15 +3,16 @@ ARG NGINX_VERSION=alpine3.22
 
 FROM node:20-alpine AS builder
 
-WORKDIR /usr/src/app
+RUN corepack enable
 
-COPY package.json package-lock.yaml ./
+WORKDIR /app 
 
-RUN --mount=type=cache, target=/root/.npm npm ci
+COPY ui/package.json ui/pnpm-lock.yaml ./
+RUN --mount=type=cache,target=/root/.pnpm-store \
+  pnpm install --frozen-lockfile
 
-COPY ../shared /usr/src/app/
-
-COPY . . 
+COPY shared ./shared
+COPY ui ./ui 
 
 RUN npm run build
 
@@ -19,11 +20,11 @@ FROM nginxinc/nginx-unprivileged:latest AS runner
 
 USER nginx
 
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY ui/nginx.conf /etc/nginx/nginx.conf
 
 COPY --chown=nginx:nginx --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 8080
 
 ENTRYPOINT [ "nginx", "-c", "/etc/nginx/nginx.conf" ]
-CMD ["-g", "demon off;"]
+CMD ["nginx", "-g", "demon off;"]

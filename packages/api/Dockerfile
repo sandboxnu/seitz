@@ -1,14 +1,16 @@
 FROM node:20-alpine
 
-WORKDIR /usr/src/app
+RUN corepack enable
 
-COPY package.json ./ 
-RUN pnpm ci
+WORKDIR /app
 
-COPY ../shared /usr/src/app/
+COPY shared ./shared
+COPY api/package.json api/pnpm-lock.yaml ./ 
+RUN --mount=type=cache,target=/root/.pnpm-store \
+  pnpm install --frozen-lockfile
 
-COPY . .
+COPY api ./api
 
-EXPOSE 4000
+EXPOSE 3000 
 
-CMD ["node", "app.js"]
+CMD ["node", "src/app.js"]
