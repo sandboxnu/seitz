@@ -3,18 +3,18 @@ ARG NGINX_VERSION=alpine3.22
 
 FROM node:20-alpine AS builder
 
-RUN corepack enable
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
 WORKDIR /app 
 
-COPY ui/package.json ui/pnpm-lock.yaml ./
+COPY ui/package.json ./
 RUN --mount=type=cache,target=/root/.pnpm-store \
-  pnpm install --frozen-lockfile
+  pnpm install 
 
 COPY shared ./shared
 COPY ui ./ui 
 
-RUN npm run build
+RUN pnpm build
 
 FROM nginxinc/nginx-unprivileged:latest AS runner
 

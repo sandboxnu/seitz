@@ -1,13 +1,13 @@
 FROM node:20-alpine
 
-RUN corepack enable
-
 WORKDIR /app
 
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
 COPY shared ./shared
-COPY api/package.json api/pnpm-lock.yaml ./ 
+COPY api/package.json ./ 
 RUN --mount=type=cache,target=/root/.pnpm-store \
-  pnpm install --frozen-lockfile
+  pnpm install
 
 COPY api ./api
 
