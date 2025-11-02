@@ -53,7 +53,7 @@ const isCollapsed = computed(() => {
         <ElImage src="/icons/ep_notebook.svg" />
         <template v-if="!isCollapsed">My Studies</template>
       </ElMenuItem>
-      <ElMenuItem class="flex items-center gap-3">
+      <ElMenuItem index="/profile" class="flex items-center gap-3">
         <ElImage src="/icons/person.svg" />
         <template v-if="!isCollapsed">Profile</template>
       </ElMenuItem>
