@@ -1,12 +1,18 @@
 services:
   redis:
     image: redis:7-alpine
+    container_name: seitz-redis
     ports:
-      - "6379:6379"
+      - "6380:6379"
     volumes:
       - redis_data:/data
-    command: redis-server --appendonly yes
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
     deploy:
       resources:
         limits:
@@ -20,42 +26,82 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - seitz-network
+
   api:
     build:
-      context: ./packages/
-      dockerfile: ./api/Dockerfile
+      context: .
+      dockerfile: ./packages/api/Dockerfile
     container_name: seitz-api
-    restart: always
+    restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "4000:4000"
     depends_on:
-      - redis
-    volumes:
-      - ./api:/app
+      redis:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_URL=redis://redis:6379
+      - MONGO_URL=${MONGO_URL}
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+      - SECURE=${SECURE:-false}
+      - JWT_SECRET=${JWT_SECRET}
+      - HUSKY=0
     networks:
       - seitz-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:4000/health",
+        ]
+      interval: 30s
+      timeout: 3s
+      retries: 3
 
   frontend:
     build:
-      context: ./packages/
-      dockerfile: ./ui/Dockerfile
+      context: .
+      dockerfile: ./packages/ui/Dockerfile
     container_name: seitz-frontend
-    restart: always
+    restart: unless-stopped
     ports:
       - "8080:8080"
     depends_on:
-      - api
-    volumes:
-      - ./frontend:/app
+      api:
+        condition: service_healthy
+    environment:
+      - VITE_API_URL=http://localhost:4000
+      - HUSKY=0
     networks:
       - seitz-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:8080",
+        ]
+      interval: 30s
+      timeout: 3s
+      retries: 3
 
 volumes:
   redis_data:
-  frontend_data:
-  api_data:
+    driver: local
 
 networks:
   seitz-network:
