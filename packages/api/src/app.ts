@@ -8,6 +8,7 @@ import {
   adminRoutes,
   authRoutes,
   exampleRoutes,
+  healthRoutes,
   studiesRoutes,
   tasksRoutes,
 } from "./routes";
@@ -42,6 +43,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Routes
+app.use("/", healthRoutes);
 app.use("/admin", adminRoutes);
 app.use("/example/", exampleRoutes);
 app.use("/studies/", studiesRoutes);
