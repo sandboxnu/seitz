@@ -1,5 +1,3 @@
-.PHONY: help build up down restart logs clean dev prod shell
-
 help:
 	@echo "Commands:"
 	@echo "  make build    - Build all images"
@@ -7,8 +5,6 @@ help:
 	@echo "  make dev      - Start development"
 	@echo "  make down     - Stop services"
 	@echo "  make logs     - View logs"
-	@echo "  make clean    - Remove everything"
-
 build:
 	docker compose build --no-cache
 

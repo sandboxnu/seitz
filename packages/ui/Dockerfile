@@ -2,8 +2,6 @@ FROM node:20-alpine AS development
 
 WORKDIR /app
 
-ENV HUSKY=0
-
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 COPY package.json* pnpm-lock.yaml* pnpm-workspace.yaml* ./
@@ -23,8 +21,6 @@ CMD ["pnpm", "--filter", "ui", "dev"]
 FROM node:20-alpine AS builder
 
 WORKDIR /app
-
-ENV HUSKY=0
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
 

@@ -24,8 +24,6 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-ENV HUSKY=0
-
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 COPY package.json* pnpm-lock.yaml* pnpm-workspace.yaml* ./
@@ -33,7 +31,7 @@ COPY packages/api/package.json ./packages/api/
 COPY packages/shared/package.json ./packages/shared/
 
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
-  pnpm install --frozen-lockfile --prod
+  pnpm install --frozen-lockfile
 
 COPY packages/shared ./packages/shared
 COPY packages/api ./packages/api
@@ -41,8 +39,6 @@ COPY packages/api ./packages/api
 FROM node:20-alpine AS production
 
 WORKDIR /app
-
-ENV HUSKY=0
 
 RUN apk add --no-cache dumb-init && addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
 
