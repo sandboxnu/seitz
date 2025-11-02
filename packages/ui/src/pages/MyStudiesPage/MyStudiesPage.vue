@@ -84,7 +84,7 @@ const handleStudyDeleted = async () => {
             :key="study._id.toString()"
             :name="study.name"
             :description="study.description"
-            @deleted="refetch"
+            @deleted="handleStudyDeleted"
             @open="openSidebar"
           />
         </tbody>
