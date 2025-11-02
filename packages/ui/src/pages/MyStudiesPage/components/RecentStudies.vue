@@ -11,7 +11,7 @@ const { data: recentStudies } = useQuery({
 
 <template>
   <!-- calls 3 most recent, variants and status are currently placeholders -->
-  <div v-if="recentStudies?.length" class="flex flex-row gap-4">
+  <div v-if="recentStudies?.length" class="flex flex-row gap-4 -mt-4">
     <RecentStudiesComponent
       v-for="s in recentStudies"
       :id="s._id"
