@@ -373,7 +373,7 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
           <h2 class="font-bold text-xl mb-4 ml-3">Users</h2>
           <!-- Handle button click -->
           <AppButton
-            class="mb-4 !bg-[#fafafa] !text-[#000000] border !border-[#e6e6e6] rounded-md hover:bg-[#f3f3f3] ml-auto px-4"
+            class="mb-4 !bg-[#fafafa] !text-[#000000] border !border-[#e6e6e6] rounded-md hover:text-gray-500 hover:bg-[#f3f3f3] ml-auto px-4"
             @click="saveChanges"
           >
             Save Changes
