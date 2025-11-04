@@ -39,7 +39,7 @@ const isoDate = computed(() =>
     :to="{ name: 'study', params: { id } }"
     :class="[
       'sm:p-6 sm:my-8 rounded-xl ring-1 ring-stone-300/90 shadow-sm flex flex-col gap-3 w-full transition-colors',
-      isHovered ? 'bg-gray-300' : 'bg-white',
+      isHovered ? 'bg-gray-100' : 'bg-white',
     ]"
     :aria-label="`${title} card`"
     @mouseenter="isHovered = true"

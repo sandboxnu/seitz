@@ -9,6 +9,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { ElButton, ElCard, ElNotification } from "element-plus";
 import { Role } from "@seitz/shared";
 import RolesDropdown from "./components/RolesDropdown.vue";
+import SecondaryButton from "../../components/ui/SecondaryButton.vue";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -377,7 +378,7 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
             @click="saveChanges"
           >
             Save Changes
-          </AppButton>
+          </SecondaryButton>
           <AppButton
             class="mb-4 bg-[#1F1915] border-[#1F1915] rounded-md"
             @click="addAdminDialogVisible = true"
