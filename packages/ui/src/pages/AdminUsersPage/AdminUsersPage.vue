@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 
@@ -18,6 +18,8 @@ const queryClient = useQueryClient();
 const usersToAdd = ref<string[]>([]); // IDs of the users to be added as new admins
 const rolesToAdd = ref<Record<string, Role>>({}); // The roles of the new admins to be added
 const rolesToUpdate = ref<Record<string, Role>>({}); // The roles of the existing admins to be updated
+const showErrorAlert = ref(false);
+const dropdownResetKey = ref(0);
 
 const searchQuery = ref("");
 const { data: adminUsers, isLoading: isAdminsLoading } = useQuery(
@@ -46,13 +48,20 @@ const addAdmin = useMutation(
         type: "success",
       });
     },
-    onError: (error) => {
+    onError: (error: { response: { data: { message: string } } }) => {
       console.error(error);
-      ElNotification({
-        title: "Error",
-        message: "Failed to update admin roles",
-        type: "error",
-      });
+      dropdownResetKey.value++;
+      if (
+        error.response.data.message === "Cannot demote the only super admin"
+      ) {
+        showErrorAlert.value = true;
+      } else {
+        ElNotification({
+          title: "Error",
+          message: "Failed to update admin roles",
+          type: "error",
+        });
+      }
     },
   }
 );
@@ -78,6 +87,14 @@ const removeAdmin = useMutation(
     },
   }
 );
+
+watch(showErrorAlert, (show) => {
+  if (show) {
+    setTimeout(() => {
+      showErrorAlert.value = false;
+    }, 3000);
+  }
+});
 
 const addAdminDialogVisible = ref(false);
 const removeAdminDialogVisible = ref(false);
@@ -199,6 +216,12 @@ const saveChanges = () => {
   if (Object.keys(rolesToUpdate.value).length) {
     addAdmin.mutate(rolesToUpdate.value);
     rolesToUpdate.value = {};
+  } else {
+    ElNotification({
+      title: "No changes",
+      message: "No changes to save",
+      type: "info",
+    });
   }
 };
 
@@ -351,7 +374,7 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
           <h2 class="font-bold text-xl mb-4 ml-3">Users</h2>
           <!-- Handle button click -->
           <SecondaryButton
-            class="mb-4 bg-[#fafafa] !text-black border border-[#e6e6e6] rounded-md hover:bg-[#f3f3f3] ml-auto px-4"
+            class="mb-4 !bg-[#fafafa] !text-[#000000] border !border-[#e6e6e6] rounded-md hover:text-gray-500 hover:bg-[#f3f3f3] ml-auto px-4"
             @click="saveChanges"
           >
             Save Changes
@@ -422,7 +445,16 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
             </tr>
           </thead>
         </table>
-
+        <div
+          v-if="showErrorAlert && activeTab === 'superAdmin'"
+          class="flex items-center p-2 mb-2 text-[#BA3B2A] rounded-lg bg-red-50"
+        >
+          <img src="/icons/warning.svg" class="w-3 h-3 mr-2 ml-2" />
+          <span class="text-sm"
+            >Must have one super admin at all times. Add one before removing
+            one.</span
+          >
+        </div>
         <!-- User Data Info Table -->
         <table
           v-if="!isAdminsLoading && adminUsers.length > 0"
@@ -445,13 +477,23 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
                 {{ user.email }}
               </td>
               <td class="py-2 px-4 border-b text-left">
-                <RolesDropdown :user="user" @role-changed="updateRoles" />
+                <RolesDropdown
+                  :key="dropdownResetKey"
+                  :user="user"
+                  @role-changed="updateRoles"
+                />
               </td>
               <td class="py-2 px-4 border-b text-right">
                 <ElButton
                   :text="true"
                   type="danger"
-                  class="hover:bg-red-100 text-red-600 underline"
+                  :class="{
+                    'hover:bg-red-100 text-red-600 underline':
+                      user._id !== authStore.currentUser?._id,
+                    'text-gray-400 cursor-not-allowed':
+                      user._id === authStore.currentUser?._id,
+                  }"
+                  :disabled="user._id === authStore.currentUser?._id"
                   @click="handleRemoveAdmin(user.email, user._id)"
                   >Remove</ElButton
                 >
