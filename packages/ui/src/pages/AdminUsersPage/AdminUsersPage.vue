@@ -373,7 +373,7 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
         <div class="flex justify-between items-center">
           <h2 class="font-bold text-xl mb-4 ml-3">Users</h2>
           <!-- Handle button click -->
-          <AppButton
+          <SecondaryButton
             class="mb-4 !bg-[#fafafa] !text-[#000000] border !border-[#e6e6e6] rounded-md hover:text-gray-500 hover:bg-[#f3f3f3] ml-auto px-4"
             @click="saveChanges"
           >
