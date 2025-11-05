@@ -50,11 +50,10 @@ RUN apk add --no-cache dumb-init && \
   adduser -S nodejs -u 1001
 
 COPY --chown=nodejs:nodejs --from=builder /app/node_modules ./node_modules
-COPY --chown=nodejs:nodejs --from=builder /app/packages/shared ./packages/shared
-COPY --chown=nodejs:nodejs --from=builder /app/packages/api/dist ./packages/api/dist
-COPY --chown=nodejs:nodejs --from=builder /app/packages/api/package.json ./packages/api/package.json
+COPY --chown=nodejs:nodejs --from=builder /app/packages ./packages
+COPY --chown=nodejs:nodejs --from=builder /app/package.json ./package.json
 
-WORKDIR /app/packages/api
+WORKDIR /app
 
 USER nodejs
 
@@ -64,4 +63,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
 EXPOSE 4000
 
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["node", "dist/src/index.js"]
+CMD ["node", "packages/api/dist/src/index.js"]
