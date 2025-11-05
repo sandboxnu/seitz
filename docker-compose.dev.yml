@@ -1,38 +1,17 @@
 services:
-  redis:
-    ports:
-      - "6379:6379"
-
   api:
     build:
-      context: .
-      dockerfile: ./packages/api/Dockerfile
       target: development
     environment:
       - NODE_ENV=development
       - DEBUG=*
-      - PORT=4000
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_URL=redis://redis:6379
-      - MONGO_URL=${MONGO_URL}
-      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
-      - JWT_SECRET=${JWT_SECRET}
-      - SESSION_SECRET=${SESSION_SECRET}
     volumes:
-      - ./packages/api/src:/app/src
-      - ./packages/api/package.json:/app/package.json
-      - ./packages/shared:/app/shared
-      - /app/node_modules
-    command: ["pnpm", "dev"]
+      - ./packages/api/src:/app/packages/api/src
+      - ./packages/shared:/app/packages/shared
     ports:
-      - "4000:4000"
       - "9229:9229"
-
   frontend:
     build:
-      context: .
-      dockerfile: ./packages/ui/Dockerfile
       target: development
     environment:
       - NODE_ENV=development
@@ -44,11 +23,6 @@ services:
       - ./packages/ui/vite.config.ts:/app/packages/ui/vite.config.ts
       - ./packages/ui/tailwind.config.js:/app/packages/ui/tailwind.config.js
       - ./packages/ui/postcss.config.js:/app/packages/ui/postcss.config.js
-      - ./packages/ui/package.json:/app/packages/ui/package.json
       - ./packages/shared:/app/packages/shared
-      - /app/node_modules
-      - /app/packages/ui/node_modules
     ports:
       - "5173:5173"
-      - "8080:8080"
-    command: ["pnpm", "--filter", "ui", "dev", "--host", "0.0.0.0"]
