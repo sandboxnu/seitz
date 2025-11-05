@@ -44,7 +44,7 @@ const isCollapsed = computed(() => {
       class="h-5 w-5 mt-[22px] self-center cursor-pointer"
       @click="collapsePressed = false"
     />
-    <ElMenuItem class="flex items-center gap-3">
+    <ElMenuItem index="/home" class="flex items-center gap-3">
       <ElImage src="/icons/home.svg" />
       <template v-if="!isCollapsed">Home</template>
     </ElMenuItem>
