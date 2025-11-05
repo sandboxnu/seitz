@@ -1,78 +1,68 @@
-# -------------------------------
-# Dependency directories
-# -------------------------------
-node_modules/
+# Dependencies
+node_modules
+**/node_modules
+packages/*/node_modules
+.pnpm-store
 
-# -------------------------------
-# Production and build outputs
-# -------------------------------
-dist/
-out/
-build/
-public/build/
+# Build outputs
+dist
+**/dist
+packages/*/dist
+build
+**/build
 
-# -------------------------------
-# Vite, VuePress, and cache dirs
-# -------------------------------
-.vite/
-.vitepress/
-.cache/
-.tmp/
-
-# -------------------------------
-# Test output and coverage
-# -------------------------------
-coverage/
-reports/
-jest/
-cypress/
-cypress/screenshots/
-cypress/videos/
-
-# -------------------------------
-# Environment and config files
-# -------------------------------
-*.env*
-!.env.production  
-*.local
+# Development files
+.env
+.env.local
+.env.*.local
 *.log
-
-# -------------------------------
-# TypeScript artifacts
-# -------------------------------
-*.tsbuildinfo
-
-# -------------------------------
-# Editor and IDE config
-# -------------------------------
-.vscode/
-.idea/
-*.swp
-
-# -------------------------------
-# System files
-# -------------------------------
-.DS_Store
-Thumbs.db
-
-# -------------------------------
-# Lockfiles (optional)
-# -------------------------------
 npm-debug.log*
+pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
 
-# -------------------------------
-# Git files
-# -------------------------------
-.git/
+# Git
+.git
 .gitignore
+.gitattributes
 
-# -------------------------------
-# Docker-related files
-# -------------------------------
-Dockerfile
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+coverage
+.nyc_output
+**/*.test.ts
+**/*.test.js
+**/*.spec.ts
+**/*.spec.js
+test
+**/test
+
+# Documentation
+README.md
+*.md
+docs
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+
+# Docker
+Dockerfile*
+docker-compose*.yml
 .dockerignore
-docker-compose.yml
-docker-compose.override.yml
+
+# Misc
+.husky
+.prettierrc
+.prettierignore
+.eslintrc*
+.eslintignore
+tsconfig.tsbuildinfo
