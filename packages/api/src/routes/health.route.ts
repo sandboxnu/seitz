@@ -17,16 +17,14 @@ router.get("/health", async (req: Request, res: Response) => {
   };
 
   try {
-    // Check MongoDB
     if (mongoose.connection.readyState === 1) {
       healthcheck.checks.database = "healthy";
     } else {
       healthcheck.checks.database = "unhealthy";
     }
 
-    // Check Redis (if you set it up)
     const redisClient = req.app.locals.redisClient;
-    if (redisClient && redisClient.isReady) {
+    if (redisClient?.isReady) {
       await redisClient.ping();
       healthcheck.checks.redis = "healthy";
     } else {
@@ -55,7 +53,7 @@ router.get("/health/ready", async (req: Request, res: Response) => {
   try {
     const mongoReady = mongoose.connection.readyState === 1;
     const redisClient = req.app.locals.redisClient;
-    const redisReady = redisClient && redisClient.isReady;
+    const redisReady = redisClient?.isReady;
 
     if (mongoReady && redisReady) {
       res.status(200).json({ status: "ready" });
