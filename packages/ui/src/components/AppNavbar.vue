@@ -11,7 +11,7 @@ const collapsePressed = ref(false);
 
 function logOut() {
   authStore.logOut();
-  router.push("/login");
+  router.push("/home");
 }
 
 const isCollapsed = computed(() => {

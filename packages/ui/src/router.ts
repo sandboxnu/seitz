@@ -10,7 +10,6 @@ import ProfilePage from "./pages/ProfilePage/ProfilePage.vue";
 import LandingPage from "./pages/LandingPage/LandingPage.vue";
 
 const routes: RouteRecordRaw[] = [
-  { path: "/", redirect: "/home" },
   { path: "/home", name: "home", component: LandingPage },
   { path: "/example", name: "example", component: CarPage },
   { path: "/login", name: "login", component: AuthLoginForm },
