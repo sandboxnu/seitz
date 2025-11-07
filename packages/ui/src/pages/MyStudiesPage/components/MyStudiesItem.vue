@@ -5,12 +5,15 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessageBox } from "element-plus";
 import { MoreFilled } from "@element-plus/icons-vue";
+import ShortUniqueId from "short-unique-id";
 
 const router = useRouter();
 const emit = defineEmits(["deleted", "open"]);
 const props = defineProps<{ name: string; description: string; id: string }>();
 const isHovered = ref(false);
 const queryClient = useQueryClient();
+const uid = new ShortUniqueId({ dictionary: "alphanum_lower" });
+const serverCodeLength = 5;
 
 const { mutate } = useMutation({
   mutationFn: () => studiesAPI.deleteStudy(props.id),
@@ -54,6 +57,27 @@ const confirmDelete = () => {
     mutate();
   });
 };
+
+const { mutate: duplicateMutate } = useMutation({
+  mutationFn: async () => {
+    const study = await studiesAPI.getStudy(props.id);
+    const newStudyId = await studiesAPI.createStudy();
+    const newStudy = await studiesAPI.getStudy(newStudyId);
+    await studiesAPI.saveStudy(newStudyId, {
+      ...study,
+      _id: newStudyId,
+      name: `Copy of ${study.name}`,
+      prefixServerCode: newStudy.prefixServerCode,
+      variants: study.variants.map((v) => ({
+        ...v,
+        serverCode: uid.rnd(serverCodeLength),
+      })),
+    });
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries(["studies"]);
+  },
+});
 </script>
 <template>
   <tr
@@ -104,13 +128,13 @@ const confirmDelete = () => {
           <template #dropdown>
             <el-dropdown-menu style="width: 129px; background-color: #fcf9f7">
               <el-dropdown-item
-                @click="confirmDelete"
                 style="
                   color: #594f47;
                   background-color: inherit;
                   height: 41px;
                   font-size: 14px;
                 "
+                @click="confirmDelete"
                 >Delete</el-dropdown-item
               >
               <el-dropdown-item
@@ -120,6 +144,7 @@ const confirmDelete = () => {
                   height: 41px;
                   font-size: 14px;
                 "
+                @click="duplicateMutate"
                 >Duplicate</el-dropdown-item
               >
             </el-dropdown-menu>
@@ -136,36 +161,40 @@ const confirmDelete = () => {
 
 <style>
 .delete-study-popup .el-message-box__title {
-  font-size: 24px !important;
-  font-weight: 700 !important;
+  font-size: 24px;
+  font-weight: 700;
 }
 .delete-study-popup .el-button--primary {
   background-color: #1f1915 !important;
-  color: white !important;
-  border: #1f1915 !important;
-  height: 36px !important;
-  width: 107px !important;
+  box-shadow: 0px 1px 4px 0px #00000026 !important;
+  color: white;
+  border: #1f1915;
+  border-radius: 10px !important;
+  height: 36px;
+  width: 107px;
 }
 .delete-study-popup .el-button:not(.el-button--primary) {
-  background-color: #f1edea !important;
-  color: #594f47 !important;
-  border: #e6dfd8 !important;
-  height: 36px !important;
-  width: 107px !important;
+  background-color: #f1edea;
+  box-shadow: 0px 1px 4px 0px #00000026;
+  color: #594f47;
+  border: #e6dfd8;
+  border-radius: 10px;
+  height: 36px;
+  width: 107px;
 }
 .delete-study-popup .el-message-box__message {
-  font-size: 16px !important;
-  font-weight: 400 !important;
+  font-size: 16px;
+  font-weight: 400;
 }
 .action-dropdown .el-dropdown-menu__item:hover {
   background-color: #f7f4f3 !important;
 }
 .action-dropdown .el-popper__arrow {
-  display: none !important;
+  display: none;
 }
 
 .action-dropdown {
-  border-radius: 8px !important;
+  border-radius: 8px;
   overflow: hidden;
 }
 </style>
