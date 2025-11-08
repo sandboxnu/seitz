@@ -10,7 +10,10 @@ const router = useRouter();
   <div class="relative flex flex-col bg-white">
     <div class="relative h-screen">
       <header class="flex justify-between items-center px-12 py-10">
-        <h1 class="text-2xl font-semibold" @click="router.push('/home')">
+        <h1
+          class="text-2xl font-semibold cursor-pointer"
+          @click="router.push('/home')"
+        >
           Brain Game Center
         </h1>
         <SecondaryButton class="px-8" @click="router.push('/login')"

@@ -44,7 +44,11 @@ const isCollapsed = computed(() => {
       class="h-5 w-5 mt-[22px] self-center cursor-pointer"
       @click="collapsePressed = false"
     />
-    <ElMenuItem index="/home" class="flex items-center gap-3">
+    <ElMenuItem
+      v-if="!authStore.currentUser"
+      index="/home"
+      class="flex items-center gap-3"
+    >
       <ElImage src="/icons/home.svg" />
       <template v-if="!isCollapsed">Home</template>
     </ElMenuItem>
