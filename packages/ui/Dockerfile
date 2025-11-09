@@ -46,18 +46,19 @@ WORKDIR /app/packages/ui
 # Build without type checking (skip vue-tsc)
 RUN pnpm vite build
 
-FROM nginxinc/nginx-unprivileged:1.25-alpine AS production
+FROM nginxinc/nginx-unprivileged:1.27-alpine AS production
 
-# Install wget for healthchecks
 USER root
-RUN apk add --no-cache wget
+RUN apk upgrade --no-cache && \
+  apk add --no-cache curl
+
 USER nginx
 
 COPY packages/ui/nginx.conf /etc/nginx/nginx.conf
 COPY --from=builder --chown=nginx:nginx /app/packages/ui/dist /usr/share/nginx/html
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:8080 || exit 1
+  CMD curl -f http://localhost:8080 || exit 1
 
 EXPOSE 8080
 

@@ -14,7 +14,7 @@ const userSchema = new Schema<IUser>({
   password: { type: String, required: true },
   role: {
     type: String,
-    enum: Object.values(Role),
+    enum: Object.values(Role), // ?? {}),
     required: true,
     default: Role.BasicUser,
   },

@@ -33,13 +33,16 @@ COPY packages/api/package.json ./packages/api/
 COPY packages/shared/package.json ./packages/shared/
 
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
-  pnpm install --frozen-lockfile --ignore-scripts
+  pnpm install --frozen-lockfile
 
 COPY packages/shared ./packages/shared
 COPY packages/api ./packages/api
 
 WORKDIR /app/packages/api
-RUN pnpm exec tsc
+RUN pnpm build
+
+WORKDIR /app/packages/shared
+RUN pnpm build
 
 FROM node:20-alpine AS production
 
@@ -53,8 +56,6 @@ COPY --chown=nodejs:nodejs --from=builder /app/node_modules ./node_modules
 COPY --chown=nodejs:nodejs --from=builder /app/packages ./packages
 COPY --chown=nodejs:nodejs --from=builder /app/package.json ./package.json
 
-WORKDIR /app
-
 USER nodejs
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
@@ -63,4 +64,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
 EXPOSE 4000
 
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["node", "packages/api/dist/src/index.js"]
+CMD ["node", "packages/api/dist/index.js"]
