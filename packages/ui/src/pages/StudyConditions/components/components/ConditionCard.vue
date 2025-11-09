@@ -69,7 +69,7 @@ function setVariantId() {
             <ElImage
               v-if="props.draggable"
               src="/icons/dropdown-arrow.svg"
-              class="handle cursor-pointer align-center"
+              class="handle cursor-pointer align-center rotate-180"
               @click="toggleContent"
             />
             <header
