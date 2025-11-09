@@ -41,6 +41,9 @@ COPY packages/ui ./packages/ui
 ARG API_URL=http://localhost:4000
 ENV VITE_API_URL=$API_URL
 
+WORKDIR /app/packages/shared
+RUN pnpm build
+
 WORKDIR /app/packages/ui
 
 # Build without type checking (skip vue-tsc)

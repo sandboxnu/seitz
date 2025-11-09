@@ -38,10 +38,10 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
 COPY packages/shared ./packages/shared
 COPY packages/api ./packages/api
 
-WORKDIR /app/packages/api
+WORKDIR /app/packages/shared
 RUN pnpm build
 
-WORKDIR /app/packages/shared
+WORKDIR /app/packages/api
 RUN pnpm build
 
 FROM node:20-alpine AS production
