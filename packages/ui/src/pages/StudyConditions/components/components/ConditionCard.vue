@@ -90,7 +90,9 @@ function setVariantId() {
                 :to="{
                   name: 'study',
                   params: { id: studyBuilderStore.studyId },
+                  query: { variantId: props.variantId },
                 }"
+                @click.stop
               >
                 <AppButton>Edit</AppButton>
               </RouterLink>
@@ -166,7 +168,9 @@ function setVariantId() {
                 :to="{
                   name: 'study',
                   params: { id: studyBuilderStore.studyId },
+                  query: { variantId: props.variantId },
                 }"
+                @click.stop
               >
                 <AppButton>Edit</AppButton>
               </RouterLink>

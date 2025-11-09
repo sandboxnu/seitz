@@ -78,6 +78,7 @@ export interface VariantFromQuery {
   name: string;
   sessions: SessionFromQuery[];
   serverCode: string;
+  description?: string;
 }
 
 interface SessionFromQuery {

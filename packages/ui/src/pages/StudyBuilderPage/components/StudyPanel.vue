@@ -4,11 +4,12 @@ import AppButton from "@/components/ui/AppButton.vue";
 import SessionCard from "./SessionCard.vue";
 import Draggable from "vuedraggable";
 import StudyServerCode from "./StudyServerCode.vue";
-import { ref, computed } from "vue";
-import type { VariantFromQuery } from "@/api/studies";
+import { ref, watch } from "vue";
 import { ArrowRight, ArrowLeft, Plus, Delete } from "@element-plus/icons-vue";
+import { useRoute } from "vue-router";
 
 const studyBuilderStore = useStudyBuilderStore();
+const route = useRoute();
 const currentVariantIndex = ref(0);
 
 const switchVariantByIndex = (index: number) => {
@@ -52,31 +53,41 @@ const draggableProps = {
   animation: 200,
 };
 
-// current variant description
-type VariantWithDesc = VariantFromQuery & { description?: string };
-const currentVariantDescription = computed<string>({
-  get: () => {
-    const id = studyBuilderStore.currentVariantId || undefined;
-    const variant: VariantWithDesc | undefined = id
-      ? (studyBuilderStore.variants.find((v) => v._id === id) as
-          | VariantWithDesc
-          | undefined)
-      : (studyBuilderStore.variants[currentVariantIndex.value] as
-          | VariantWithDesc
-          | undefined);
-    return variant?.description ?? "Untitled Variant Description";
-  },
-  set: (val: string) => {
-    const id = studyBuilderStore.currentVariantId || undefined;
-    const idx = id
-      ? studyBuilderStore.variants.findIndex((v) => v._id === id)
-      : currentVariantIndex.value;
-    if (idx >= 0 && idx < studyBuilderStore.variants.length) {
-      const v = studyBuilderStore.variants[idx] as unknown as VariantWithDesc;
-      v.description = val;
+// Sync local index with store.currentVariantId when variants load or change
+watch(
+  () => [studyBuilderStore.variants, studyBuilderStore.currentVariantId],
+  () => {
+    if (!studyBuilderStore.currentVariantId) return;
+    const idx = studyBuilderStore.variants.findIndex(
+      (v) => v._id === studyBuilderStore.currentVariantId
+    );
+    if (idx !== -1 && idx !== currentVariantIndex.value) {
+      currentVariantIndex.value = idx;
     }
   },
-});
+  { immediate: true, deep: true }
+);
+
+// Align with the desired variantId from the route (if any)
+watch(
+  () => [studyBuilderStore.variants.length, route.query.variantId],
+  () => {
+    const queriedVariant = Array.isArray(route.query.variantId)
+      ? route.query.variantId[0]
+      : typeof route.query.variantId === "string"
+      ? route.query.variantId
+      : undefined;
+    if (!queriedVariant) return;
+    const exists = studyBuilderStore.variants.some(
+      (v) => v._id === queriedVariant
+    );
+    if (!exists) return;
+    if (studyBuilderStore.currentVariantId !== queriedVariant) {
+      studyBuilderStore.switchVariant(queriedVariant);
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
@@ -135,7 +146,7 @@ const currentVariantDescription = computed<string>({
     >
       <div class="flex-2 items-center justify-between gap-4 pb-5">
         <input
-          v-model="currentVariantDescription"
+          v-model="studyBuilderStore.variantDescription"
           class="text-center w-full bg-transparent text-neutral-600 font-medium text-lg"
           type="text"
           placeholder="Untitled Variant Description"

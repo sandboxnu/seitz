@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import mongoose from "mongoose";
 
 import studiesAPI, { VariantFromQuery } from "@/api/studies";
@@ -18,6 +18,7 @@ import type {
   DTO,
   GETTasks,
   GETCustomizedTask,
+  IStudyVariant,
 } from "@seitz/shared";
 import ShortUniqueId from "short-unique-id";
 
@@ -68,13 +69,35 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
   const isStudySaving = ref(false);
   const studyName = ref<string>();
   const description = ref<string>();
-  const variantName = ref<string>();
   const variants = ref<VariantFromQuery[]>([]);
   const taskData = ref<Record<string, DTO<GETCustomizedTask>>>({});
   const taskBank = ref<string[]>([]);
   const sessionData = ref<Record<string, DTO<ISession>>>({});
   const sessions = ref<string[]>([]);
   const serverCode = ref<string>("");
+
+  const variantName = computed({
+    get: () =>
+      variants.value.find((v) => v._id === currentVariantId.value)?.name ?? "",
+    set: (val: string) => {
+      const variant = variants.value.find(
+        (v) => v._id === currentVariantId.value
+      );
+      if (variant) variant.name = val;
+    },
+  });
+
+  const variantDescription = computed({
+    get: () =>
+      variants.value.find((v) => v._id === currentVariantId.value)
+        ?.description ?? "",
+    set: (val: string) => {
+      const variant = variants.value.find(
+        (v) => v._id === currentVariantId.value
+      );
+      if (variant) variant.description = val;
+    },
+  });
 
   function initialize() {
     if (route.name !== "study" && route.name !== "conditions") return;
@@ -88,6 +111,8 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     sessionData.value = {};
     sessions.value = [];
     serverCode.value = "";
+    variants.value = [];
+    currentVariantId.value = "";
 
     queryClient
       .fetchQuery({
@@ -101,6 +126,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
         description.value = studyData.description;
         variants.value = studyData.variants;
 
+        // Determine preferred variant selection order: query.variantId -> existing current -> first
         if (variants.value.length > 0) {
           currentVariantId.value = studyData.variants[0]._id;
           loadVariant(currentVariantId.value);
@@ -261,7 +287,14 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     if (!variant || !authStore.currentUser) return;
 
     // COMMENT THIS LINE BELOW TO DISABLE DATABASE UPDATE
-    studiesAPI.updateVariant(studyId.value, variantId, variant);
+    const payload: DTO<IStudyVariant> = {
+      _id: variant._id,
+      name: variant.name ?? "",
+      description: variant.description ?? "",
+      sessions: variant.sessions,
+      serverCode: variant.serverCode ?? "",
+    };
+    studiesAPI.updateVariant(studyId.value, variantId, payload);
   }
 
   function handleChange(
@@ -299,28 +332,47 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
 
   function switchVariant(variantId: string) {
     if (currentVariantId.value !== variantId) {
-      if (variantName.value) {
-        variants.value = variants.value.map((v) =>
-          v._id === currentVariantId.value
-            ? { ...v, name: variantName.value || "" }
-            : v
-        );
+      // Commit current variant buffers back to variants list
+      const currIdx = variants.value.findIndex(
+        (v) => v._id === currentVariantId.value
+      );
+      if (currIdx !== -1) {
+        const committed = {
+          ...variants.value[currIdx],
+          name: variantName.value ?? "",
+          description: variantDescription.value ?? "",
+          sessions: sessions.value.map((id) => sessionData.value[id]),
+          serverCode: serverCode.value,
+        } as VariantFromQuery;
+        variants.value.splice(currIdx, 1, committed);
       }
 
       currentVariantId.value = variantId;
       loadVariant(currentVariantId.value);
+
+      // Sync URL query to preserve selection on refresh/back
+      const name = (route.name as string) || "study";
+      router.replace({
+        name,
+        params: route.params,
+        query: { ...route.query, variantId },
+      });
     }
   }
 
   function loadVariant(variantId: string) {
     const variant = variants.value.find((v) => v._id === variantId);
     if (variant) {
+      sessionData.value = {};
+      sessions.value = [];
+
       variant.sessions.forEach((s) => {
         sessionData.value[s._id] = s;
+        sessions.value.push(s._id);
       });
-      sessions.value = variant.sessions.map((s) => s._id);
-      serverCode.value = variant.serverCode;
-      variantName.value = variant.name;
+      serverCode.value = variant.serverCode ?? "";
+      variantName.value = variant.name ?? "";
+      variantDescription.value = variant.description ?? "";
     }
   }
 
@@ -333,6 +385,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
         return {
           ...v,
           name: variantName.value ?? "",
+          description: variantDescription.value ?? "",
           sessions: sessions.value.map((id) => sessionData.value[id]),
           serverCode: serverCode.value,
         };
@@ -359,6 +412,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
     studyId,
     currentVariantId,
     variantName,
+    variantDescription,
     variants,
     isStudyLoading,
     isStudySaving,
