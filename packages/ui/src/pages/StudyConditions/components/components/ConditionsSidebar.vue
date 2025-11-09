@@ -83,7 +83,7 @@ function updateVariantName() {
         <div class="flex items-center gap-2">
           <input
             v-model="variantData.name"
-            class="w-fit bg-transparent text-neutral-600 font-bold text-2xl truncate"
+            class="w-full bg-transparent text-neutral-600 font-bold text-2xl truncate"
             type="text"
             placeholder="Untitled Variant"
             @change="updateVariantName"
