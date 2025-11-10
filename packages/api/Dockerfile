@@ -33,7 +33,7 @@ COPY packages/api/package.json ./packages/api/
 COPY packages/shared/package.json ./packages/shared/
 
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
-  pnpm install --frozen-lockfile
+  pnpm install 
 
 COPY packages/shared ./packages/shared
 COPY packages/api ./packages/api
