@@ -1,5 +1,3 @@
-import { Types } from "mongoose";
-
 export enum Role {
   BasicUser = "Basic User",
   UserManager = "User Manager",
@@ -8,15 +6,15 @@ export enum Role {
 }
 
 export interface CreateUser {
-  _id?: Types.ObjectId;
+  _id?: string;
   name: string;
   email: string;
   password: string;
   role: Role;
-  studies?: Types.ObjectId[];
-  favoriteBatteries?: Types.ObjectId[];
+  studies?: string[];
+  favoriteBatteries?: string[];
   recentStudyIds?: string[] | null;
-  recentBatteries?: Types.ObjectId[];
+  recentBatteries?: string[];
 }
 
 export interface IUser extends Required<CreateUser> {

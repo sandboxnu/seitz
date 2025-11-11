@@ -30,7 +30,7 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 
 COPY package.json* pnpm-lock.yaml* pnpm-workspace.yaml* ./
 COPY packages/ui/package.json ./packages/ui/
-COPY packages/shared/package.json ./packages/shared/
+COPY packages/shared/package.json packages/shared/tsconfig.json ./packages/shared/
 
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
   pnpm install --ignore-scripts

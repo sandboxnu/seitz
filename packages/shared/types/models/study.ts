@@ -1,14 +1,12 @@
-import { Types } from "mongoose";
-
 export interface CreateTaskInstance {
-  _id?: Types.ObjectId;
-  task: Types.ObjectId;
+  _id?: string;
+  task: string;
   quantity?: number;
 }
 export type ITaskInstance = Required<CreateTaskInstance>;
 
 export interface CreateSession {
-  _id?: Types.ObjectId;
+  _id?: string;
   name: string;
   tasks: CreateTaskInstance[];
 }
@@ -18,7 +16,7 @@ export interface ISession extends Required<CreateSession> {
 }
 
 export interface CreateStudyVariant {
-  _id?: Types.ObjectId;
+  _id?: string;
   name: string;
   sessions: CreateSession[];
   serverCode: string;
@@ -29,11 +27,11 @@ export interface IStudyVariant extends Required<CreateStudyVariant> {
 }
 
 export interface CreateStudy {
-  _id?: Types.ObjectId;
+  _id?: string;
   name?: string;
   description?: string;
-  batteries?: Types.ObjectId[];
-  owner: Types.ObjectId;
+  batteries?: string[];
+  owner: string;
   prefixServerCode: string;
   variants: CreateStudyVariant[];
   lastModified?: Date;
