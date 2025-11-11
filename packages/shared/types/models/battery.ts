@@ -1,5 +1,7 @@
+import { Types } from "mongoose";
+
 export interface CreateGenericOption<T> {
-  _id?: string;
+  _id?: Types.ObjectId;
   name: string;
   default: T;
 }
@@ -26,7 +28,7 @@ export interface CreateCheckboxOption extends CreateGenericOption<boolean> {
 }
 
 export interface CreateOptionGroup {
-  _id?: string;
+  _id?: Types.ObjectId;
   type: "group";
   name: string;
   options: CreateOption[];
@@ -47,7 +49,7 @@ export type CreateOption = CreateBasicOption | CreateOptionGroup;
 export type IOption = Required<CreateBasicOption> | IOptionGroup;
 
 export interface CreateBatteryStage {
-  _id?: string;
+  _id?: Types.ObjectId;
   type: string;
   stageLabel: string;
   options: CreateOptionGroup;
@@ -59,7 +61,7 @@ export interface IBatteryStage extends Required<CreateBatteryStage> {
 }
 
 export interface CreateBattery {
-  _id?: string;
+  _id?: Types.ObjectId;
   name: string;
   description: string;
   imageUrl: string;
@@ -73,16 +75,16 @@ export interface IBattery extends Required<CreateBattery> {
 }
 
 export interface CreateOptionValue {
-  _id?: string;
-  option: string;
+  _id?: Types.ObjectId;
+  option: Types.ObjectId;
   value: unknown;
 }
 
 export type IOptionValue = Required<CreateOptionValue>;
 
 export interface CreateCustomizedBattery {
-  _id?: string;
-  battery: string;
+  _id?: Types.ObjectId;
+  battery: Types.ObjectId;
   name: string;
   values: CreateOptionValue[];
   isVisibleToNonAdmins: boolean;
