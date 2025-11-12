@@ -30,7 +30,7 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 
 COPY package.json* pnpm-lock.yaml* pnpm-workspace.yaml* ./
 COPY packages/api/package.json ./packages/api/
-COPY packages/shared/package.json packages/shared/tsconfig.json ./packages/shared/
+COPY packages/shared/package.json ./packages/shared/
 
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
   pnpm install 
@@ -44,6 +44,10 @@ RUN pnpm build
 WORKDIR /app/packages/api
 RUN pnpm build
 
+# Deploy stage - flatten dependencies
+WORKDIR /app
+RUN pnpm deploy --filter=api --prod /prod/api
+
 FROM node:20-alpine AS production
 
 WORKDIR /app
@@ -52,9 +56,9 @@ RUN apk add --no-cache dumb-init && \
   addgroup -g 1001 -S nodejs && \
   adduser -S nodejs -u 1001
 
-COPY --chown=nodejs:nodejs --from=builder /app/node_modules ./node_modules
-COPY --chown=nodejs:nodejs --from=builder /app/packages ./packages
-COPY --chown=nodejs:nodejs --from=builder /app/package.json ./package.json
+# Copy the deployed, flattened structure
+COPY --chown=nodejs:nodejs --from=builder /prod/api ./
+COPY --chown=nodejs:nodejs --from=builder /app/packages/shared ./node_modules/@seitz/shared
 
 USER nodejs
 
@@ -64,4 +68,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
 EXPOSE 4000
 
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["node", "packages/api/dist/index.js"]
+CMD ["node", "dist/index.js"]
