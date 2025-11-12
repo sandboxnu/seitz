@@ -3,11 +3,12 @@ import { ref } from "vue";
 import { ElNotification } from "element-plus";
 import SecondaryButton from "../components/ui/SecondaryButton.vue";
 import { useRouter } from "vue-router";
+import AppButton from "@/components/ui/AppButton.vue";
 
 const router = useRouter();
 
 const props = defineProps({
-  hasName: Boolean,
+  hasEmail: Boolean,
   hasPasswordConfirm: Boolean,
   headerText: {
     type: String,
@@ -22,7 +23,6 @@ const props = defineProps({
 const emit = defineEmits(["submitted"]);
 
 const loginData = ref({
-  name: "",
   email: "",
   password: "",
   passwordConfirm: "",
@@ -67,17 +67,16 @@ function submit() {
   </header>
   <ElCard
     shadow="never"
-    class="w-[380px] h-[480px] px-5 rounded-lg my-10 mx-auto text-center bg-neutral-10"
+    class="w-[410px] h-[480px] px-5 rounded-lg my-10 mx-auto bg-neutral-10"
     style="box-shadow: 0 2px 8px 0 rgba(31, 25, 21, 0.2)"
   >
-    <h1 class="text-2xl font-bold">{{ headerText }}</h1>
-    Welcome to the Brain Game Center
+    <h1 class="text-2xl font-bold mt-4">{{ headerText }}</h1>
     <div class="p-2"></div>
     <ElForm label-position="top" @submit.prevent="submit">
-      <ElFormItem v-if="hasName" label="Name">
-        <ElInput v-model="loginData.name" />
+      <ElFormItem v-if="hasEmail" label="Email">
+        <ElInput v-model="loginData.email" />
       </ElFormItem>
-      <ElFormItem label="Email">
+      <ElFormItem label="Username">
         <ElInput v-model="loginData.email" />
       </ElFormItem>
       <ElFormItem label="Password">
@@ -86,9 +85,13 @@ function submit() {
       <ElFormItem v-if="hasPasswordConfirm" label="Re-enter Password">
         <ElInput v-model="loginData.passwordConfirm" type="password" />
       </ElFormItem>
-      <ElButton type="primary" class="bg-sky-800" @click="submit">
+      <AppButton
+        type="primary"
+        class="flex py-2 justify-center bg-black text-white w-full border border-black rounded-lg mt-8"
+        @click="submit"
+      >
         {{ submitText }}
-      </ElButton>
+      </AppButton>
       <input type="submit" hidden />
     </ElForm>
   </ElCard>

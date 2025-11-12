@@ -36,8 +36,8 @@ const { mutate } = useMutation<void, AxiosError<Error>, LoginDTO>({
 
 <template>
   <AuthForm
-    header-text="Log in to your account"
-    submit-text="Log In"
+    header-text="Account Login"
+    submit-text="Login"
     @submitted="mutate"
   />
 </template>
