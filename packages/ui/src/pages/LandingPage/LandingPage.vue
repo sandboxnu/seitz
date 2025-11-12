@@ -102,7 +102,7 @@ const router = useRouter();
       </div>
     </section>
 
-    <section class="flex items-center gap-16 px-12 py-48">
+    <section class="flex items-center gap-16 px-12 py-40">
       <ElImage src="/home-photo-2.svg"></ElImage>
       <div class="flex-1 max-w-2xl">
         <h2 class="text-4xl font-bold mb-6">
@@ -117,5 +117,59 @@ const router = useRouter();
         </p>
       </div>
     </section>
+
+    <footer class="bg-black">
+      <div class="grid grid-cols-1 md:grid-cols-4 px-12 py-12 items-start">
+        <div
+          @click="router.push('/home')"
+          class="flex items-center gap-4 cursor-pointer"
+        >
+          <ElImage src="/bgc-footer-logo.svg"></ElImage>
+          <h1 class="text-xl font-semibold text-white">Brain Game Center</h1>
+        </div>
+
+        <div>
+          <h3 class="text-md text-white font-semibold mb-4">Contact</h3>
+          <div class="space-y-2">
+            <div class="flex items-center gap-4">
+              <ElImage src="/email-footer-icon.svg"></ElImage>
+              <p class="text-white">
+                <a href="mailto:bgc@northeastern.edu">bgc@northeastern.edu</a>
+              </p>
+            </div>
+            <div class="flex items-center gap-4">
+              <ElImage src="/phone-footer-icon.svg"></ElImage>
+              <p class="text-white">123-323-2389</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-md text-white font-semibold mb-4">Location</h3>
+          <div class="flex items-start gap-4">
+            <ElImage src="/location-footer-icon.svg"></ElImage>
+            <div>
+              <p class="text-white">360 Huntington Avenue</p>
+              <p class="text-white">Boston, MA 02115</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-md text-white font-semibold mb-4">Our Funders</h3>
+          <div>
+            <p class="text-white">AERDF | ONR | NIH | NEI | NIA | NIDCD</p>
+            <p class="text-white">NIDDK | NIMH | NSF</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center">
+        <p class="text-white py-8">
+          Made by students @
+          <a href="https://www.sandboxnu.com/" target="_blank">Sandbox</a>
+        </p>
+      </div>
+    </footer>
   </div>
 </template>
