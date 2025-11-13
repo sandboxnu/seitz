@@ -72,12 +72,11 @@ function updateVariantName() {
       <ElImage
         v-else
         src="/icons/fa6-solid_angles-right-gray.svg"
-        class="h-5 w-5 mb-4 self-start cursor-pointer"
-        style="transform: scaleX(-1)"
+        class="h-5 w-5 mb-4 self-start cursor-pointer transform scale-x-[-1]"
         @click="(collapsePressed = false), emit('collapse-change', false)"
       />
     </div>
-    <div>
+    <div class="flex flex-col flex-1 min-h-0">
       <!-- Collapse sidebar -->
       <div v-if="!isCollapsed" class="flex flex-col items-stretch w-full mb-5">
         <div class="flex items-center gap-2">
@@ -92,7 +91,7 @@ function updateVariantName() {
       </div>
       <div
         v-if="!isCollapsed"
-        class="flex flex-col w-full flex-1 overflow-hidden"
+        class="flex flex-col min-h-0 flex-1 overflow-hidden"
       >
         <div class="flex space-x-4 mb-4">
           <button
@@ -118,7 +117,7 @@ function updateVariantName() {
             Sessions
           </button>
         </div>
-        <div class="flex-1 overflow-y-auto">
+        <div class="flex-1 min-h-0 overflow-y-auto pr-2">
           <div v-if="selectedOption === 'Details'" class="h-full flex flex-col">
             <div class="mb-2">
               <h2 class="font-bold mb-1">Description</h2>
@@ -159,7 +158,7 @@ function updateVariantName() {
                   <!-- TODO: not real tags, just placeholders -->
                   <img
                     src="/vision.svg"
-                    alt="Brain"
+                    alt="Vision"
                     class="w-3 h-2.5 object-contain"
                   />
                   <div
@@ -173,14 +172,14 @@ function updateVariantName() {
           </div>
           <div
             v-else-if="selectedOption === 'Sessions'"
-            class="flex-1 overflow-y-auto flex flex-col"
+            class="flex flex-col min-h-0 overflow-y-auto"
           >
             <Draggable
               v-model="variantData.sessions"
               v-bind="draggableProps"
               :group="{ name: 'sessions', pull: 'clone', put: true }"
               item-key="_id"
-              class="flex flex-col gap-2"
+              class="min-h-0 overflow-y-auto flex flex-col gap-2"
             >
               <template #item="{ element: session }">
                 <SessionCard :key="session._id" :session="session" draggable />
