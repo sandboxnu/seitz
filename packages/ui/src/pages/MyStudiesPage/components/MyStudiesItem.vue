@@ -133,10 +133,6 @@ const { mutate: duplicateMutate } = useMutation({
             </el-dropdown-menu>
           </template>
         </ElDropdown>
-        <!-- <RouterLink :to="{ name: 'study', params: { id } }">
-          <AppButton @click.stop>Edit</AppButton>
-        </RouterLink>
-        <AppButton @click="confirmDelete">Delete</AppButton> -->
       </div>
     </td>
   </tr>
