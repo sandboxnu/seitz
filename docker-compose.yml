@@ -1,3 +1,7 @@
+# This file is generally speaking a placeholder for once the project is deployed on the cloud
+# The productin containers and images should be placed on the cloud using this configuration, with
+# the locally hosted URLS replaced with the registered ones, as well as added configurations for
+# cookies and authentication (locally, we work with http and not https)
 services:
   redis:
     image: redis:7-alpine
@@ -69,14 +73,13 @@ services:
     networks:
       - seitz-network
     healthcheck:
-      test:
-        [
+      test: [
           "CMD",
           "wget",
-          "--quiet",
+          "--no-verbose",
           "--tries=1",
           "--spider",
-          "http://localhost:5173",
+          "http://localhost:5173", # needs to be updated to DN once registered
         ]
       interval: 30s
       timeout: 3s

@@ -47,6 +47,8 @@ RUN pnpm build
 WORKDIR /app/packages/ui
 RUN pnpm build
 
+# Placeholder production. Should be updated to include the registered URL once the project is
+# deployed on the cloud.
 FROM nginxinc/nginx-unprivileged:1.27-alpine AS production
 
 USER root
@@ -58,9 +60,9 @@ USER nginx
 COPY packages/ui/nginx.conf /etc/nginx/nginx.conf
 COPY --from=builder --chown=nginx:nginx /app/packages/ui/dist /usr/share/nginx/html
 
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:8080 || exit 1
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:5173 || exit 1
 
-EXPOSE 5173 
+EXPOSE 5173
 
 CMD ["nginx", "-g", "daemon off;"]

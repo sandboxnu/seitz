@@ -48,6 +48,7 @@ RUN pnpm build
 WORKDIR /app
 RUN pnpm deploy --filter=api --prod /prod/api
 
+# Should not need to change once the project is deployed on the cloud.
 FROM node:20-alpine AS production
 
 WORKDIR /app
@@ -63,7 +64,7 @@ COPY --chown=nodejs:nodejs --from=builder /app/packages/shared ./node_modules/@s
 USER nodejs
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:4000/health/live', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); });"
+  CMD pgrep nginx || exit 1
 
 EXPOSE 4000
 

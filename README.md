@@ -1,57 +1,93 @@
 ## Prerequisites
 
-- Docker & Docker Compose
-- pnpm 8.9.0+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
+- pnpm 8.9.0+ (included via corepack in Docker)
 
 ## Setup
 
-1. **Install dependencies:**
+**Install dependencies (optional for local development):**
 
 ```bash
    pnpm install
 ```
 
-# Docker Desktop Download
-
-[Docker Desktop Download](https://www.docker.com/products/docker-desktop/)
-
 ## Development
 
-```bash
-# Start all services in development mode
-pnpm docker:dev
+Start all services in development mode with hot-reload:
 
-# View logs
-pnpm docker:logs
+```bash
+pnpm dev
 ```
 
-Services and Ports:
+**Services and Ports:**
 
 - Frontend: http://localhost:5173
 - API: http://localhost:4000
 - Redis: localhost:6379
 
-## Production
+**View logs:**
 
 ```bash
-# Build Images and Start services
-pnpm docker:prod
+pnpm logs              # All services
+pnpm logs:api          # API only
+pnpm logs:frontend     # Frontend only
+```
 
-# OR build images and start services separately
-pnpm docker:build
+## Production
 
-docker compose up -d
+Test the production build locally:
 
-# Check health
-pnpm docker:health
+```bash
+pnpm prod:build
+```
+
+**Check health:**
+
+```bash
+pnpm health
 ```
 
 ## Useful Commands
 
 ```bash
-pnpm docker:down          # Stop all services
-pnpm docker:restart       # Restart services
-pnpm docker:clean         # Remove containers & volumes
-pnpm docker:redis         # Access Redis CLI
-pnpm docker:shell:api     # Shell into API container
+pnpm down              # Stop all services
+pnpm clean             # Remove containers, volumes, and cleanup
+pnpm cli:redis             # Access Redis CLI
+pnpm shell:api         # Shell into API container
+pnpm shell:frontend    # Shell into frontend container
 ```
+
+## Code Quality
+
+```bash
+pnpm lint              # Check for linting errors
+pnpm format            # Format code and fix linting issues
+```
+
+## Project Structure
+
+```
+seitz/
+├── packages/
+│   ├── api/           # Express backend
+│   ├── ui/            # Vue.js frontend
+│   └── shared/        # Shared types/utilities
+├── docker-compose.yml            # Production configuration
+├── docker-compose.dev.yml        # Development configuration
+└── package.json                  # Root package scripts
+```
+
+## Troubleshooting
+
+**Containers won't start:**
+
+```bash
+pnpm clean
+pnpm dev:build
+```
+
+**Port conflicts:**
+Make sure ports 4000, 5173, and 6379 are not in use by other applications.
+
+**Environment variables not loading:**
+Ensure `.env` file exists in the root directory with all required variables.
