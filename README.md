@@ -34,11 +34,13 @@ Services and Ports:
 ## Production
 
 ```bash
-# Build images
+# Build Images and Start services
+pnpm docker:prod
+
+# OR build images and start services separately
 pnpm docker:build
 
-# Start services
-pnpm docker:up
+docker compose up -d
 
 # Check health
 pnpm docker:health
