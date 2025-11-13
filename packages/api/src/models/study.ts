@@ -22,7 +22,7 @@ const taskInstanceSchema = new Schema<ITaskInstance>({
 });
 
 const sessionSchema = new Schema<ISession>({
-  name: { type: String, required: true },
+  name: { type: String, default: "" },
   tasks: [taskInstanceSchema],
 });
 

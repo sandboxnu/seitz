@@ -5,15 +5,12 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessageBox } from "element-plus";
 import { MoreFilled } from "@element-plus/icons-vue";
-import ShortUniqueId from "short-unique-id";
 
 const router = useRouter();
 const emit = defineEmits(["deleted", "open"]);
 const props = defineProps<{ name: string; description: string; id: string }>();
 const isHovered = ref(false);
 const queryClient = useQueryClient();
-const uid = new ShortUniqueId({ dictionary: "alphanum_lower" });
-const serverCodeLength = 5;
 
 const { mutate } = useMutation({
   mutationFn: () => studiesAPI.deleteStudy(props.id),
@@ -59,21 +56,7 @@ const confirmDelete = () => {
 };
 
 const { mutate: duplicateMutate } = useMutation({
-  mutationFn: async () => {
-    const study = await studiesAPI.getStudy(props.id);
-    const newStudyId = await studiesAPI.createStudy();
-    const newStudy = await studiesAPI.getStudy(newStudyId);
-    await studiesAPI.saveStudy(newStudyId, {
-      ...study,
-      _id: newStudyId,
-      name: `Copy of ${study.name}`,
-      prefixServerCode: newStudy.prefixServerCode,
-      variants: study.variants.map((v) => ({
-        ...v,
-        serverCode: uid.rnd(serverCodeLength),
-      })),
-    });
-  },
+  mutationFn: () => studiesAPI.duplicateStudy(props.id),
   onSuccess: () => {
     queryClient.invalidateQueries(["studies"]);
   },

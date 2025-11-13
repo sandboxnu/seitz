@@ -56,6 +56,13 @@ async function saveStudy(id: string, studyData: DTO<PUTStudy>) {
   await axiosInstance.put(`/studies/${id}`, studyData);
 }
 
+async function duplicateStudy(id: string) {
+  const response = await axiosInstance.post<DTO<string>>(
+    `/studies/${id}/duplicate`
+  );
+  return response.data;
+}
+
 export interface VariantFromQuery {
   _id: string;
   name: string;
@@ -83,4 +90,5 @@ export default {
   saveStudy,
   createStudy,
   fetchRecentStudies,
+  duplicateStudy,
 };
