@@ -61,6 +61,12 @@ services:
     volumes:
       - redis_data_dev:/data
     command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
     networks:
       - seitz-network
 
