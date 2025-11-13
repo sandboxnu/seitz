@@ -61,6 +61,6 @@ COPY --from=builder --chown=nginx:nginx /app/packages/ui/dist /usr/share/nginx/h
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:8080 || exit 1
 
-EXPOSE 8080
+EXPOSE 5173 
 
 CMD ["nginx", "-g", "daemon off;"]

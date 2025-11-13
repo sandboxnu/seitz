@@ -62,7 +62,7 @@ services:
     container_name: seitz-frontend
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "5173:5173"
     depends_on:
       api:
         condition: service_healthy
@@ -76,7 +76,7 @@ services:
           "--quiet",
           "--tries=1",
           "--spider",
-          "http://localhost:8080",
+          "http://localhost:5173",
         ]
       interval: 30s
       timeout: 3s

@@ -25,7 +25,7 @@ pnpm docker:dev
 pnpm docker:logs
 ```
 
-Services:
+Services and Ports:
 
 - Frontend: http://localhost:5173
 - API: http://localhost:4000
@@ -43,11 +43,6 @@ pnpm docker:up
 # Check health
 pnpm docker:health
 ```
-
-Services:
-
-- Frontend: http://localhost:8080
-- API: http://localhost:4000
 
 ## Useful Commands
 
