@@ -52,7 +52,7 @@ pnpm health
 ```bash
 pnpm down              # Stop all services
 pnpm clean             # Remove containers, volumes, and cleanup
-pnpm cli:redis             # Access Redis CLI
+pnpm redis:cli         # Access Redis CLI
 pnpm shell:api         # Shell into API container
 pnpm shell:frontend    # Shell into frontend container
 ```
