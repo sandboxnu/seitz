@@ -12,10 +12,6 @@ import { SignupDTO } from "@seitz/shared";
 const router = useRouter();
 const authStore = useAuthStore();
 
-// if (authStore.currentUser) {
-//   router.push("/");
-// }
-
 const { mutate } = useMutation<void, AxiosError<Error>, SignupDTO>({
   mutationFn: authAPI.signUp,
   onSuccess: async () => {

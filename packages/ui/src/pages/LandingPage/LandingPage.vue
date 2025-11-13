@@ -121,8 +121,8 @@ const router = useRouter();
     <footer class="bg-black">
       <div class="grid grid-cols-1 md:grid-cols-4 px-12 py-12 items-start">
         <div
-          @click="router.push('/home')"
           class="flex items-center gap-4 cursor-pointer"
+          @click="router.push('/home')"
         >
           <ElImage src="/bgc-footer-logo.svg"></ElImage>
           <h1 class="text-xl font-semibold text-white">Brain Game Center</h1>
