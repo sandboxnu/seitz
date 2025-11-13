@@ -11,13 +11,6 @@
    pnpm install
 ```
 
-2. **Create environment file:**
-
-```bash
-   cp .env.example .env
-   # Edit .env with your configuration (MONGO_URL, JWT_SECRET, etc.)
-```
-
 # Docker Desktop Download
 
 [Docker Desktop Download](https://www.docker.com/products/docker-desktop/)
