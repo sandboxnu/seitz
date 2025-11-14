@@ -36,7 +36,7 @@ const isoDate = computed(() =>
 </script>
 <template>
   <RouterLink
-    :to="{ name: 'study', params: { id } }"
+    :to="{ name: 'conditions', params: { id } }"
     :class="[
       'sm:p-6 sm:my-8 rounded-xl ring-1 ring-stone-300/90 shadow-sm flex flex-col gap-3 w-full transition-colors',
       isHovered ? 'bg-gray-300' : 'bg-white',
