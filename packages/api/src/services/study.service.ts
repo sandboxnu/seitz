@@ -402,3 +402,33 @@ export const validateAndUpdatePrefixServerCode = async (
     );
   }
 };
+
+export const duplicateStudy = async (
+  user: HydratedDocument<IUser>,
+  studyId: string
+): APIResponse<Types.ObjectId> => {
+  const study = await Study.findOne({ _id: studyId, owner: user._id });
+  if (!study) throw new HttpError(404, "Study not found");
+  const newStudy = await Study.create({
+    owner: user._id,
+    name: `Copy of ${study.name}`,
+    description: study.description,
+    batteries: study.batteries,
+    variants: study.variants.map((v) => ({
+      ...v,
+      serverCode: "",
+    })),
+    lastModified: new Date(),
+  });
+
+  await user.updateOne({ $push: { studies: newStudy._id } });
+
+  await RedisService.addRecentItem(
+    "user",
+    user._id.toString(),
+    RedisService.cacheTypeOf("studies"),
+    newStudy._id.toString()
+  );
+
+  return [201, newStudy._id];
+};
