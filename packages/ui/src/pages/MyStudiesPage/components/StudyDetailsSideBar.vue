@@ -129,7 +129,7 @@ onUnmounted(() => {
           </p>
         </div>
         <AppButton
-          @click="$router.push({ name: 'study', params: { id: studyId } })"
+          @click="$router.push({ name: 'conditions', params: { id: studyId } })"
         >
           Edit Study
         </AppButton>
