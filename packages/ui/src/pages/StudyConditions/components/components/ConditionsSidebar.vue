@@ -2,6 +2,7 @@
 import { useStudyBuilderStore } from "@/stores/studyBuilder";
 import { ref, computed, watch } from "vue";
 import SessionCard from "./SessionCard.vue";
+import TagLabel from "./TagLabel.vue";
 import Draggable from "vuedraggable";
 
 const props = defineProps<{ collapsed?: boolean }>();
@@ -136,43 +137,24 @@ function updateVariantName() {
             <div class="mb-2">
               <h2 class="font-bold mt-2 mb-1">Tags</h2>
               <div class="flex gap-1 flex-wrap">
-                <div
-                  class="h-5 p-1 bg-rose-100 rounded outline outline-1 outline-offset-[-1px] outline-red-300 inline-flex justify-center items-center gap-1"
+                <template
+                  v-if="
+                    Array.isArray(variantData.tags) && variantData.tags.length
+                  "
                 >
-                  <!-- TODO: not real tags, just placeholders -->
-                  <img
-                    src="/brain.svg"
-                    alt="Brain"
-                    class="w-3 h-2.5 object-contain"
+                  <TagLabel
+                    v-for="(t, idx) in variantData.tags"
+                    :key="idx + '-' + t"
+                    :label="t"
                   />
-                  <div
-                    class="justify-center text-orange-700 text-[10px] font-semibold font-['Lato'] leading-3"
-                  >
-                    Cognitive
-                  </div>
-                </div>
-
-                <div
-                  class="h-5 p-1 bg-rose-100 rounded outline outline-1 outline-offset-[-1px] outline-red-300 inline-flex justify-center items-center gap-1"
-                >
-                  <!-- TODO: not real tags, just placeholders -->
-                  <img
-                    src="/vision.svg"
-                    alt="Vision"
-                    class="w-3 h-2.5 object-contain"
-                  />
-                  <div
-                    class="justify-center text-orange-700 text-[10px] font-semibold font-['Lato'] leading-3"
-                  >
-                    Vision
-                  </div>
-                </div>
+                </template>
+                <span v-else class="text-neutral-500 text-xs">No tags</span>
               </div>
             </div>
           </div>
           <div
             v-else-if="selectedOption === 'Sessions'"
-            class="flex flex-col min-h-0 overflow-y-auto"
+            class="flex flex-col min-h-0 overflow-y-auto py-2"
           >
             <Draggable
               v-model="variantData.sessions"

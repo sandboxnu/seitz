@@ -79,6 +79,7 @@ export interface VariantFromQuery {
   sessions: SessionFromQuery[];
   serverCode: string;
   description?: string;
+  tags?: string[];
 }
 
 interface SessionFromQuery {

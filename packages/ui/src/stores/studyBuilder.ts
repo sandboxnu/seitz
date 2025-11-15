@@ -256,6 +256,8 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
       name: "",
       sessions: [],
       serverCode: uid.rnd(serverCodeLength),
+      description: "",
+      tags: [],
     };
     variants.value.push(newVariant);
     switchVariant(newVariant._id);
@@ -293,6 +295,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
       description: variant.description ?? "",
       sessions: variant.sessions,
       serverCode: variant.serverCode ?? "",
+      tags: variant.tags ?? [],
     };
     studiesAPI.updateVariant(studyId.value, variantId, payload);
   }
@@ -375,7 +378,6 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
       variantDescription.value = variant.description ?? "";
     }
   }
-
   function saveStudyStore() {
     if (isStudyLoading.value || isStudySaving.value || !authStore.currentUser)
       return;
@@ -388,6 +390,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
           description: variantDescription.value ?? "",
           sessions: sessions.value.map((id) => sessionData.value[id]),
           serverCode: serverCode.value,
+          tags: v.tags ?? [],
         };
       }
       return v;

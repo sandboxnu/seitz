@@ -60,11 +60,5 @@ const props = defineProps<{
     <div v-if="props.session.tasks.length > 3" class="text-black text-xs">
       ...
     </div>
-    <div
-      class="mt-auto self-stretch text-center justify-center text-stone-500 text-xs"
-    >
-      <!-- placeholder for session id -->
-      id: {{ session._id }}
-    </div>
   </div>
 </template>
