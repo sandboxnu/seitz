@@ -6,6 +6,7 @@ import { useAuthStore } from "@/stores/auth";
 import StudyPanel from "./components/StudyPanel.vue";
 import TaskBank from "./components/TaskBank.vue";
 import AppEditModal from "@/components/ui/AppEditModal.vue";
+import AppBreadcrumb from "@/components/ui/AppBreadcrumb.vue";
 import { useTaskEditingStore } from "@/stores/taskEditing";
 import TaskEditPanel from "./components/TaskEditPanel.vue";
 import { useStudyBuilderStore } from "@/stores/studyBuilder";
@@ -19,32 +20,11 @@ if (!authStore.currentUser) {
 
 const studyBuilderStore = useStudyBuilderStore();
 const taskEditingStore = useTaskEditingStore();
-
-function returnToConditions() {
-  const id = studyBuilderStore.studyId;
-  if (id) {
-    router.push({ name: "conditions", params: { id } });
-  } else {
-    // Fallback: simple history back if id is missing for some reason
-    router.back();
-  }
-}
 </script>
 
 <template>
   <div>
-    <button
-      class="inline-flex items-center text-neutral-600 mx-4 mt-4"
-      type="button"
-      @click="returnToConditions"
-    >
-      <img
-        src="../../../public/icons/back-button.svg"
-        alt="Back"
-        class="h-4 w-4"
-      />
-      <span>Back</span>
-    </button>
+    <AppBreadcrumb />
 
     <!-- This is sort of a hack to delete elements if they are dropped outside of sessions -->
     <Draggable

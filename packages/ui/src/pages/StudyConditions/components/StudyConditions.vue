@@ -3,6 +3,7 @@ import { onMounted } from "vue";
 import { useRouter } from "vue-router";
 
 import { useAuthStore } from "@/stores/auth";
+import AppBreadcrumb from "@/components/ui/AppBreadcrumb.vue";
 import ConditionPanel from "./components/ConditionPanel.vue";
 import ConditionsSidebar from "./components/ConditionsSidebar.vue";
 import { computed, ref } from "vue";
@@ -20,17 +21,20 @@ onMounted(() => {
 });
 </script>
 <template>
-  <div class="flex flex-row">
-    <div
-      class="transition-all"
-      :style="{ width: `calc(100% - ${isCollapsed ? '4rem' : '300px'})` }"
-    >
-      <ConditionPanel @open-sidebar="collapsePressed = false" />
-    </div>
+  <div>
+    <AppBreadcrumb />
+    <div class="flex flex-row">
+      <div
+        class="transition-all"
+        :style="{ width: `calc(100% - ${isCollapsed ? '4rem' : '300px'})` }"
+      >
+        <ConditionPanel @open-sidebar="collapsePressed = false" />
+      </div>
 
-    <ConditionsSidebar
-      :collapsed="isCollapsed"
-      @collapse-change="(v: boolean) => (collapsePressed = v)"
-    />
+      <ConditionsSidebar
+        :collapsed="isCollapsed"
+        @collapse-change="(v: boolean) => (collapsePressed = v)"
+      />
+    </div>
   </div>
 </template>
