@@ -148,7 +148,7 @@ function updateVariantName() {
                     :label="t"
                   />
                 </template>
-                <span v-else class="text-neutral-500 text-xs">No tags</span>
+                <span v-else class="text-neutral-500 text-sm">No tags</span>
               </div>
             </div>
           </div>
