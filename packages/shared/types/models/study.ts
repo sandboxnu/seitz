@@ -24,6 +24,7 @@ export interface CreateStudyVariant {
   serverCode: string;
   description: string;
   tags?: string[];
+  type?: string;
 }
 
 export interface IStudyVariant extends Required<CreateStudyVariant> {

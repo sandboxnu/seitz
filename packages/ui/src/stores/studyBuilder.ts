@@ -258,6 +258,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
       serverCode: uid.rnd(serverCodeLength),
       description: "",
       tags: [],
+      type: "",
     };
     variants.value.push(newVariant);
     switchVariant(newVariant._id);
@@ -288,7 +289,6 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
 
     if (!variant || !authStore.currentUser) return;
 
-    // COMMENT THIS LINE BELOW TO DISABLE DATABASE UPDATE
     const payload: DTO<IStudyVariant> = {
       _id: variant._id,
       name: variant.name ?? "",
@@ -296,6 +296,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
       sessions: variant.sessions,
       serverCode: variant.serverCode ?? "",
       tags: variant.tags ?? [],
+      type: variant.type ?? "",
     };
     studiesAPI.updateVariant(studyId.value, variantId, payload);
   }
@@ -391,6 +392,7 @@ export const useStudyBuilderStore = defineStore("studyBuilder", () => {
           sessions: sessions.value.map((id) => sessionData.value[id]),
           serverCode: serverCode.value,
           tags: v.tags ?? [],
+          type: v.type ?? "",
         };
       }
       return v;

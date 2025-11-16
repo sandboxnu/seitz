@@ -34,7 +34,6 @@ const variantData = computed({
   },
 });
 
-// Todo: make this actually draggable
 const draggableProps = {
   chosenClass: "bg-stone-200",
   dragClass: "bg-stone-200",

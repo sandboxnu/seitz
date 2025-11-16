@@ -80,6 +80,7 @@ export interface VariantFromQuery {
   serverCode: string;
   description?: string;
   tags?: string[];
+  type?: string;
 }
 
 interface SessionFromQuery {

@@ -127,8 +127,7 @@ function updateVariantName() {
 
             <div class="mb-2">
               <h2 class="font-bold mt-2 mb-1">Type</h2>
-              <!-- TODO: not real type, placeholder -->
-              <p>hearing impaired condition</p>
+              <p>{{ variantData.type || "No type" }}</p>
             </div>
             <div class="mb-2">
               <h2 class="font-bold mt-2 mb-1">Condition Server Code</h2>

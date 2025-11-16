@@ -26,18 +26,10 @@ const props = defineProps<{
     />
 
     <!-- header for session card -->
-    <div class="flex items-center justify-between gap-2.5 mt-3 mb-3 w-full">
-      <div class="flex items-center gap-2.5">
-        <!-- placeholder for image icon -->
-        <div
-          class="w-8 h-8 bg-neutral-200 border border-neutral-300 rounded"
-        ></div>
-
-        <div class="text-neutral-600 font-bold text-base">
-          {{ props.session.name }}
-        </div>
+    <div class="flex items-center justify-between gap-2.5 my-3 px-3 w-full">
+      <div class="text-neutral-500 font-bold text-base">
+        {{ props.session.name }}
       </div>
-
       <ElImage src="/icons/lock.svg" fit="cover" class="w-4 h-4 ml-auto" />
     </div>
 
