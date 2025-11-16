@@ -8,8 +8,10 @@ import AppButton from "@/components/ui/AppButton.vue";
 const router = useRouter();
 
 const props = defineProps({
-  hasEmail: Boolean,
+  hasName: Boolean,
   hasPasswordConfirm: Boolean,
+  hasNewPassword: Boolean,
+  hasCode: Boolean,
   headerText: {
     type: String,
     required: true,
@@ -23,6 +25,8 @@ const props = defineProps({
 const emit = defineEmits(["submitted"]);
 
 const loginData = ref({
+  name: "",
+  lastName: "",
   email: "",
   password: "",
   passwordConfirm: "",
@@ -67,32 +71,119 @@ function submit() {
   </header>
   <ElCard
     shadow="never"
-    class="w-[410px] h-[480px] px-5 rounded-lg my-10 mx-auto bg-neutral-10"
+    class="w-[410px] h-[520px] px-5 rounded-lg my-6 ml-12 bg-neutral-10 z-10"
     style="box-shadow: 0 2px 8px 0 rgba(31, 25, 21, 0.2)"
   >
     <h1 class="text-2xl font-bold mt-4">{{ headerText }}</h1>
+    <p v-if="hasCode" class="text-sm font-bold mt-4 mb-2">
+      A verification code was sent to your email.
+    </p>
+
     <div class="p-2"></div>
     <ElForm label-position="top" @submit.prevent="submit">
-      <ElFormItem v-if="hasEmail" label="Email">
+      <div v-if="hasName" class="flex gap-4">
+        <ElFormItem class="flex-1">
+          <template #label>
+            <span class="text-neutral-400">First name</span>
+          </template>
+          <ElInput v-model="loginData.name" />
+        </ElFormItem>
+        <ElFormItem class="flex-1">
+          <template #label>
+            <span class="text-neutral-400">Last name</span>
+          </template>
+          <ElInput v-model="loginData.lastName" />
+        </ElFormItem>
+      </div>
+
+      <ElFormItem v-if="!hasCode">
+        <template #label>
+          <span class="text-neutral-400">Email</span>
+        </template>
         <ElInput v-model="loginData.email" />
       </ElFormItem>
-      <ElFormItem label="Username">
-        <ElInput v-model="loginData.email" />
-      </ElFormItem>
-      <ElFormItem label="Password">
+
+      <ElFormItem v-if="!hasNewPassword && !hasCode">
+        <template #label>
+          <span class="text-neutral-400">Password</span>
+        </template>
         <ElInput v-model="loginData.password" type="password" />
       </ElFormItem>
-      <ElFormItem v-if="hasPasswordConfirm" label="Re-enter Password">
+      <p
+        v-if="!hasPasswordConfirm && !hasNewPassword && !hasCode"
+        class="text-right text-xs text-neutral-400 -mt-2 cursor-pointer"
+        @click="router.push('/reset')"
+      >
+        Forgot Password?
+      </p>
+
+      <ElFormItem v-if="hasPasswordConfirm && !hasNewPassword">
+        <template #label>
+          <span class="text-neutral-400">Re-enter Password</span>
+        </template>
         <ElInput v-model="loginData.passwordConfirm" type="password" />
       </ElFormItem>
-      <AppButton
-        type="primary"
-        class="flex py-2 justify-center bg-black text-white w-full border border-black rounded-lg mt-8"
-        @click="submit"
+
+      <ElFormItem v-if="hasNewPassword">
+        <template #label>
+          <span class="text-neutral-400">New Password</span>
+        </template>
+        <ElInput v-model="loginData.password" type="password" />
+      </ElFormItem>
+
+      <ElFormItem v-if="hasNewPassword">
+        <template #label>
+          <span class="text-neutral-400">Confirm New Password</span>
+        </template>
+        <ElInput v-model="loginData.name" type="name" />
+      </ElFormItem>
+
+      <ElFormItem v-if="hasCode">
+        <template #label>
+          <span class="text-neutral-400">Enter Code:</span>
+        </template>
+        <ElInput v-model="loginData.password" type="password" />
+      </ElFormItem>
+      <p
+        v-if="hasCode"
+        class="text-right text-xs text-neutral-400 -mt-2 cursor-pointer"
       >
+        Didn't receive code?
+      </p>
+
+      <div
+        v-if="['Reset', 'Enter'].includes(submitText)"
+        class="flex gap-2 mt-8"
+      >
+        <AppButton type="primary" class="px-8" @click="submit">
+          {{ submitText }}
+        </AppButton>
+        <SecondaryButton class="px-8" @click="router.push('/login')"
+          >Cancel</SecondaryButton
+        >
+      </div>
+      <AppButton v-else type="primary" class="w-full mt-6" @click="submit">
         {{ submitText }}
       </AppButton>
+
+      <p
+        v-if="hasPasswordConfirm && !hasNewPassword && !hasCode"
+        class="text-right text-xs text-neutral-400 mt-2 cursor-pointer"
+        @click="router.push('/login')"
+      >
+        Have an account already? Login
+      </p>
+      <p
+        v-if="!hasPasswordConfirm && !hasNewPassword && !hasCode"
+        class="text-right text-xs text-neutral-400 mt-2 cursor-pointer"
+        @click="router.push('/signup')"
+      >
+        Don't have an account? Sign Up
+      </p>
       <input type="submit" hidden />
     </ElForm>
   </ElCard>
+  <div class="absolute right-0 top-[60%] -translate-y-1/2 h-[95vh] z-0">
+    <ElImage src="/icons/bgc-logo.svg" class="w-full h-full" fit="contain" />
+  </div>
 </template>
