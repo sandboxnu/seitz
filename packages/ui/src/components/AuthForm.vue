@@ -8,10 +8,12 @@ import AppButton from "@/components/ui/AppButton.vue";
 const router = useRouter();
 
 const props = defineProps({
+  hasEmail: Boolean,
   hasName: Boolean,
   hasPasswordConfirm: Boolean,
   hasNewPassword: Boolean,
   hasCode: Boolean,
+  hasOnlyEmail: Boolean,
   headerText: {
     type: String,
     required: true,
@@ -78,6 +80,9 @@ function submit() {
     <p v-if="hasCode" class="text-sm font-bold mt-4 mb-2">
       A verification code was sent to your email.
     </p>
+    <p v-if="hasOnlyEmail" class="text-sm font-bold mt-4 mb-2">
+      Enter the email tied to your account.
+    </p>
 
     <div class="p-2"></div>
     <ElForm label-position="top" @submit.prevent="submit">
@@ -103,16 +108,18 @@ function submit() {
         <ElInput v-model="loginData.email" />
       </ElFormItem>
 
-      <ElFormItem v-if="!hasNewPassword && !hasCode">
+      <ElFormItem v-if="!hasNewPassword && !hasCode && !hasOnlyEmail">
         <template #label>
           <span class="text-neutral-400">Password</span>
         </template>
         <ElInput v-model="loginData.password" type="password" />
       </ElFormItem>
       <p
-        v-if="!hasPasswordConfirm && !hasNewPassword && !hasCode"
+        v-if="
+          !hasPasswordConfirm && !hasNewPassword && !hasCode && !hasOnlyEmail
+        "
         class="text-right text-xs text-neutral-400 -mt-2 cursor-pointer"
-        @click="router.push('/reset')"
+        @click="router.push('/reset-password')"
       >
         Forgot Password?
       </p>
@@ -135,7 +142,7 @@ function submit() {
         <template #label>
           <span class="text-neutral-400">Confirm New Password</span>
         </template>
-        <ElInput v-model="loginData.name" type="name" />
+        <ElInput v-model="loginData.password" type="password" />
       </ElFormItem>
 
       <ElFormItem v-if="hasCode">
@@ -155,11 +162,12 @@ function submit() {
         v-if="['Reset', 'Enter'].includes(submitText)"
         class="flex gap-2 mt-8"
       >
+        <!-- need to connect with send grid -->
         <AppButton type="primary" class="px-8" @click="submit">
           {{ submitText }}
         </AppButton>
         <SecondaryButton class="px-8" @click="router.push('/login')"
-          >Cancel</SecondaryButton
+          >Go Back</SecondaryButton
         >
       </div>
       <AppButton v-else type="primary" class="w-full mt-6" @click="submit">
@@ -167,14 +175,16 @@ function submit() {
       </AppButton>
 
       <p
-        v-if="hasPasswordConfirm && !hasNewPassword && !hasCode"
+        v-if="hasPasswordConfirm"
         class="text-right text-xs text-neutral-400 mt-2 cursor-pointer"
         @click="router.push('/login')"
       >
         Have an account already? Login
       </p>
       <p
-        v-if="!hasPasswordConfirm && !hasNewPassword && !hasCode"
+        v-if="
+          !hasPasswordConfirm && !hasNewPassword && !hasCode && !hasOnlyEmail
+        "
         class="text-right text-xs text-neutral-400 mt-2 cursor-pointer"
         @click="router.push('/signup')"
       >
