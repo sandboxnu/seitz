@@ -71,11 +71,8 @@ function setVariantId() {
               class="handle cursor-pointer align-center rotate-180"
               @click="toggleContent"
             />
-            <header
-              class="text-left font-bold text-lg"
-              placeholder="Condition Title"
-            >
-              {{ variantData.name }}
+            <header class="text-left font-bold text-lg">
+              {{ variantData.name || "Untitled Condition" }}
             </header>
           </div>
 

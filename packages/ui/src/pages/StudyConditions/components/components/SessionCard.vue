@@ -54,8 +54,8 @@ const taskCounts = computed(() => {
 
     <!-- header for session card -->
     <div class="flex items-center justify-between gap-2.5 my-3 px-3 w-full">
-      <div class="text-neutral-500 font-bold text-base">
-        {{ props.session.name }}
+      <div class="text-neutral-500 font-bold text-base truncate">
+        {{ props.session.name || "Untitled Session" }}
       </div>
     </div>
 
@@ -79,6 +79,9 @@ const taskCounts = computed(() => {
         </div>
       </div>
       <div v-if="uniqueTasksAll.length > 3" class="text-black text-xs">...</div>
+      <div v-if="uniqueTasksAll.length == 0" class="text-neutral-400 text-xs">
+        No tasks added
+      </div>
     </div>
   </div>
 </template>
