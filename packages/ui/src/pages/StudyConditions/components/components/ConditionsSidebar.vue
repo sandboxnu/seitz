@@ -4,6 +4,7 @@ import { ref, computed, watch } from "vue";
 import SessionCard from "./SessionCard.vue";
 import TagLabel from "./TagLabel.vue";
 import Draggable from "vuedraggable";
+import studiesAPI from "@/api/studies";
 
 const props = defineProps<{ collapsed?: boolean }>();
 const emit = defineEmits<(e: "collapse-change", value: boolean) => void>();
@@ -52,7 +53,26 @@ const variantData = computed<Record<string, any>>({
 });
 
 function updateVariantName() {
-  // TODO: Make database update
+  const variant = studyBuilderStore.variants.find(
+    (v) => v._id === studyBuilderStore.currentVariantId
+  );
+  if (!variant) return;
+
+  const payload = {
+    _id: variant._id,
+    name: variant.name ?? "",
+    description: variant.description ?? "",
+    sessions: variant.sessions,
+    serverCode: variant.serverCode ?? "",
+    tags: Array.isArray(variant.tags) ? variant.tags : [],
+    type: variant.type ?? "",
+  };
+
+  studiesAPI.updateVariant(
+    studyBuilderStore.studyId,
+    studyBuilderStore.currentVariantId,
+    payload
+  );
 }
 </script>
 

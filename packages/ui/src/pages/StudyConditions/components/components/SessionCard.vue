@@ -42,7 +42,7 @@ const taskCounts = computed(() => {
 
 <template>
   <div
-    class="w-52 h-52 flex flex-col items-center border rounded-3xl border-neutral-300 overflow-y-hidden p-3 bg-stone-50 outline-stone-300"
+    class="w-52 h-52 flex flex-col items-center border rounded-3xl border-neutral-300 overflow-hidden p-3 bg-stone-50 outline-stone-300"
   >
     <!-- grip icon for dragging -->
     <ElImage
