@@ -10,6 +10,12 @@ const userSchema = new Schema<IUser>({
       return this.verified === true;
     },
   },
+  lastName: {
+    type: String,
+    required: function () {
+      return this.verified === true;
+    },
+  },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: {

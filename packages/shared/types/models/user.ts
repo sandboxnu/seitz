@@ -10,6 +10,7 @@ export enum Role {
 export interface CreateUser {
   _id?: Types.ObjectId;
   name: string;
+  lastName: string;
   email: string;
   password: string;
   role: Role;

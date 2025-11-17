@@ -3,22 +3,17 @@ import { useMutation } from "@tanstack/vue-query";
 import authAPI from "@/api/auth";
 import { useRouter } from "vue-router";
 import { ElNotification } from "element-plus";
-import { useAuthStore } from "@/stores/auth";
 import AuthForm from "./AuthForm.vue";
 
 import type { AxiosError } from "axios";
 import type { LoginDTO } from "@seitz/shared";
 
 const router = useRouter();
-const authStore = useAuthStore();
 
 const { mutate } = useMutation<void, AxiosError<Error>, LoginDTO>({
   mutationFn: authAPI.logIn,
   onSuccess: async () => {
-    authAPI.getCurrentUser().then((user) => {
-      authStore.currentUser = user;
-      router.push("/studies");
-    });
+    router.push("/login");
   },
   onError: (err) => {
     ElNotification({
@@ -32,8 +27,9 @@ const { mutate } = useMutation<void, AxiosError<Error>, LoginDTO>({
 
 <template>
   <AuthForm
-    header-text="Account Login"
-    submit-text="Login"
+    has-only-email
+    header-text="Forgot Password"
+    submit-text="Enter"
     @submitted="mutate"
   />
 </template>

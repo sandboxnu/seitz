@@ -8,7 +8,7 @@ const showNavbar = computed(() => route.path !== "/home");
 </script>
 
 <template>
-  <div class="flex h-screen bg-neutral-50">
+  <div class="flex h-screen bg-neutral-10">
     <AppNavbar v-if="showNavbar" />
     <div class="flex flex-col w-full h-screen overflow-y-auto">
       <RouterView />
