@@ -71,6 +71,11 @@ async function updateVariant(
     `/studies/${studyId}/variants/${variantId}`,
     variantData
   );
+async function duplicateStudy(id: string) {
+  const response = await axiosInstance.post<DTO<string>>(
+    `/studies/${id}/duplicate`
+  );
+  return response.data;
 }
 
 export interface VariantFromQuery {
@@ -104,4 +109,5 @@ export default {
   createStudy,
   updateVariant,
   fetchRecentStudies,
+  duplicateStudy,
 };
