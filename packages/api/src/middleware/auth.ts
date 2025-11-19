@@ -66,8 +66,13 @@ export const roleUpdateIsValid: RequestHandler = async (req, res, next) => {
     );
   }
 
-  if (req.params.id === user?._id?.toString()) {
-    return next(new HttpError(403, "You cannot update your own role"));
+  if (userRole == Role.SuperAdmin && req.params.id === user?._id?.toString()) {
+    const superAdminCount = await User.countDocuments({
+      role: Role.SuperAdmin,
+    });
+    if (superAdminCount === 1) {
+      return next(new HttpError(403, "Cannot demote the only super admin"));
+    }
   }
 
   if (userRole === Role.UserManager) {
