@@ -25,8 +25,6 @@ const taskEditingStore = useTaskEditingStore();
 <template>
   <div>
     <AppBreadcrumb />
-
-    <!-- This is sort of a hack to delete elements if they are dropped outside of sessions -->
     <Draggable
       v-loading="studyBuilderStore.isStudySaving"
       class="flex-1 flex overflow-auto"

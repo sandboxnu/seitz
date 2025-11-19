@@ -77,7 +77,6 @@ function setVariantId() {
           </div>
 
           <div class="flex items-center gap-2.5">
-            <!-- placeholder for variant id -->
             <div class="border rounded px-2 py-1 whitespace-nowrap">
               {{ variantData.serverCode || "00000" }}
             </div>
@@ -96,7 +95,6 @@ function setVariantId() {
           </div>
         </div>
 
-        <!-- placeholder for variant description -->
         <div class="text-neutral-600 font-medium text-sm mb-4">
           {{ variantData.description || "No description" }}
         </div>
@@ -145,7 +143,6 @@ function setVariantId() {
             >
               {{ variantData.name }}
             </header>
-            <!--placeholder for description-->
             <div
               class="items-start text-left text-sm overflow-hidden whitespace-nowrap text-ellipsis min-w-0"
               style="max-width: 30vw"
@@ -155,7 +152,6 @@ function setVariantId() {
           </div>
 
           <div class="flex items-center gap-2.5">
-            <!-- placeholder for variant id -->
             <div class="border rounded px-2 py-1 whitespace-nowrap">
               {{ variantData.serverCode || "00000" }}
             </div>
