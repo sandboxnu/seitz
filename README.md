@@ -1,35 +1,93 @@
-# Docker Desktop Download
+## Prerequisites
 
-[Docker Desktop Download](https://www.docker.com/products/docker-desktop/)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
+- pnpm 8.9.0+ (included via corepack in Docker)
 
-## To Run the Program
+## Setup
 
-### Install Node Modules
-
-```bash
-pnpm install
-```
-
-### Boot the Infrastructure (Redis Server)
+**Install dependencies (optional for local development):**
 
 ```bash
-pnpm run dev:infra
+   pnpm install
 ```
 
-### Run the Program
+## Development
+
+Start all services in development mode with hot-reload:
 
 ```bash
-pnpm run dev
+pnpm dev
 ```
 
-### Cleanup Docker Infrastructure
+**Services and Ports:**
+
+- Frontend: http://localhost:5173
+- API: http://localhost:4000
+- Redis: localhost:6379
+
+**View logs:**
 
 ```bash
-pnpm run dev:infra:stop
+pnpm logs              # All services
+pnpm logs:api          # API only
+pnpm logs:frontend     # Frontend only
 ```
 
-### To see if you have a Docker container currently running
+## Production
+
+Test the production build locally:
 
 ```bash
-docker ps
+pnpm prod:build
 ```
+
+**Check health:**
+
+```bash
+pnpm health
+```
+
+## Useful Commands
+
+```bash
+pnpm down              # Stop all services
+pnpm clean             # Remove containers, volumes, and cleanup
+pnpm redis:cli         # Access Redis CLI
+pnpm shell:api         # Shell into API container
+pnpm shell:frontend    # Shell into frontend container
+```
+
+## Code Quality
+
+```bash
+pnpm lint              # Check for linting errors
+pnpm format            # Format code and fix linting issues
+```
+
+## Project Structure
+
+```
+seitz/
+├── packages/
+│   ├── api/           # Express backend
+│   ├── ui/            # Vue.js frontend
+│   └── shared/        # Shared types/utilities
+├── docker-compose.yml            # Production configuration
+├── docker-compose.dev.yml        # Development configuration
+└── package.json                  # Root package scripts
+```
+
+## Troubleshooting
+
+**Containers won't start:**
+
+```bash
+pnpm clean
+pnpm dev:build
+```
+
+**Port conflicts:**
+Make sure ports 4000, 5173, and 6379 are not in use by other applications.
+
+**Environment variables not loading:**
+Ensure `.env` file exists in the root directory with all required variables.
