@@ -33,7 +33,7 @@ const handleDoubleClick = () => {
     clearTimeout(clickTimer);
     clickTimer = null;
   }
-  router.push({ name: "study", params: { id: props.id } });
+  router.push({ name: "conditions", params: { id: props.id } });
 };
 
 const confirmDelete = () => {

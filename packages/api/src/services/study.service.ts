@@ -271,6 +271,24 @@ export const putTask = async (
   }
 };
 
+export const updateVariant = async (
+  user: HydratedDocument<IUser>,
+  studyId: string,
+  variantId: string,
+  variantData: IStudyVariant
+): APIResponse<void> => {
+  const study = await Study.findOneAndUpdate(
+    { _id: studyId, owner: user._id, "variants._id": variantId },
+    { $set: { "variants.$": variantData } }
+  );
+
+  if (!study) {
+    throw new HttpError(404);
+  }
+
+  return [200];
+};
+
 export const getVariant = async (
   serverCode: string
 ): APIResponse<IStudyVariant> => {

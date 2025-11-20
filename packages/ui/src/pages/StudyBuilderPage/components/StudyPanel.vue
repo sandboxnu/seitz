@@ -4,10 +4,12 @@ import AppButton from "@/components/ui/AppButton.vue";
 import SessionCard from "./SessionCard.vue";
 import Draggable from "vuedraggable";
 import StudyServerCode from "./StudyServerCode.vue";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { ArrowRight, ArrowLeft, Plus, Delete } from "@element-plus/icons-vue";
+import { useRoute } from "vue-router";
 
 const studyBuilderStore = useStudyBuilderStore();
+const route = useRoute();
 const currentVariantIndex = ref(0);
 
 const switchVariantByIndex = (index: number) => {
@@ -50,6 +52,42 @@ const draggableProps = {
   handle: ".handle",
   animation: 200,
 };
+
+// Sync local index with store.currentVariantId when variants load or change
+watch(
+  () => [studyBuilderStore.variants, studyBuilderStore.currentVariantId],
+  () => {
+    if (!studyBuilderStore.currentVariantId) return;
+    const idx = studyBuilderStore.variants.findIndex(
+      (v) => v._id === studyBuilderStore.currentVariantId
+    );
+    if (idx !== -1 && idx !== currentVariantIndex.value) {
+      currentVariantIndex.value = idx;
+    }
+  },
+  { immediate: true, deep: true }
+);
+
+// Align with the desired variantId from the route (if any)
+watch(
+  () => [studyBuilderStore.variants.length, route.query.variantId],
+  () => {
+    const queriedVariant = Array.isArray(route.query.variantId)
+      ? route.query.variantId[0]
+      : typeof route.query.variantId === "string"
+      ? route.query.variantId
+      : undefined;
+    if (!queriedVariant) return;
+    const exists = studyBuilderStore.variants.some(
+      (v) => v._id === queriedVariant
+    );
+    if (!exists) return;
+    if (studyBuilderStore.currentVariantId !== queriedVariant) {
+      studyBuilderStore.switchVariant(queriedVariant);
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
@@ -106,7 +144,13 @@ const draggableProps = {
       v-loading="studyBuilderStore.isStudyLoading"
       class="grow p-6 bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
     >
-      <div class="flex items-start items-center justify-between gap-4 pb-5">
+      <div class="flex-2 items-center justify-between gap-4 pb-5">
+        <input
+          v-model="studyBuilderStore.variantDescription"
+          class="text-center w-full bg-transparent text-neutral-600 font-medium text-lg"
+          type="text"
+          placeholder="Untitled Variant Description"
+        />
         <div></div>
         <div class="flex gap-2 items-end justify-end min-w-[200px] flex-wrap">
           <StudyServerCode class="shrink grow-0 min-w-0" />
@@ -119,7 +163,9 @@ const draggableProps = {
         </div>
       </div>
 
-      <div class="w-full h-5/6 flex gap-6 overflow-x-auto bg-white pr-5">
+      <div
+        class="w-full h-fill min-h-[300px] flex gap-6 overflow-x-auto bg-white pr-5"
+      >
         <TransitionGroup>
           <Draggable
             key="draggable"
