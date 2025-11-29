@@ -107,4 +107,10 @@ router.post(
   authRoute((req, user) => studyService.duplicateStudy(user, req.params.id))
 );
 
+router.get(
+  "/:id/export",
+  isAuthenticated,
+  authRoute((req, user) => studyService.exportStudy(user, req.params.id))
+);
+
 export default router;

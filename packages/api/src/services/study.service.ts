@@ -432,3 +432,23 @@ export const duplicateStudy = async (
 
   return [201, newStudy._id];
 };
+
+/*
+export const exportStudy = async (
+  user: HydratedDocument<IUser>,
+  studyId: string
+): APIResponse<Types.ObjectId> => {
+  const study = await Study.findOne({ _id: studyId, owner: user._id })
+  if (!study) throw new HttpError(404, "Study not found!");
+
+  const studies = extractStudies(study);
+  const { conditions, protocol_key, session_ids } = extractVariantInfo(studies)
+  const batteries = extractBatteries(conditions)
+  const stages = extractStages(batteries)
+  return [201, combine(studies, conditions, batteries, stages)];
+};
+
+const exportStudies = async(
+
+): 
+*/
