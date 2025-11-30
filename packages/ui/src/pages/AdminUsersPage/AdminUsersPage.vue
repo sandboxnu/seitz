@@ -66,14 +66,14 @@ const addAdmin = useMutation(
   }
 );
 const removeAdmin = useMutation(
-  (userId: string) => adminAPI.removeUserAsAdmin(userId),
+  (userId: string) => adminAPI.deleteUser(userId),
   {
     onSuccess: () => {
       queryClient.invalidateQueries(["admins"]);
       queryClient.invalidateQueries(["users"]);
       ElNotification({
         title: "Success",
-        message: "Admin user removed",
+        message: "User removed successfully",
         type: "success",
       });
     },
@@ -81,7 +81,7 @@ const removeAdmin = useMutation(
       console.error(error);
       ElNotification({
         title: "Error",
-        message: "Failed to remove admin user",
+        message: "Failed to remove user",
         type: "error",
       });
     },
