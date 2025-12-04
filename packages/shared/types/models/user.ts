@@ -17,6 +17,7 @@ export interface CreateUser {
   favoriteBatteries?: Types.ObjectId[];
   recentStudyIds?: string[] | null;
   recentBatteries?: Types.ObjectId[];
+  welcomeWizardStep: number;
 }
 
 export interface IUser extends Required<CreateUser> {
