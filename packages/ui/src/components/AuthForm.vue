@@ -27,7 +27,7 @@ const props = defineProps({
 const emit = defineEmits(["submitted"]);
 
 const loginData = ref({
-  name: "",
+  firstName: "",
   lastName: "",
   email: "",
   password: "",
@@ -91,7 +91,7 @@ function submit() {
           <template #label>
             <span class="text-neutral-400">First name</span>
           </template>
-          <ElInput v-model="loginData.name" />
+          <ElInput v-model="loginData.firstName" />
         </ElFormItem>
         <ElFormItem class="flex-1">
           <template #label>

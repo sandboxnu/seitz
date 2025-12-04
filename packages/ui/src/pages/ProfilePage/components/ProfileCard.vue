@@ -35,7 +35,7 @@ watch(
   user,
   (u) => {
     if (!initialized.value && u) {
-      firstName.value = u.name ?? "";
+      firstName.value = u.firstName ?? "";
       lastName.value = u.lastName ?? "";
       email.value = u.email ?? "";
       initialized.value = true;
@@ -50,7 +50,7 @@ const roleLabel = computed(() => user.value?.role ?? "");
 onMounted(async () => {
   try {
     const apiUser = await authAPI.getCurrentUser();
-    firstName.value = apiUser.name ?? "";
+    firstName.value = apiUser.firstName ?? "";
     lastName.value = apiUser.lastName ?? "";
     email.value = apiUser.email ?? email.value;
   } catch {
@@ -65,13 +65,13 @@ async function onSave() {
   const trimmedEmail = email.value.trim();
 
   const payload: {
-    name?: string;
+    firstName?: string;
     lastName?: string;
     email?: string;
     password?: string;
   } = {};
-  if (trimmedFirst !== (user.value?.name ?? "").trim()) {
-    payload.name = trimmedFirst;
+  if (trimmedFirst !== (user.value?.firstName ?? "").trim()) {
+    payload.firstName = trimmedFirst;
   }
   if (trimmedLast !== (user.value?.lastName ?? "").trim()) {
     payload.lastName = trimmedLast;
@@ -107,7 +107,7 @@ async function onSave() {
     };
     authStore.currentUser = storeUser;
     // Update display name immediately
-    firstName.value = updated.name ?? firstName.value;
+    firstName.value = updated.firstName ?? firstName.value;
     lastName.value = updated.lastName ?? lastName.value;
     // Clear password field after successful save
     password.value = "";

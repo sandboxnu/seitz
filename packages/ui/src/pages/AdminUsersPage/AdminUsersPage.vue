@@ -276,7 +276,7 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
           <tbody>
             <tr v-for="user in filteredBasicUsers" :key="user._id">
               <td class="py-2 px-4 border-b flex items-center justify-evenly">
-                <div class="mr-auto font-bold">{{ user.name }}</div>
+                <div class="mr-auto font-bold">{{ user.firstName }}</div>
                 <div>{{ user.email }}</div>
                 <div class="ml-auto">
                   <ElButton
@@ -325,7 +325,7 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
           <tbody>
             <tr v-for="user in selectedUsers" :key="user._id">
               <td class="py-2 px-4 border-b flex items-center justify-evenly">
-                <div class="mr-auto font-bold">{{ user.name }}</div>
+                <div class="mr-auto font-bold">{{ user.firstName }}</div>
                 <div class="ml-auto">
                   <RolesDropdown
                     :user="user"
@@ -472,7 +472,9 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
           </thead>
           <tbody>
             <tr v-for="user in filteredAdminUsers" :key="user._id">
-              <td class="py-2 px-6 border-b text-left">{{ user.name }}</td>
+              <td class="py-2 px-6 border-b text-left">
+                {{ user.firstName }} {{ user.lastName }}
+              </td>
               <td class="py-2 px-12 border-b">
                 {{ user.email }}
               </td>
