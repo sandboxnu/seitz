@@ -58,7 +58,11 @@ const handleStudyDeleted = async () => {
     <h1 class="mt-4">Recents</h1>
     <RecentStudies />
 
-    <ElCard class="rounded-xl shadow-sm" :body-style="{ padding: 0 }">
+    <ElCard
+      v-if="studies && studies.length > 0"
+      class="rounded-xl shadow-sm"
+      :body-style="{ padding: 0 }"
+    >
       <table class="w-full table-auto border-collapse">
         <thead>
           <tr>

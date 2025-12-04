@@ -130,6 +130,14 @@ export const removeUserAsAdmin = async (userId: string): APIResponse<void> => {
   return [200];
 };
 
+export const deleteUser = async (userId: string): APIResponse<void> => {
+  const deletedUser = await User.findByIdAndDelete(userId);
+  if (!deletedUser) {
+    throw new HttpError(404);
+  }
+  return [200];
+};
+
 export const updateStageVisibility = async (
   batteryId: string,
   stageId: string,
