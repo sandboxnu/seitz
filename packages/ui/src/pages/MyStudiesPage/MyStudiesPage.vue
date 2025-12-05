@@ -231,9 +231,8 @@ const updateWizardSteps = (step: number) => {
             <img
               :src="tagsIcon[tag as keyof typeof tagsIcon]"
               class="inline-block mr-2"
-              style="width: 16px; height: 16px"
-            />
-            {{ tag }}
+              style="width: 12px; height: 12px"
+            />{{ tag }}
           </ElTag>
           <el-dropdown trigger="click">
             <el-button
@@ -268,6 +267,7 @@ const updateWizardSteps = (step: number) => {
                         }
                       }
                     "
+                    class="tag-checkbox"
                   >
                     {{ tag }}
                   </el-checkbox>
@@ -350,5 +350,8 @@ const updateWizardSteps = (step: number) => {
 :deep(.el-dialog__footer .el-button:hover) {
   color: inherit !important;
   background-color: #f5f5f5 !important;
+}
+:deep(.tag-checkbox.is-checked .el-checkbox__label) {
+  color: inherit !important;
 }
 </style>

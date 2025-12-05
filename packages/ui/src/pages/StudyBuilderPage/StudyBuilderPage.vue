@@ -11,9 +11,21 @@ import AppBreadcrumb from "@/components/ui/AppBreadcrumb.vue";
 import { useTaskEditingStore } from "@/stores/taskEditing";
 import TaskEditPanel from "./components/TaskEditPanel.vue";
 import { useStudyBuilderStore } from "@/stores/studyBuilder";
+import { ElMessageBox } from "element-plus";
 
 const router = useRouter();
 const authStore = useAuthStore();
+const finishWelcomeWizard = () => {
+  ElMessageBox.alert(
+    "Congratulations! You've finished the walkthrough.",
+    "Finish",
+    {
+      confirmButtonText: "Close",
+      customStyle: { borderRadius: "10px", width: "278px", height: "160px" },
+      customClass: "finish-msgbox",
+    }
+  );
+};
 
 if (!authStore.currentUser) {
   router.push("/login");
@@ -76,7 +88,10 @@ const updateWizardSteps = (step: number) => {
                   font-size: 14px;
                   font-weight: 700;
                 "
-                @click="updateWizardSteps(welcomeWizardStep + 1)"
+                @click="
+                  updateWizardSteps(welcomeWizardStep + 1);
+                  finishWelcomeWizard();
+                "
                 >Close</el-button
               >
               <div style="font-weight: 500; font-size: 14px">3/3</div>
@@ -112,3 +127,33 @@ const updateWizardSteps = (step: number) => {
     </AppEditModal>
   </div>
 </template>
+
+<style>
+.finish-msgbox .el-message-box__btns {
+  display: flex !important;
+  justify-content: center !important;
+}
+.finish-msgbox .el-message-box__btns .el-button--primary {
+  width: 59px;
+  height: 36px;
+  border-radius: 10px;
+  background-color: #1f1915;
+  border: none !important;
+  color: #fffdfd;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.finish-msgbox .el-message-box__btns .el-button--primary:focus {
+  outline: none !important;
+}
+
+.finish-msgbox .el-message-box__title {
+  font-weight: 700 !important;
+  font-size: 14px !important;
+}
+
+.finish-msgbox .el-message-box__message {
+  font-size: 14px !important;
+}
+</style>
