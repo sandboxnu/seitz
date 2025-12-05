@@ -9,6 +9,7 @@ import AdminUsersPage from "./pages/AdminUsersPage/AdminUsersPage.vue";
 import StudyConditions from "./pages/StudyConditions/components/StudyConditions.vue";
 import ProfilePage from "./pages/ProfilePage/ProfilePage.vue";
 import LandingPage from "./pages/LandingPage/LandingPage.vue";
+import EmailValiationForm from "./components/EmailValiationForm.vue";
 
 const routes: RouteRecordRaw[] = [
   { path: "/", redirect: "/home" },
@@ -16,6 +17,7 @@ const routes: RouteRecordRaw[] = [
   { path: "/example", name: "example", component: CarPage },
   { path: "/login", name: "login", component: AuthLoginForm },
   { path: "/signup", name: "signup", component: AuthSignupForm },
+  { path: "/reset-password", name: "reset", component: EmailValiationForm },
   { path: "/studies", name: "studies", component: MyStudiesPage },
   { path: "/admin", name: "admin", component: AdminPage },
   { path: "/admin/users", name: "adminUsers", component: AdminUsersPage },

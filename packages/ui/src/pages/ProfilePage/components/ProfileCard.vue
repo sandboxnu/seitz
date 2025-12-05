@@ -17,7 +17,6 @@ const user = computed<Partial<SharedUser> | null>(
 );
 
 // Local editable fields populated once from user
-const fullName = ref("");
 const firstName = ref("");
 const lastName = ref("");
 const email = ref("");
@@ -26,15 +25,18 @@ const saving = ref(false);
 const password = ref("");
 const showPasswordModal = ref(false);
 
+const fullName = computed(() => {
+  const fName = firstName.value.trim();
+  const lName = lastName.value.trim();
+  return [fName, lName].filter(Boolean).join(" ");
+});
+
 watch(
   user,
   (u) => {
     if (!initialized.value && u) {
-      const full = (u.name ?? "").trim();
-      const parts = full.length ? full.split(/\s+/) : [];
-      fullName.value = full;
-      firstName.value = parts[0] ?? "";
-      lastName.value = parts.slice(1).join(" ");
+      firstName.value = u.firstName ?? "";
+      lastName.value = u.lastName ?? "";
       email.value = u.email ?? "";
       initialized.value = true;
     }
@@ -48,11 +50,8 @@ const roleLabel = computed(() => user.value?.role ?? "");
 onMounted(async () => {
   try {
     const apiUser = await authAPI.getCurrentUser();
-    const full = (apiUser.name ?? "").trim();
-    const parts = full.length ? full.split(/\s+/) : [];
-    fullName.value = full;
-    firstName.value = parts[0] ?? "";
-    lastName.value = parts.slice(1).join(" ");
+    firstName.value = apiUser.firstName ?? "";
+    lastName.value = apiUser.lastName ?? "";
     email.value = apiUser.email ?? email.value;
   } catch {
     // ignore if unauthenticated or request fails; fields remain as-is
@@ -63,14 +62,23 @@ onMounted(async () => {
 async function onSave() {
   const trimmedFirst = firstName.value.trim();
   const trimmedLast = lastName.value.trim();
-  const name = [trimmedFirst, trimmedLast].filter(Boolean).join(" ");
-  const currentName = (user.value?.name ?? "").trim();
   const trimmedEmail = email.value.trim();
 
-  const payload: { name?: string; email?: string; password?: string } = {};
-  if (name && name !== currentName) payload.name = name;
-  if (trimmedEmail && trimmedEmail !== user.value?.email)
+  const payload: {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    password?: string;
+  } = {};
+  if (trimmedFirst !== (user.value?.firstName ?? "").trim()) {
+    payload.firstName = trimmedFirst;
+  }
+  if (trimmedLast !== (user.value?.lastName ?? "").trim()) {
+    payload.lastName = trimmedLast;
+  }
+  if (trimmedEmail && trimmedEmail !== user.value?.email) {
     payload.email = trimmedEmail;
+  }
   if (password.value.trim().length > 0) {
     payload.password = password.value.trim();
   }
@@ -95,11 +103,12 @@ async function onSave() {
       email: updated.email,
       role: updated.role,
       studies: updated.studies ?? [],
+      favoriteBatteries: [],
     };
     authStore.currentUser = storeUser;
     // Update display name immediately
-    const newFull = [firstName.value, lastName.value].filter(Boolean).join(" ");
-    if (newFull) fullName.value = newFull;
+    firstName.value = updated.firstName ?? firstName.value;
+    lastName.value = updated.lastName ?? lastName.value;
     // Clear password field after successful save
     password.value = "";
     ElNotification({
