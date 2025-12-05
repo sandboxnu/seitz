@@ -19,14 +19,14 @@ const libraryVisible = ref(false);
 
 <template>
   <div
-    class="bg-neutral-10 fixed flex items-stretch h-full border border-neutral-300 rounded-l-2xl px-6 py-8 shadow-2xl right-0"
+    class="top-0 bg-neutral-10 fixed flex items-stretch h-full border border-neutral-200 rounded-l-2xl px-6 py-8 shadow-2xl right-0"
   >
     <div class="flex flex-col w-[216px]">
       <div class="flex mb-5 items-center">
         <h1 class="text-2xl font-bold">Task Bank</h1>
         <div class="grow"></div>
         <AppButton v-if="!libraryVisible" @click="libraryVisible = true">
-          Add
+          + Add
         </AppButton>
       </div>
       <ElSkeleton animated :loading="studyBuilderStore.isStudyLoading">

@@ -17,7 +17,7 @@ function copyCode() {
 </script>
 
 <template>
-  <el-button class="border rounded-lg px-5 py-1" @click="copyCode">
+  <el-button class="border rounded-lg px-3 py-1" @click="copyCode">
     <FontAwesomeIcon :icon="['far', 'copy']" />
   </el-button>
 
@@ -28,13 +28,15 @@ function copyCode() {
     <div
       :class="[
         'border rounded-lg px-5 py-1 flex items-center justify-center gap-1 w-40',
-        copied ? 'bg-gray-300 border-gray-500' : 'bg-gray-200 border-gray-300',
+        copied
+          ? 'bg-neutral-0 border-gray-500'
+          : 'bg-neutral-0 border-gray-300',
       ]"
     >
       <input
         v-model="studyBuilderStore.serverCode"
         type="text"
-        class="truncate text-center border-none bg-transparent w-full focus:outline-none"
+        class="truncate text-center border-none bg-neutral-0 w-full focus:outline-none"
       />
     </div>
   </div>
