@@ -4,13 +4,24 @@ import AppButton from "@/components/ui/AppButton.vue";
 import SessionCard from "./SessionCard.vue";
 import Draggable from "vuedraggable";
 import StudyServerCode from "./StudyServerCode.vue";
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { ArrowRight, ArrowLeft, Plus, Delete } from "@element-plus/icons-vue";
 import { useRoute } from "vue-router";
+import authAPI from "@/api/auth";
+import { useAuthStore } from "@/stores/auth";
 
 const studyBuilderStore = useStudyBuilderStore();
 const route = useRoute();
 const currentVariantIndex = ref(0);
+const authStore = useAuthStore();
+const welcomeWizardStep = computed(
+  () => authStore.currentUser?.welcomeWizardStep ?? 0
+);
+
+const updateWizardSteps = (step: number) => {
+  authAPI.updateCurrentUser({ welcomeWizardStep: step });
+  if (authStore.currentUser) authStore.currentUser.welcomeWizardStep = step;
+};
 
 const switchVariantByIndex = (index: number) => {
   const variant = studyBuilderStore.variants[index];
@@ -185,14 +196,78 @@ watch(
             </template>
           </Draggable>
         </TransitionGroup>
-        <el-button
-          class="h-[30px] w-[30px] bg-primary-300 text-white border border-primary-400 self-center cursor-pointer flex"
-          circle
-          @click="studyBuilderStore.addSession"
+        <el-popover
+          :visible="welcomeWizardStep == 1"
+          teleported="false"
+          title="Add a Session"
+          placement="left-start"
+          width="293px"
+          popper-style="border-radius: 10px;"
+          :hide-after="0"
+          trigger="manual"
         >
-          <font-awesome-icon :icon="['fas', 'plus']" />
-        </el-button>
+          <template #default>
+            A new study has no sessions. Click the plus button to add a new
+            session.
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 8px;
+              "
+            >
+              <el-button
+                class="close-tip"
+                style="
+                  width: 59px;
+                  height: 36px;
+                  border-radius: 10px;
+                  border-width: 1px;
+                  border-color: #c3bcb5;
+                  background-color: #fffdfd;
+                  font-size: 14px;
+                  font-weight: 700;
+                "
+                @click="updateWizardSteps(welcomeWizardStep + 1)"
+                >Close</el-button
+              >
+              <div style="font-weight: 500; font-size: 14px">2/3</div>
+              <el-button
+                type="text"
+                style="font-size: 14px; font-weight: 500; color: #8a7f75"
+                @click="updateWizardSteps(3)"
+                >Skip all tips</el-button
+              >
+            </div>
+          </template>
+          <template #reference>
+            <el-button
+              class="h-[30px] w-[30px] bg-primary-300 text-white border border-primary-400 self-center cursor-pointer flex"
+              circle
+              @click="studyBuilderStore.addSession"
+            >
+              <font-awesome-icon :icon="['fas', 'plus']" />
+            </el-button>
+          </template>
+        </el-popover>
+        <div
+          v-if="welcomeWizardStep == 1"
+          style="
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+          "
+        ></div>
       </div>
     </div>
   </div>
 </template>
+
+<style>
+.close-tip:hover {
+  background-color: #e0e0e0 !important;
+  color: inherit !important;
+}
+</style>

@@ -9,6 +9,8 @@ const props = defineProps<{
 const tagIconMap: Record<string, string> = {
   cognitive: "/brain.svg",
   vision: "/vision.svg",
+  hearing: "/hearing.svg",
+  training: "/training.svg",
 };
 
 const icon = computed(() => {
