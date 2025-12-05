@@ -204,8 +204,8 @@ const switchTab = (tab: string) => {
               :class="[
                 'flex gap-5 p-4 border rounded-2xl cursor-pointer',
                 batteryEditingStore.editingBatteryId === task._id.toString()
-                  ? 'bg-neutral-100 border-neutral-400'
-                  : 'bg-neutral-10 border-neutral-300',
+                  ? 'bg-neutral-50 border-neutral-200'
+                  : 'bg-neutral-10 border-neutral-100',
               ]"
               @click="batteryEditingStore.select(task._id.toString())"
             >

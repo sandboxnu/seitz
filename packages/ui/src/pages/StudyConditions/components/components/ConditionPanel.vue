@@ -16,7 +16,7 @@ const emit = defineEmits<(e: "open-sidebar") => void>();
         </template>
 
         <template #default>
-          <div class="flex flex-col">
+          <div class="flex gap-1 flex-col">
             <input
               v-model="studyBuilderStore.name"
               class="w-fit bg-transparent text-neutral-600 font-bold text-2xl"
@@ -40,7 +40,13 @@ const emit = defineEmits<(e: "open-sidebar") => void>();
       :key="variant._id"
       :variant-id="variant._id"
       :draggable="true"
-      @click="emit('open-sidebar')"
+      :is-selected="variant._id === studyBuilderStore.currentVariantId"
+      @click="
+        () => {
+          studyBuilderStore.switchVariant(variant._id);
+          emit('open-sidebar');
+        }
+      "
     />
   </div>
 </template>

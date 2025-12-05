@@ -17,7 +17,7 @@ const taskEditingStore = useTaskEditingStore();
 <template>
   <div
     :class="[
-      'group flex items-center pl-1.5 pr-3 py-2.5 gap-2 rounded-xl border border-neutral-300 bg-neutral-10',
+      'group flex items-center pl-1.5 pr-3 py-2.5 gap-2 rounded-xl border border-neutral-200 bg-neutral-50',
       { 'cursor-pointer': draggable },
     ]"
     @click="taskEditingStore.select(taskId)"

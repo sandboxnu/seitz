@@ -21,7 +21,7 @@ onMounted(() => {
 });
 </script>
 <template>
-  <div>
+  <div class="bg-neutral-50">
     <AppBreadcrumb />
     <div class="flex flex-row">
       <div
@@ -32,6 +32,7 @@ onMounted(() => {
       </div>
 
       <ConditionsSidebar
+        class="top-0"
         :collapsed="isCollapsed"
         @collapse-change="(v: boolean) => (collapsePressed = v)"
       />
