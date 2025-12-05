@@ -115,8 +115,8 @@ const editingName = ref(false);
             <textarea
               id="description"
               v-model="batteryData.description"
-              class="mt-3 border border-neutral-300 rounded-2xl resize-none py-2.5 px-4 w-full"
-              rows="10"
+              class="mt-3 border border-neutral-200 rounded-2xl resize-none py-2.5 px-4 w-full"
+              rows="5"
             ></textarea>
           </div>
         </div>

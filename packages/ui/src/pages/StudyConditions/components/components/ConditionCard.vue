@@ -7,7 +7,11 @@ import AppButton from "@/components/ui/AppButton.vue";
 import { defineProps } from "vue";
 
 // Define props for this component
-const props = defineProps<{ variantId: string; draggable: boolean }>();
+const props = defineProps<{
+  variantId: string;
+  draggable: boolean;
+  isSelected?: boolean;
+}>();
 
 // Use the study builder store to get your data
 const studyBuilderStore = useStudyBuilderStore();
@@ -60,7 +64,10 @@ function setVariantId() {
       <div
         v-if="isOpen === true"
         v-loading="studyBuilderStore.isStudyLoading"
-        class="w-full p-6 bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
+        :class="[
+          'w-full p-6 border border-neutral-200 rounded-3xl overflow-x-hidden',
+          isSelected ? 'bg-neutral-100' : 'bg-neutral-10',
+        ]"
         @click="setVariantId"
       >
         <div class="flex items-start justify-between gap-4 pb-3">
@@ -99,7 +106,7 @@ function setVariantId() {
           {{ variantData.description || "No description" }}
         </div>
 
-        <div class="w-full h-5/6 flex gap-6 overflow-x-auto bg-white pr-5">
+        <div class="w-full h-5/6 flex gap-6 overflow-x-auto pr-5">
           <TransitionGroup>
             <Draggable
               key="draggable"
@@ -126,7 +133,10 @@ function setVariantId() {
       <div
         v-else
         v-loading="studyBuilderStore.isStudyLoading"
-        class="w-full p-6 bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
+        :class="[
+          'w-full p-6 border border-neutral-300 rounded-3xl overflow-x-hidden',
+          isSelected ? 'bg-neutral-100' : 'bg-neutral-10',
+        ]"
         @click="setVariantId"
       >
         <div class="flex items-start justify-between gap-4 pb-5">

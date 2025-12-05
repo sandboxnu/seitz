@@ -48,7 +48,7 @@ const handleStudyDeleted = async () => {
 <template>
   <div
     v-loading="isLoading"
-    class="mt-14 mx-auto w-full min-w-[600px] px-4 sm:px-6 lg:px-10"
+    class="pt-14 mx-auto w-full min-w-[600px] px-4 sm:px-6 lg:px-10 bg-neutral-50"
   >
     <div class="flex items-center">
       <h1 class="text-3xl font-bold mb-4 -mt-4">My Studies</h1>
