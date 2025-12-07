@@ -66,6 +66,7 @@ const firstStudyForm = reactive({
 });
 
 const createFirstStudy = async () => {
+  createStudyPopup.value = false;
   const createdStudyId = await studiesAPI.createStudy();
   const study = await studiesAPI.getStudy(createdStudyId);
   await studiesAPI.saveStudy(createdStudyId, {
@@ -102,7 +103,7 @@ const updateWizardSteps = (step: number) => {
         title="Create a new Study"
         placement="left-start"
         width="308px"
-        popper-style="border-radius: 10px;"
+        popper-style="border-radius: 10px; z-index: 1500"
         :hide-after="0"
         :visible="welcomeWizardStep == 0"
         trigger="manual"
@@ -256,6 +257,7 @@ const updateWizardSteps = (step: number) => {
                 >
                   <el-checkbox
                     :model-value="firstStudyForm.tags.includes(tag)"
+                    class="tag-checkbox"
                     @change="
                       (checked: boolean) => {
                         if (checked) {
@@ -267,7 +269,6 @@ const updateWizardSteps = (step: number) => {
                         }
                       }
                     "
-                    class="tag-checkbox"
                   >
                     {{ tag }}
                   </el-checkbox>
