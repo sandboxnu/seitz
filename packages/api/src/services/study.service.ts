@@ -1,6 +1,7 @@
 import HttpError from "../types/errors";
 import { CustomizedBattery, Study } from "../models";
 import RedisService from "./redis.service";
+import { buildFullClientExport } from "./export.service";
 
 import type { HydratedDocument, Types } from "mongoose";
 import type {
@@ -433,22 +434,29 @@ export const duplicateStudy = async (
   return [201, newStudy._id];
 };
 
-/*
 export const exportStudy = async (
   user: HydratedDocument<IUser>,
   studyId: string
-): APIResponse<Types.ObjectId> => {
-  const study = await Study.findOne({ _id: studyId, owner: user._id })
+): APIResponse<unknown> => {
+  const study = await Study.findOne({ _id: studyId, owner: user._id });
   if (!study) throw new HttpError(404, "Study not found!");
 
+  /*
   const studies = extractStudies(study);
   const { conditions, protocol_key, session_ids } = extractVariantInfo(studies)
   const batteries = extractBatteries(conditions)
   const stages = extractStages(batteries)
   return [201, combine(studies, conditions, batteries, stages)];
+  */
+
+  try {
+    const exportObj = await buildFullClientExport(studyId);
+    return [200, exportObj];
+  } catch (error) {
+    console.error("Error exporting study:", error);
+    throw new HttpError(
+      500,
+      "An internal error occured while exporting the study"
+    );
+  }
 };
-
-const exportStudies = async(
-
-): 
-*/

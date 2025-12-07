@@ -37,6 +37,15 @@ const fetchStudy = async () => {
   }
 };
 
+const downloadExport = async () => {
+  if (!props.studyId) return;
+  try {
+    await studiesAPI.downloadStudyExport(props.studyId);
+  } catch (err) {
+    console.error("Failed to download export:", err);
+  }
+};
+
 watch(
   () => props.studyId,
   (newId) => {
@@ -133,6 +142,7 @@ onUnmounted(() => {
         >
           Edit Study
         </AppButton>
+        <AppButton @click="downloadExport">Export</AppButton>
       </div>
 
       <div v-if="isLoading" class="flex-1 flex items-center justify-center">

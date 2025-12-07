@@ -50,3 +50,8 @@ export interface ClientStage {
   "Stage Precursor"?: ClientStagePrecursor;
   [key: string]: unknown;
 }
+
+export interface ClientConditionExport {
+  ProtocolKey: string;
+  StudyName: string;
+}

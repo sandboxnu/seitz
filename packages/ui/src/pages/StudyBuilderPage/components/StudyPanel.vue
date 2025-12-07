@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useStudyBuilderStore } from "@/stores/studyBuilder";
+import studiesAPI from "@/api/studies";
 import AppButton from "@/components/ui/AppButton.vue";
 import SessionCard from "./SessionCard.vue";
 import Draggable from "vuedraggable";
@@ -50,6 +51,16 @@ const draggableProps = {
   handle: ".handle",
   animation: 200,
 };
+
+const downloadExport = async () => {
+  const id = studyBuilderStore.studyId;
+  if (!id) return;
+  try {
+    await studiesAPI.downloadStudyExport(id);
+  } catch (err) {
+    console.error("Failed to download study export:", err);
+  }
+};
 </script>
 
 <template>
@@ -62,19 +73,28 @@ const draggableProps = {
             <ElSkeletonItem variant="text" class="h-8 mt-2 mb-1 w-3/4" />
           </template>
           <template #default>
-            <div class="flex gap-3 flex-col">
-              <input
-                v-model="studyBuilderStore.name"
-                class="w-full bg-transparent text-neutral-600 font-bold text-4xl"
-                type="text"
-                placeholder="Untitled Study"
-              />
-              <input
-                v-model="studyBuilderStore.description"
-                class="w-full bg-transparent text-neutral-600 font-medium text-lg"
-                type="text"
-                placeholder="Add a description"
-              />
+            <div class="flex flex-row items-start justify-between">
+              <div class="flex gap-3 flex-col">
+                <input
+                  v-model="studyBuilderStore.name"
+                  class="w-full bg-transparent text-neutral-600 font-bold text-4xl"
+                  type="text"
+                  placeholder="Untitled Study"
+                />
+                <input
+                  v-model="studyBuilderStore.description"
+                  class="w-full bg-transparent text-neutral-600 font-medium text-lg"
+                  type="text"
+                  placeholder="Add a description"
+                />
+              </div>
+              <AppButton
+                class="flex-none"
+                :disabled="!studyBuilderStore.studyId"
+                @click="downloadExport"
+              >
+                Export
+              </AppButton>
             </div>
           </template>
         </ElSkeleton>
