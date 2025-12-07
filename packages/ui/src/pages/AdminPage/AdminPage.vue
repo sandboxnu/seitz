@@ -16,10 +16,10 @@ if (!authStore.hasAdminPower(Role.StudyManager)) {
 </script>
 <template>
   <div class="flex h-screen items-stretch">
-    <AdminTaskLibrary class="flex-none" />
+    <AdminTaskLibrary class="flex-none border border-neutral-100" />
     <div
       v-if="batteryEditingStore.editingBatteryId !== undefined"
-      class="flex-1 mx-6 my-8 p-8 rounded-2xl min-w-[600px] bg-white shadow-xl overflow-y-hidden"
+      class="flex-1 mx-6 my-8 p-8 rounded-2xl min-w-[600px] bg-white shadow-xl overflow-y-hidden border border-neutral-100"
     >
       <BatteryEditForm />
     </div>
