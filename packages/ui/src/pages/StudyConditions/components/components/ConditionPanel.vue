@@ -19,12 +19,14 @@ const emit = defineEmits<(e: "open-sidebar") => void>();
           <div class="flex flex-col">
             <input
               v-model="studyBuilderStore.name"
-              class="w-fit bg-transparent text-neutral-600 font-bold text-2xl"
+              @change="studyBuilderStore.saveStudyStore"
+              class="w-full bg-transparent text-neutral-600 font-bold text-2xl"
               type="text"
               placeholder="Untitled Study"
             />
             <input
               v-model="studyBuilderStore.description"
+              @change="studyBuilderStore.saveStudyStore"
               class="w-full bg-transparent text-neutral-600 font-medium text-md"
               type="text"
               placeholder="Add a description"
