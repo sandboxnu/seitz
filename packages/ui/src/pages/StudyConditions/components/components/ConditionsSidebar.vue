@@ -79,11 +79,11 @@ function updateVariantName() {
 <template>
   <div
     :class="[
-      'bg-neutral-10 fixed flex flex-row items-stretch h-full border border-neutral-300 rounded-l-2xl pt-8 shadow-2xl right-0 transition-all duration-200',
+      'bg-neutral-10 fixed flex flex-row items-stretch h-full border border-neutral-200 rounded-l-xl pt-8 shadow-2xl right-0 transition-all duration-200',
       isCollapsed ? 'w-16 px-3' : 'w-[300px] px-4',
     ]"
   >
-    <div class="justify-center flex flex-col pr-4">
+    <div class="align-start flex flex-col pr-4">
       <ElImage
         v-if="!isCollapsed"
         src="/icons/fa6-solid_angles-right-gray.svg"

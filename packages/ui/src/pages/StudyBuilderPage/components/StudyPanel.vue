@@ -111,16 +111,16 @@ watch(
             <ElSkeletonItem variant="text" class="h-8 mt-2 mb-1 w-3/4" />
           </template>
           <template #default>
-            <div class="flex gap-3 flex-col">
+            <div class="flex gap-1 flex-col">
               <input
                 v-model="studyBuilderStore.name"
-                class="w-full bg-transparent text-neutral-600 font-bold text-4xl"
+                class="w-full bg-transparent text-neutral-600 font-bold text-2xl"
                 type="text"
                 placeholder="Untitled Study"
               />
               <input
                 v-model="studyBuilderStore.description"
-                class="w-full bg-transparent text-neutral-600 font-medium text-lg"
+                class="w-full bg-transparent text-neutral-600 font-medium text-md"
                 type="text"
                 placeholder="Add a description"
               />
@@ -131,6 +131,7 @@ watch(
     </div>
     <div class="flex items-center justify-center w-3/6 p-2 mx-auto">
       <el-button
+        class="rounded-lg px-2"
         :icon="ArrowLeft"
         :disabled="currentVariantIndex <= 0"
         @click="switchVariant('prev')"
@@ -143,22 +144,27 @@ watch(
       />
       <el-button
         v-if="currentVariantIndex < studyBuilderStore.variants.length - 1"
+        class="rounded-lg px-2"
         :icon="ArrowRight"
         :disabled="currentVariantIndex >= studyBuilderStore.variants.length - 1"
         @click="switchVariant('next')"
       />
       <el-button v-else :icon="Plus" @click="addVariant()" />
-      <el-button class="ml-8" :icon="Delete" @click="deleteVariant()" />
+      <el-button
+        class="ml-8 rounded-lg px-3"
+        :icon="Delete"
+        @click="deleteVariant()"
+      />
     </div>
 
     <div
       v-loading="studyBuilderStore.isStudyLoading"
-      class="grow p-6 bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
+      class="grow p-6 bg-neutral-10 border border-neutral-200 rounded-3xl overflow-x-hidden"
     >
       <div class="flex-2 items-center justify-between gap-4 pb-5">
         <input
           v-model="studyBuilderStore.variantDescription"
-          class="text-center w-full bg-transparent text-neutral-600 font-medium text-lg"
+          class="text-center w-full bg-transparent text-neutral-600 font-medium text-md"
           type="text"
           placeholder="Untitled Variant Description"
         />

@@ -44,7 +44,7 @@ const updateWizardSteps = (step: number) => {
 </script>
 
 <template>
-  <div>
+  <div class="bg-neutral-50">
     <AppBreadcrumb />
     <Draggable
       v-loading="studyBuilderStore.isStudySaving"

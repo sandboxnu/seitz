@@ -5,7 +5,7 @@ defineProps<{ group: DTO<IBattery>["stages"][0]["options"] }>();
 </script>
 
 <template>
-  <div class="border border-gray-400 rounded-xl p-5">
+  <div class="bg-neutral-50 border border-neutral-200 rounded-xl p-5">
     <h2 class="text-base font-bold">
       {{ group.name }}
     </h2>
