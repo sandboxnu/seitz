@@ -44,6 +44,12 @@ router.get(
 );
 
 router.delete(
+  "/users/:id/delete",
+  isSuperAdmin,
+  route((req) => adminService.deleteUser(req.params.id))
+);
+
+router.delete(
   "/users/:id",
   isSuperAdmin,
   route((req) => adminService.removeUserAsAdmin(req.params.id))
