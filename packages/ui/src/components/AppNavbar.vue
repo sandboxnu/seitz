@@ -91,7 +91,7 @@ const isCollapsed = computed(() => {
       >
         <ElImage src="/icons/logout.svg" />
         <template v-if="!isCollapsed">
-          <div>Log Out</div>
+          Log Out, {{ authStore.currentUser.email }}
         </template>
       </ElMenuItem>
     </template>
