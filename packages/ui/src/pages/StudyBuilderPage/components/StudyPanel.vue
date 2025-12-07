@@ -132,8 +132,8 @@ watch(
         placeholder="Untitled Variant"
       />
       <el-button
-        class="rounded-lg px-2"
         v-if="currentVariantIndex < studyBuilderStore.variants.length - 1"
+        class="rounded-lg px-2"
         :icon="ArrowRight"
         :disabled="currentVariantIndex >= studyBuilderStore.variants.length - 1"
         @click="switchVariant('next')"
