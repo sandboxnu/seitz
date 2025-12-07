@@ -159,8 +159,12 @@ const filteredUsers = computed(() => {
 });
 
 const filteredBasicUsers = computed(() => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return allUsers.value?.filter((user: any) => user.role === Role.BasicUser);
+  return allUsers.value?.filter(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (user: any) =>
+      user.role === Role.BasicUser &&
+      user.email.toLowerCase().includes(searchQuery.value.toLowerCase())
+  );
 });
 
 const activeTab = ref("superAdmin");
@@ -255,7 +259,7 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
 
     <el-dialog
       v-model="editRolesDialogVisible"
-      title="Edit User Roles:"
+      title="Edit Basic User Roles:"
       width="500"
       class="rounded-xl"
     >
@@ -269,7 +273,11 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
 
       <div class="m-4 mb-8 h-32 overflow-auto">
         <table
-          v-if="!isUsersLoading && filteredUsers.length > 0"
+          v-if="
+            !isUsersLoading &&
+            filteredBasicUsers &&
+            filteredBasicUsers.length > 0
+          "
           class="w-full table-auto border-collapse"
         >
           <tbody>
@@ -303,7 +311,12 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
             </tr>
           </tbody>
         </table>
-        <p v-else-if="!isUsersLoading && filteredUsers.length === 0">
+        <p
+          v-else-if="
+            !isUsersLoading &&
+            (!filteredBasicUsers || filteredBasicUsers.length === 0)
+          "
+        >
           No users found.
         </p>
         <p v-else>Loading...</p>
