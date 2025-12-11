@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import Draggable from "vuedraggable";
-import { computed } from "vue";
 import authAPI from "@/api/auth";
 import { useAuthStore } from "@/stores/auth";
 import StudyPanel from "./components/StudyPanel.vue";
@@ -12,9 +11,11 @@ import { useTaskEditingStore } from "@/stores/taskEditing";
 import TaskEditPanel from "./components/TaskEditPanel.vue";
 import { useStudyBuilderStore } from "@/stores/studyBuilder";
 import { ElMessageBox } from "element-plus";
+import { useQueryClient, useQuery } from "@tanstack/vue-query";
 
 const router = useRouter();
 const authStore = useAuthStore();
+const queryClient = useQueryClient();
 const finishWelcomeWizard = () => {
   ElMessageBox.alert(
     "Congratulations! You've finished the walkthrough.",
@@ -33,13 +34,14 @@ if (!authStore.currentUser) {
 
 const studyBuilderStore = useStudyBuilderStore();
 const taskEditingStore = useTaskEditingStore();
-const welcomeWizardStep = computed(
-  () => authStore.currentUser?.welcomeWizardStep ?? 0
-);
+const { data: currentUser } = useQuery({
+  queryKey: ["user"],
+  queryFn: authAPI.getCurrentUser,
+});
 
-const updateWizardSteps = (step: number) => {
-  authAPI.updateCurrentUser({ welcomeWizardStep: step });
-  if (authStore.currentUser) authStore.currentUser.welcomeWizardStep = step;
+const updateWizardSteps = async (step: number) => {
+  await authAPI.updateCurrentUser({ welcomeWizardStep: step });
+  await queryClient.invalidateQueries(["user"]);
 };
 </script>
 
@@ -56,7 +58,7 @@ const updateWizardSteps = (step: number) => {
       <template #header>
         <StudyPanel class="grow basis-[750px] shrink-0" />
         <el-popover
-          :visible="welcomeWizardStep == 2"
+          :visible="currentUser?.welcomeWizardStep == 2"
           teleported="false"
           title="Drag Task to Session"
           placement="left"
@@ -89,7 +91,7 @@ const updateWizardSteps = (step: number) => {
                   font-weight: 700;
                 "
                 @click="
-                  updateWizardSteps(welcomeWizardStep + 1);
+                  updateWizardSteps((currentUser?.welcomeWizardStep ?? 0) + 1);
                   finishWelcomeWizard();
                 "
                 >Close</el-button
@@ -110,7 +112,7 @@ const updateWizardSteps = (step: number) => {
           </template>
         </el-popover>
         <div
-          v-if="welcomeWizardStep == 2"
+          v-if="currentUser?.welcomeWizardStep == 2"
           style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5)"
         ></div>
       </template>

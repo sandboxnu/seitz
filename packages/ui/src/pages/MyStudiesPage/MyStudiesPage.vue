@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed } from "vue";
+import { ref, reactive } from "vue";
 import { useAuthStore } from "../../stores/auth";
 import { useRouter } from "vue-router";
 import MyStudiesItem from "./components/MyStudiesItem.vue";
@@ -37,9 +37,10 @@ const { mutate, isLoading } = useMutation({
 const selectedStudyId = ref<string | null>(null);
 const showSidebar = ref<boolean>(false);
 const createStudyPopup = ref(false);
-const welcomeWizardStep = computed(
-  () => authStore.currentUser?.welcomeWizardStep ?? 0
-);
+const { data: currentUser } = useQuery({
+  queryKey: ["user"],
+  queryFn: authAPI.getCurrentUser,
+});
 
 const tagsIcon = {
   Cognitive: "/brain.svg",
@@ -86,9 +87,9 @@ const createFirstStudy = async () => {
   router.push({ name: "study", params: { id: createdStudyId } });
 };
 
-const updateWizardSteps = (step: number) => {
-  authAPI.updateCurrentUser({ welcomeWizardStep: step });
-  if (authStore.currentUser) authStore.currentUser.welcomeWizardStep = step;
+const updateWizardSteps = async (step: number) => {
+  await authAPI.updateCurrentUser({ welcomeWizardStep: step });
+  await queryClient.invalidateQueries(["user"]);
 };
 </script>
 <template>
@@ -105,7 +106,7 @@ const updateWizardSteps = (step: number) => {
         width="308px"
         popper-style="border-radius: 10px; z-index: 1500"
         :hide-after="0"
-        :visible="welcomeWizardStep == 0"
+        :visible="currentUser?.welcomeWizardStep == 0"
         trigger="manual"
       >
         <template #default>
@@ -130,7 +131,9 @@ const updateWizardSteps = (step: number) => {
                 font-size: 14px;
                 font-weight: 700;
               "
-              @click="updateWizardSteps(welcomeWizardStep + 1)"
+              @click="
+                updateWizardSteps((currentUser?.welcomeWizardStep ?? 0) + 1)
+              "
               >Close</el-button
             >
             <div style="font-weight: 500; font-size: 14px">1/3</div>
@@ -146,7 +149,7 @@ const updateWizardSteps = (step: number) => {
           <AppButton
             class="mb-4 -mt-4"
             @click="
-              if (welcomeWizardStep == 1) createStudyPopup = true;
+              if (currentUser?.welcomeWizardStep == 1) createStudyPopup = true;
               else mutate();
             "
             >+ New</AppButton
@@ -154,7 +157,7 @@ const updateWizardSteps = (step: number) => {
         </template>
       </el-popover>
       <div
-        v-if="welcomeWizardStep == 0"
+        v-if="currentUser?.welcomeWizardStep == 0"
         style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5)"
       ></div>
     </div>

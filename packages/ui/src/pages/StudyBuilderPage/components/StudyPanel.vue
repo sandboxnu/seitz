@@ -4,23 +4,24 @@ import AppButton from "@/components/ui/AppButton.vue";
 import SessionCard from "./SessionCard.vue";
 import Draggable from "vuedraggable";
 import StudyServerCode from "./StudyServerCode.vue";
-import { ref, watch, computed } from "vue";
+import { ref, watch } from "vue";
 import { ArrowRight, ArrowLeft, Plus, Delete } from "@element-plus/icons-vue";
 import { useRoute } from "vue-router";
 import authAPI from "@/api/auth";
-import { useAuthStore } from "@/stores/auth";
+import { useQueryClient, useQuery } from "@tanstack/vue-query";
 
 const studyBuilderStore = useStudyBuilderStore();
 const route = useRoute();
 const currentVariantIndex = ref(0);
-const authStore = useAuthStore();
-const welcomeWizardStep = computed(
-  () => authStore.currentUser?.welcomeWizardStep ?? 0
-);
+const queryClient = useQueryClient();
+const { data: currentUser } = useQuery({
+  queryKey: ["user"],
+  queryFn: authAPI.getCurrentUser,
+});
 
-const updateWizardSteps = (step: number) => {
-  authAPI.updateCurrentUser({ welcomeWizardStep: step });
-  if (authStore.currentUser) authStore.currentUser.welcomeWizardStep = step;
+const updateWizardSteps = async (step: number) => {
+  await authAPI.updateCurrentUser({ welcomeWizardStep: step });
+  await queryClient.invalidateQueries(["user"]);
 };
 
 const switchVariantByIndex = (index: number) => {
@@ -203,7 +204,7 @@ watch(
           </Draggable>
         </TransitionGroup>
         <el-popover
-          :visible="welcomeWizardStep == 1"
+          :visible="currentUser?.welcomeWizardStep == 1"
           teleported="false"
           title="Add a Session"
           placement="left-start"
@@ -235,7 +236,9 @@ watch(
                   font-size: 14px;
                   font-weight: 700;
                 "
-                @click="updateWizardSteps(welcomeWizardStep + 1)"
+                @click="
+                  updateWizardSteps((currentUser?.welcomeWizardStep ?? 0) + 1)
+                "
                 >Close</el-button
               >
               <div style="font-weight: 500; font-size: 14px">2/3</div>
@@ -258,7 +261,7 @@ watch(
           </template>
         </el-popover>
         <div
-          v-if="welcomeWizardStep == 1"
+          v-if="currentUser?.welcomeWizardStep == 1"
           style="
             position: fixed;
             inset: 0;
@@ -275,5 +278,8 @@ watch(
 .close-tip:hover {
   background-color: #e0e0e0 !important;
   color: inherit !important;
+}
+.close-tip:focus {
+  color: inherit;
 }
 </style>
