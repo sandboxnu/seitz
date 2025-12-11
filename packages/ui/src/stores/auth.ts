@@ -10,6 +10,7 @@ export interface IUser {
   role: Role;
   studies: string[];
   favoriteBatteries: IBattery[];
+  welcomeWizardStep: number;
 }
 
 export const useAuthStore = defineStore("auth", () => {
