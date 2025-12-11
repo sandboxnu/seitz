@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-
 import app from "./app";
+import redisClient from "./redis";
 
 dotenv.config();
 
-import "./redis";
+app.locals.redisClient = redisClient;
 
 const port = process.env.PORT || 4000;
 

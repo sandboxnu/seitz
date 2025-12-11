@@ -1,12 +1,95 @@
+# This file is generally speaking a placeholder for once the project is deployed on the cloud
+# The productin containers and images should be placed on the cloud using this configuration, with
+# the locally hosted URLS replaced with the registered ones, as well as added configurations for
+# cookies and authentication (locally, we work with http and not https)
 services:
   redis:
     image: redis:7-alpine
+    container_name: seitz-redis
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
-    command: redis-server --appendonly yes
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    networks:
+      - seitz-network
+
+  api:
+    build:
+      context: .
+      dockerfile: ./packages/api/Dockerfile
+      target: production
+    container_name: seitz-api
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_URL=redis://redis:6379
+      - MONGO_URL=${MONGO_URL}
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - SESSION_SECRET=${SESSION_SECRET}
+    networks:
+      - seitz-network
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'node -e "require(''http'').get(''http://localhost:4000/health/ready'', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); });"',
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  frontend:
+    build:
+      context: .
+      dockerfile: ./packages/ui/Dockerfile
+      target: production
+      args:
+        - API_URL=${API_URL:-http://localhost:4000}
+    container_name: seitz-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - seitz-network
+    healthcheck:
+      test: [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:5173", # needs to be updated to DN once registered
+        ]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
 
 volumes:
   redis_data:
+    driver: local
+
+networks:
+  seitz-network:
+    driver: bridge
