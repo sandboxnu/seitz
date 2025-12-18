@@ -130,8 +130,7 @@ export const getUsers = async (): APIResponse<IUser[]> => {
 export const updateUser = async (req: any): APIResponse<IUser> => {
   const user = req.user;
   if (!user) throw new HttpError(401, "Unauthorized");
-
-  const { firstName, lastName, email, password } =
+  const { firstName, lastName, email, password, welcomeWizardStep } =
     req.body as Partial<IUser> & {
       password?: string;
     };
@@ -141,6 +140,8 @@ export const updateUser = async (req: any): APIResponse<IUser> => {
   if (typeof email === "string") user.email = email;
   if (typeof password === "string" && password.length > 0)
     user.password = password;
+  if (typeof welcomeWizardStep === "number")
+    user.welcomeWizardStep = welcomeWizardStep;
 
   await user.save();
   return [200, user];
