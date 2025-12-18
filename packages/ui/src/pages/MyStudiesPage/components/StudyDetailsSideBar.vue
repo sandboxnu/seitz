@@ -126,18 +126,16 @@ onUnmounted(() => {
       class="fixed right-0 top-0 h-full w-[370px] bg-white shadow-2xl flex flex-col"
       @click.stop
     >
-      <div class="border-b border-gray-200 p-6 flex flex-col gap-2 items-start">
-        <div class="flex mr-4 justify-between w-full">
+      <div
+        class="border-b border-gray-200 p-6 flex items-start justify-between"
+      >
+        <div class="flex-1 mr-4">
           <h2 class="text-2xl font-semibold mb-2">
             {{ study?.name || "Study Name" }}
           </h2>
-          <AppButton
-            @click="
-              $router.push({ name: 'conditions', params: { id: studyId } })
-            "
-          >
-            Edit Study
-          </AppButton>
+          <p class="text-sm text-gray-600">
+            {{ study?.description || "" }}
+          </p>
         </div>
         <AppButton
           @click="$router.push({ name: 'study', params: { id: studyId } })"

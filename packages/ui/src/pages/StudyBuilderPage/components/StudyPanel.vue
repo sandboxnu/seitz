@@ -5,12 +5,14 @@ import AppButton from "@/components/ui/AppButton.vue";
 import SessionCard from "./SessionCard.vue";
 import Draggable from "vuedraggable";
 import StudyServerCode from "./StudyServerCode.vue";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { ArrowRight, ArrowLeft, Plus, Delete } from "@element-plus/icons-vue";
+import { useRoute } from "vue-router";
 import authAPI from "@/api/auth";
 import { useQueryClient, useQuery } from "@tanstack/vue-query";
 
 const studyBuilderStore = useStudyBuilderStore();
+const route = useRoute();
 const currentVariantIndex = ref(0);
 const queryClient = useQueryClient();
 const { data: currentUser } = useQuery({
@@ -63,6 +65,42 @@ const draggableProps = {
   handle: ".handle",
   animation: 200,
 };
+
+// Sync local index with store.currentVariantId when variants load or change
+watch(
+  () => [studyBuilderStore.variants, studyBuilderStore.currentVariantId],
+  () => {
+    if (!studyBuilderStore.currentVariantId) return;
+    const idx = studyBuilderStore.variants.findIndex(
+      (v) => v._id === studyBuilderStore.currentVariantId
+    );
+    if (idx !== -1 && idx !== currentVariantIndex.value) {
+      currentVariantIndex.value = idx;
+    }
+  },
+  { immediate: true, deep: true }
+);
+
+// Align with the desired variantId from the route (if any)
+watch(
+  () => [studyBuilderStore.variants.length, route.query.variantId],
+  () => {
+    const queriedVariant = Array.isArray(route.query.variantId)
+      ? route.query.variantId[0]
+      : typeof route.query.variantId === "string"
+      ? route.query.variantId
+      : undefined;
+    if (!queriedVariant) return;
+    const exists = studyBuilderStore.variants.some(
+      (v) => v._id === queriedVariant
+    );
+    if (!exists) return;
+    if (studyBuilderStore.currentVariantId !== queriedVariant) {
+      studyBuilderStore.switchVariant(queriedVariant);
+    }
+  },
+  { immediate: true }
+);
 
 const downloadExport = async () => {
   const id = studyBuilderStore.studyId;
