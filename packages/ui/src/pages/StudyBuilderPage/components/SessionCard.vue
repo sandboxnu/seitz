@@ -29,7 +29,7 @@ const draggableProps = {
 
 <template>
   <div
-    class="flex flex-col px-6 pb-5 border rounded-3xl border-neutral-300 overflow-y-hidden"
+    class="flex flex-col px-6 pb-5 border rounded-3xl border-neutral-200 overflow-y-hidden"
   >
     <ElImage
       v-if="draggable"

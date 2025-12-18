@@ -4,7 +4,13 @@ import bcrypt from "bcrypt";
 import { Role, type IUser } from "@seitz/shared";
 
 const userSchema = new Schema<IUser>({
-  name: {
+  firstName: {
+    type: String,
+    required: function () {
+      return this.verified === true;
+    },
+  },
+  lastName: {
     type: String,
     required: function () {
       return this.verified === true;
@@ -28,6 +34,7 @@ const userSchema = new Schema<IUser>({
   verified: { type: Boolean, required: true, default: false },
   favoriteBatteries: [{ type: Schema.Types.ObjectId, ref: "Battery" }],
   recentBatteries: [{ type: Schema.Types.ObjectId, ref: "Battery" }],
+  welcomeWizardStep: { type: Number, required: true, default: 0 },
 });
 
 userSchema.methods.verifyPassword = function (password: string) {

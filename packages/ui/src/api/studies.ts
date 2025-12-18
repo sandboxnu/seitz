@@ -1,7 +1,13 @@
 import axios from "axios";
 import { useAuthStore } from "@/stores/auth";
 
-import type { DTO, GETStudies, GETStudy, PUTStudy } from "@seitz/shared";
+import type {
+  DTO,
+  GETStudies,
+  GETStudy,
+  PUTStudy,
+  IStudyVariant,
+} from "@seitz/shared";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -56,6 +62,16 @@ async function saveStudy(id: string, studyData: DTO<PUTStudy>) {
   await axiosInstance.put(`/studies/${id}`, studyData);
 }
 
+async function updateVariant(
+  studyId: string,
+  variantId: string,
+  variantData: DTO<IStudyVariant>
+) {
+  await axiosInstance.put(
+    `/studies/${studyId}/variants/${variantId}`,
+    variantData
+  );
+}
 async function duplicateStudy(id: string) {
   const response = await axiosInstance.post<DTO<string>>(
     `/studies/${id}/duplicate`
@@ -82,6 +98,9 @@ export interface VariantFromQuery {
   name: string;
   sessions: SessionFromQuery[];
   serverCode: string;
+  description?: string;
+  tags?: string[];
+  type?: string;
 }
 
 interface SessionFromQuery {
@@ -103,6 +122,7 @@ export default {
   getStudyPreview,
   saveStudy,
   createStudy,
+  updateVariant,
   fetchRecentStudies,
   duplicateStudy,
   downloadStudyExport,

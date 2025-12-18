@@ -21,6 +21,7 @@ const isCollapsed = computed(() => {
 
 <template>
   <ElMenu
+    v-if="authStore.currentUser"
     :class="[
       'border-b-0 flex flex-col h-full shrink-0 bg-neutral-600',
       isCollapsed ? 'w-16' : 'w-44',

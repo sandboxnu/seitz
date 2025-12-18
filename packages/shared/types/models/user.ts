@@ -9,7 +9,8 @@ export enum Role {
 
 export interface CreateUser {
   _id?: Types.ObjectId;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   role: Role;
@@ -17,6 +18,7 @@ export interface CreateUser {
   favoriteBatteries?: Types.ObjectId[];
   recentStudyIds?: string[] | null;
   recentBatteries?: Types.ObjectId[];
+  welcomeWizardStep: number;
 }
 
 export interface IUser extends Required<CreateUser> {

@@ -41,16 +41,17 @@ passport.deserializeUser((id, done) =>
 );
 
 export const signUp = async (req: any, res: any, next: any): Promise<void> => {
-  const { name, email, password } = req.body;
+  const { firstName, lastName, email, password } = req.body;
   if (
     typeof email !== "string" ||
     typeof password !== "string" ||
-    typeof name !== "string"
+    typeof firstName !== "string" ||
+    typeof lastName !== "string"
   ) {
     next(new HttpError(400, "Must have fields name, email, and password"));
   } else {
     const token = crypto.randomBytes(20).toString("hex");
-    User.create({ name, email, password, token })
+    User.create({ firstName, lastName, email, password, token })
       .then(async (user) => {
         sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
         const URL = `http://localhost:4000/auth/verify/${user.token}`;
@@ -129,15 +130,18 @@ export const getUsers = async (): APIResponse<IUser[]> => {
 export const updateUser = async (req: any): APIResponse<IUser> => {
   const user = req.user;
   if (!user) throw new HttpError(401, "Unauthorized");
+  const { firstName, lastName, email, password, welcomeWizardStep } =
+    req.body as Partial<IUser> & {
+      password?: string;
+    };
 
-  const { name, email, password } = req.body as Partial<IUser> & {
-    password?: string;
-  };
-
-  if (typeof name === "string") user.name = name;
+  if (typeof firstName === "string") user.firstName = firstName;
+  if (typeof lastName === "string") user.lastName = lastName;
   if (typeof email === "string") user.email = email;
   if (typeof password === "string" && password.length > 0)
     user.password = password;
+  if (typeof welcomeWizardStep === "number")
+    user.welcomeWizardStep = welcomeWizardStep;
 
   await user.save();
   return [200, user];

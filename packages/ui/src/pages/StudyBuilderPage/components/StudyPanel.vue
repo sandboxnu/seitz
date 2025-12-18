@@ -5,11 +5,25 @@ import AppButton from "@/components/ui/AppButton.vue";
 import SessionCard from "./SessionCard.vue";
 import Draggable from "vuedraggable";
 import StudyServerCode from "./StudyServerCode.vue";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { ArrowRight, ArrowLeft, Plus, Delete } from "@element-plus/icons-vue";
+import { useRoute } from "vue-router";
+import authAPI from "@/api/auth";
+import { useQueryClient, useQuery } from "@tanstack/vue-query";
 
 const studyBuilderStore = useStudyBuilderStore();
+const route = useRoute();
 const currentVariantIndex = ref(0);
+const queryClient = useQueryClient();
+const { data: currentUser } = useQuery({
+  queryKey: ["user"],
+  queryFn: authAPI.getCurrentUser,
+});
+
+const updateWizardSteps = async (step: number) => {
+  await authAPI.updateCurrentUser({ welcomeWizardStep: step });
+  await queryClient.invalidateQueries(["user"]);
+};
 
 const switchVariantByIndex = (index: number) => {
   const variant = studyBuilderStore.variants[index];
@@ -102,6 +116,7 @@ const downloadExport = async () => {
     </div>
     <div class="flex items-center justify-center w-3/6 p-2 mx-auto">
       <el-button
+        class="rounded-lg px-2"
         :icon="ArrowLeft"
         :disabled="currentVariantIndex <= 0"
         @click="switchVariant('prev')"
@@ -114,19 +129,30 @@ const downloadExport = async () => {
       />
       <el-button
         v-if="currentVariantIndex < studyBuilderStore.variants.length - 1"
+        class="rounded-lg px-2"
         :icon="ArrowRight"
         :disabled="currentVariantIndex >= studyBuilderStore.variants.length - 1"
         @click="switchVariant('next')"
       />
       <el-button v-else :icon="Plus" @click="addVariant()" />
-      <el-button class="ml-8" :icon="Delete" @click="deleteVariant()" />
+      <el-button
+        class="ml-8 rounded-lg px-3"
+        :icon="Delete"
+        @click="deleteVariant()"
+      />
     </div>
 
     <div
       v-loading="studyBuilderStore.isStudyLoading"
-      class="grow p-6 bg-neutral-10 border border-neutral-300 rounded-3xl overflow-x-hidden"
+      class="grow p-6 bg-neutral-10 border border-neutral-200 rounded-3xl overflow-x-hidden"
     >
-      <div class="flex items-start items-center justify-between gap-4 pb-5">
+      <div class="flex-2 items-center justify-between gap-4 pb-5">
+        <input
+          v-model="studyBuilderStore.variantDescription"
+          class="text-center w-full bg-transparent text-neutral-600 font-medium text-md"
+          type="text"
+          placeholder="Untitled Variant Description"
+        />
         <div></div>
         <div class="flex gap-2 items-end justify-end min-w-[200px] flex-wrap">
           <StudyServerCode class="shrink grow-0 min-w-0" />
@@ -139,7 +165,9 @@ const downloadExport = async () => {
         </div>
       </div>
 
-      <div class="w-full h-5/6 flex gap-6 overflow-x-auto bg-white pr-5">
+      <div
+        class="w-full h-fill min-h-[300px] flex gap-6 overflow-x-auto bg-white pr-5"
+      >
         <TransitionGroup>
           <Draggable
             key="draggable"
@@ -159,14 +187,83 @@ const downloadExport = async () => {
             </template>
           </Draggable>
         </TransitionGroup>
-        <el-button
-          class="h-[30px] w-[30px] bg-primary-300 text-white border border-primary-400 self-center cursor-pointer flex"
-          circle
-          @click="studyBuilderStore.addSession"
+        <el-popover
+          :visible="currentUser?.welcomeWizardStep == 1"
+          teleported="false"
+          title="Add a Session"
+          placement="left-start"
+          width="293px"
+          popper-style="border-radius: 10px;"
+          :hide-after="0"
+          trigger="manual"
         >
-          <font-awesome-icon :icon="['fas', 'plus']" />
-        </el-button>
+          <template #default>
+            A new study has no sessions. Click the plus button to add a new
+            session.
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 8px;
+              "
+            >
+              <el-button
+                class="close-tip"
+                style="
+                  width: 59px;
+                  height: 36px;
+                  border-radius: 10px;
+                  border-width: 1px;
+                  border-color: #c3bcb5;
+                  background-color: #fffdfd;
+                  font-size: 14px;
+                  font-weight: 700;
+                "
+                @click="
+                  updateWizardSteps((currentUser?.welcomeWizardStep ?? 0) + 1)
+                "
+                >Close</el-button
+              >
+              <div style="font-weight: 500; font-size: 14px">2/3</div>
+              <el-button
+                type="text"
+                style="font-size: 14px; font-weight: 500; color: #8a7f75"
+                @click="updateWizardSteps(3)"
+                >Skip all tips</el-button
+              >
+            </div>
+          </template>
+          <template #reference>
+            <el-button
+              class="h-[30px] w-[30px] bg-primary-300 text-white border border-primary-400 self-center cursor-pointer flex"
+              circle
+              @click="studyBuilderStore.addSession"
+            >
+              <font-awesome-icon :icon="['fas', 'plus']" />
+            </el-button>
+          </template>
+        </el-popover>
+        <div
+          v-if="currentUser?.welcomeWizardStep == 1"
+          style="
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+          "
+        ></div>
       </div>
     </div>
   </div>
 </template>
+
+<style>
+.close-tip:hover {
+  background-color: #e0e0e0 !important;
+  color: inherit !important;
+}
+.close-tip:focus {
+  color: inherit;
+}
+</style>
