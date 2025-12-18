@@ -68,7 +68,7 @@ function submit() {
       v-if="!hasPasswordConfirm"
       class="px-8"
       @click="router.push('/signup')"
-      >Signup</SecondaryButton
+      >Sign Up</SecondaryButton
     >
   </header>
   <ElCard
