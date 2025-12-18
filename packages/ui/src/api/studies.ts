@@ -63,7 +63,6 @@ async function duplicateStudy(id: string) {
   return response.data;
 }
 
-// Download export file for a study (calls /export/studies/:id)
 async function downloadStudyExport(id: string) {
   const resp = await axiosInstance.get(`/studies/${id}/export`, {
     responseType: "blob",
