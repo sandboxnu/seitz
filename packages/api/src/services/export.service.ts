@@ -1,7 +1,7 @@
-import { Study } from "../models"; // uses your existing Study model
+import { Study } from "../models";
 import type { IStudyVariant } from "@seitz/shared";
 
-// Lightweight local types to avoid `any` and satisfy eslint rules.
+// Local types used to maintain type safety and accomadate flexibility
 type LooseRecord = Record<string, unknown>;
 type StageLike = {
   type?: string;
@@ -28,13 +28,7 @@ type VariantLike = {
   sessions?: SessionLike[];
 } & LooseRecord;
 
-/**
- * Build condition export
- * Returns an object that looks like: { StudyId, StudyName, Conditions: [{ ProtocolKey, StudyName }, ...] }
- */
 export async function buildStudyConditionExport(studyId: string) {
-  // load study and ensure ownership (or allow admin)
-  // If you already have an ownership check in another service, reuse it.
   const study = await Study.findById(studyId)
     .populate({
       path: "variants.sessions.tasks.task",
@@ -45,7 +39,6 @@ export async function buildStudyConditionExport(studyId: string) {
 
   if (!study) throw new Error("Study not found");
 
-  // mapping -> list of conditions (one per variant)
   const conditions = (study.variants || []).map((v: IStudyVariant) => ({
     ProtocolKey: v.serverCode || "",
     StudyName: study.name || "",
@@ -58,9 +51,6 @@ export async function buildStudyConditionExport(studyId: string) {
   };
 }
 
-/**
- * build full client export for study
- */
 export async function buildFullClientExport(studyId: string) {
   const study = await Study.findById(studyId)
     .populate({ path: "batteries", populate: { path: "battery" } })
@@ -79,14 +69,12 @@ export async function buildFullClientExport(studyId: string) {
 
   if (Array.isArray(study.batteries)) {
     for (const b of study.batteries) {
-      // b may already be populated
       const id =
         (b as unknown as LooseRecord)._id?.toString?.() ?? String(b as unknown);
       if (!batteryMap.has(id)) batteryMap.set(id, b as unknown);
     }
   }
 
-  // scan tasks in variants for referenced batteries
   if (Array.isArray(study.variants)) {
     for (const variant of (study.variants || []) as unknown as VariantLike[]) {
       for (const session of variant.sessions || []) {
@@ -101,16 +89,13 @@ export async function buildFullClientExport(studyId: string) {
     }
   }
 
-  // Build Batteries export as an array
   const Batteries = Array.from(batteryMap.values()).map((b) => {
-    // b may be a CustomizedBattery (with .battery populated) or a Battery
     const baseBattery = (b as unknown as LooseRecord).battery ?? b;
     const base = baseBattery as BaseBatteryLike;
 
     const stages = (base.stages || []).map((s) => {
       const stage = s as StageLike;
       const mapped: Record<string, unknown> = { ...(stage as LooseRecord) };
-      // normalize keys
       if (stage.type) {
         mapped.Type = stage.type;
         delete (mapped as LooseRecord).type;
@@ -119,7 +104,7 @@ export async function buildFullClientExport(studyId: string) {
         mapped.StageLabel = stage.stageLabel;
         delete (mapped as LooseRecord).stageLabel;
       }
-      // TODO: stage precursor doesnt exist right now so placeholder is gonna be none, but should we add?
+      // Placeholder for stage precursor
       if (!mapped["Stage Precursor"]) {
         if ((stage as LooseRecord).stagePrecursor) {
           mapped["Stage Precursor"] = (stage as LooseRecord).stagePrecursor;
@@ -130,7 +115,7 @@ export async function buildFullClientExport(studyId: string) {
       return mapped;
     });
 
-    //TODO: our batteries right now also don't have a type field, temp making custom
+    // Placeholder for type field
     return {
       Type: "Custom",
       Name: (b as LooseRecord).name ?? base.name ?? "",
@@ -140,7 +125,6 @@ export async function buildFullClientExport(studyId: string) {
     };
   });
 
-  // Conditions: one entry per variant
   const Conditions = ((study.variants || []) as unknown as VariantLike[]).map(
     (v) => ({
       ProtocolKey: v.serverCode || "",
@@ -148,7 +132,6 @@ export async function buildFullClientExport(studyId: string) {
     })
   );
 
-  // Protocols: build a ClientProtocolExport-like structure
   const Sessions: unknown[] = [];
   const SessionElements: unknown[] = [];
   const Protocols: Record<string, unknown> = {};
@@ -167,10 +150,8 @@ export async function buildFullClientExport(studyId: string) {
         const elId = nextElementId++;
         elementIds.push(elId);
 
-        // If element is a battery element
         const task = (elem as TaskInstanceLike).task as TaskRefLike | undefined;
 
-        // Use the customized battery name (if present) or fallback to referenced battery name
         const batteryName =
           task?.name ?? task?.battery?.name ?? String(task?._id ?? task);
 
@@ -185,7 +166,7 @@ export async function buildFullClientExport(studyId: string) {
       protocolSessions.push(sessionId);
     }
 
-    //TODO: keeping protocolkey as variant server id for now
+    // keeping protocolkey as variant server id
     const protocolKey = variant.serverCode ?? String(variant._id ?? "");
     Protocols[protocolKey] = {
       Name: variant.name || "",
@@ -193,9 +174,8 @@ export async function buildFullClientExport(studyId: string) {
     };
   }
 
-  //TODO: where to get version? keeping 1 for now
   const ProtocolExport = {
-    Version: 1,
+    Version: 1, // placeholder since we do not have versioning
     Protocols,
     Sessions,
     SessionElements,
@@ -209,8 +189,6 @@ export async function buildFullClientExport(studyId: string) {
   };
 }
 
-// Export study files to disk. This is a small helper used by maintenance scripts
-// to write the raw study JSON and the client export.
 import fs from "fs/promises";
 import path from "path";
 
@@ -227,14 +205,12 @@ export async function exportStudyToDisk(studyId: string, outDir: string) {
   const studyDir = path.join(outDir, studyDirName);
   await fs.mkdir(studyDir, { recursive: true });
 
-  // write raw study
   await fs.writeFile(
     path.join(studyDir, "study.json"),
     JSON.stringify(study, null, 2),
     "utf-8"
   );
 
-  // build and write client export
   const clientExport = await buildFullClientExport(studyId);
   await fs.writeFile(
     path.join(studyDir, "clientExport.json"),
