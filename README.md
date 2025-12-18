@@ -13,7 +13,7 @@
 - `pnpm install`
 - `pnpm dev:build`
 - `pnpm dev`
-- `pnpm log` (to perform logging of application while running)
+- `pnpm logs` (to perform logging of application while running)
 - Open the application frontend at http://localhost:5173
 - Create an account/log in
 
