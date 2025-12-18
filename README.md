@@ -2,6 +2,20 @@
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
 - pnpm 8.9.0+ (included via corepack in Docker)
+- MongoDB Compass Application
+
+## Quick Installation Workflow:
+
+- Install Docker Desktop, make an account, and run
+- Install MongoDB Compass, make an account, and add cluster connection string (from .env file)
+- Clone Repository locally
+- Run in terminal:
+- `pnpm install`
+- `pnpm dev:build`
+- `pnpm dev`
+- `pnpm log` (to perform logging of application while running)
+- Open the application frontend at http://localhost:5173
+- Create an account/log in
 
 ## Setup
 
