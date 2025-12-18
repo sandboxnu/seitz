@@ -5,14 +5,12 @@ import AppButton from "@/components/ui/AppButton.vue";
 import SessionCard from "./SessionCard.vue";
 import Draggable from "vuedraggable";
 import StudyServerCode from "./StudyServerCode.vue";
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import { ArrowRight, ArrowLeft, Plus, Delete } from "@element-plus/icons-vue";
-import { useRoute } from "vue-router";
 import authAPI from "@/api/auth";
 import { useQueryClient, useQuery } from "@tanstack/vue-query";
 
 const studyBuilderStore = useStudyBuilderStore();
-const route = useRoute();
 const currentVariantIndex = ref(0);
 const queryClient = useQueryClient();
 const { data: currentUser } = useQuery({
