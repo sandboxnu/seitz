@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "pnpm run clean && tsc"
+    "build": "tsc"
   },
   "devDependencies": {
     "typescript": "^5.0.0",

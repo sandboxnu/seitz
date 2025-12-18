@@ -16,7 +16,7 @@ services:
       - SESSION_SECRET=${SESSION_SECRET}
     volumes:
       - ./packages/api/src:/app/packages/api/src
-      - ./packages/shared:/app/packages/shared
+      - /app/packages/api/node_modules
       - ./packages/api/tsconfig.json:/app/packages/api/tsconfig.json
       - ./packages/api/package.json:/app/packages/api/package.json
     ports:
@@ -27,7 +27,6 @@ services:
         condition: service_healthy
     networks:
       - seitz-network
-
   frontend:
     build:
       context: .
@@ -45,14 +44,13 @@ services:
       - ./packages/ui/postcss.config.js:/app/packages/ui/postcss.config.js
       - ./packages/ui/tsconfig.json:/app/packages/ui/tsconfig.json
       - ./packages/ui/package.json:/app/packages/ui/package.json
-      - ./packages/shared:/app/packages/shared
+      - /app/packages/ui/node_modules
     ports:
       - "5173:5173"
     depends_on:
       - api
     networks:
       - seitz-network
-
   redis:
     image: redis:7-alpine
     container_name: seitz-redis-dev
@@ -69,10 +67,8 @@ services:
       start_period: 5s
     networks:
       - seitz-network
-
 volumes:
   redis_data_dev:
-
 networks:
   seitz-network:
     driver: bridge
