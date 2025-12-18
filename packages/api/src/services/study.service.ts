@@ -1,6 +1,6 @@
 import HttpError from "../types/errors";
 import { CustomizedBattery, Study } from "../models";
-import * as redisService from "./redis.service";
+import RedisService from "./redis.service";
 
 import type { HydratedDocument, Types } from "mongoose";
 import type {
@@ -29,7 +29,11 @@ export const getMyStudies = async (
 export const getRecentlyEditedStudies = async (
   user: HydratedDocument<IUser>
 ): APIResponse<GETStudies> => {
-  const recentStudyIds = await redisService.getRecentDocs(user._id.toString());
+  const recentStudyIds = await RedisService.getRecentItems(
+    "user",
+    user._id.toString(),
+    RedisService.cacheTypeOf("studies")
+  );
 
   if (recentStudyIds.length === 0) {
     return [200, []];
@@ -83,7 +87,12 @@ export const deleteStudy = async (
   user.studies.splice(studyIndex, 1);
   user.save();
 
-  await redisService.removeRecentDocs(user._id.toString(), studyId);
+  await RedisService.removeRecentItem(
+    "user",
+    user._id.toString(),
+    RedisService.cacheTypeOf("studies"),
+    studyId
+  );
   return [200];
 };
 
@@ -147,11 +156,14 @@ export const createBlankStudy = async (
     lastModified: new Date(),
   });
   await user.updateOne({ $push: { studies: study._id } });
-  // Immediately add to recent documents so it appears in UI after creation
-  await redisService.addRecentDocument(
+
+  await RedisService.addRecentItem(
+    "user",
     user._id.toString(),
+    RedisService.cacheTypeOf("studies"),
     study._id.toString()
   );
+
   return [201, study._id];
 };
 
@@ -210,7 +222,14 @@ export const updateStudy = async (
   if (!study) {
     throw new HttpError(404);
   }
-  await redisService.addRecentDocument(user._id.toString(), studyId);
+
+  await RedisService.addRecentItem(
+    "user",
+    user._id.toString(),
+    RedisService.cacheTypeOf("studies"),
+    studyId
+  );
+
   return [200, study];
 };
 
@@ -250,6 +269,24 @@ export const putTask = async (
     const populated = await task.populate<{ battery: IBattery }>("battery");
     return [200, populated];
   }
+};
+
+export const updateVariant = async (
+  user: HydratedDocument<IUser>,
+  studyId: string,
+  variantId: string,
+  variantData: IStudyVariant
+): APIResponse<void> => {
+  const study = await Study.findOneAndUpdate(
+    { _id: studyId, owner: user._id, "variants._id": variantId },
+    { $set: { "variants.$": variantData } }
+  );
+
+  if (!study) {
+    throw new HttpError(404);
+  }
+
+  return [200];
 };
 
 export const getVariant = async (
@@ -382,4 +419,34 @@ export const validateAndUpdatePrefixServerCode = async (
       "An internal error occured while updating the prefix server code"
     );
   }
+};
+
+export const duplicateStudy = async (
+  user: HydratedDocument<IUser>,
+  studyId: string
+): APIResponse<Types.ObjectId> => {
+  const study = await Study.findOne({ _id: studyId, owner: user._id });
+  if (!study) throw new HttpError(404, "Study not found");
+  const newStudy = await Study.create({
+    owner: user._id,
+    name: `Copy of ${study.name}`,
+    description: study.description,
+    batteries: study.batteries,
+    variants: study.variants.map((v) => ({
+      ...v,
+      serverCode: "",
+    })),
+    lastModified: new Date(),
+  });
+
+  await user.updateOne({ $push: { studies: newStudy._id } });
+
+  await RedisService.addRecentItem(
+    "user",
+    user._id.toString(),
+    RedisService.cacheTypeOf("studies"),
+    newStudy._id.toString()
+  );
+
+  return [201, newStudy._id];
 };

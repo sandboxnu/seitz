@@ -77,6 +77,10 @@ async function removeUserAsAdmin(userId: string) {
   return await axiosInstance.delete(`admin/users/${userId}`);
 }
 
+async function deleteUser(userId: string) {
+  return await axiosInstance.delete(`admin/users/${userId}/delete`);
+}
+
 async function toggleFavoriteBattery(userId: string, battery_id: string) {
   return await axiosInstance.post(
     `admin/users/${userId}/favorite/${battery_id}`
@@ -96,6 +100,7 @@ export default {
   getAllUsers,
   assignAdminRole,
   removeUserAsAdmin,
+  deleteUser,
   toggleFavoriteBattery,
   recentBatteries,
 };

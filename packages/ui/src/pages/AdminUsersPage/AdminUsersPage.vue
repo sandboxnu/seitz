@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 
@@ -9,6 +9,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { ElButton, ElCard, ElNotification } from "element-plus";
 import { Role } from "@seitz/shared";
 import RolesDropdown from "./components/RolesDropdown.vue";
+import SecondaryButton from "../../components/ui/SecondaryButton.vue";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -17,6 +18,8 @@ const queryClient = useQueryClient();
 const usersToAdd = ref<string[]>([]); // IDs of the users to be added as new admins
 const rolesToAdd = ref<Record<string, Role>>({}); // The roles of the new admins to be added
 const rolesToUpdate = ref<Record<string, Role>>({}); // The roles of the existing admins to be updated
+const showErrorAlert = ref(false);
+const dropdownResetKey = ref(0);
 
 const searchQuery = ref("");
 const { data: adminUsers, isLoading: isAdminsLoading } = useQuery(
@@ -27,7 +30,7 @@ const { data: allUsers, isLoading: isUsersLoading } = useQuery(
   ["users"],
   adminAPI.getAllUsers
 );
-const addAdmin = useMutation(
+const editRoles = useMutation(
   async (usersToUpdate: Record<string, Role>) => {
     await Promise.all(
       Object.entries(usersToUpdate).map(([userId, role]) =>
@@ -45,25 +48,32 @@ const addAdmin = useMutation(
         type: "success",
       });
     },
-    onError: (error) => {
+    onError: (error: { response: { data: { message: string } } }) => {
       console.error(error);
-      ElNotification({
-        title: "Error",
-        message: "Failed to update admin roles",
-        type: "error",
-      });
+      dropdownResetKey.value++;
+      if (
+        error.response.data.message === "Cannot demote the only super admin"
+      ) {
+        showErrorAlert.value = true;
+      } else {
+        ElNotification({
+          title: "Error",
+          message: "Failed to update admin roles",
+          type: "error",
+        });
+      }
     },
   }
 );
-const removeAdmin = useMutation(
-  (userId: string) => adminAPI.removeUserAsAdmin(userId),
+const deleteUser = useMutation(
+  (userId: string) => adminAPI.deleteUser(userId),
   {
     onSuccess: () => {
       queryClient.invalidateQueries(["admins"]);
       queryClient.invalidateQueries(["users"]);
       ElNotification({
         title: "Success",
-        message: "Admin user removed",
+        message: "User deleted successfully",
         type: "success",
       });
     },
@@ -71,18 +81,26 @@ const removeAdmin = useMutation(
       console.error(error);
       ElNotification({
         title: "Error",
-        message: "Failed to remove admin user",
+        message: "Failed to delete user",
         type: "error",
       });
     },
   }
 );
 
-const addAdminDialogVisible = ref(false);
-const removeAdminDialogVisible = ref(false);
-const userToRemove = ref<{ email: string; userId: string } | null>(null);
+watch(showErrorAlert, (show) => {
+  if (show) {
+    setTimeout(() => {
+      showErrorAlert.value = false;
+    }, 3000);
+  }
+});
 
-const handleAddAdmin = (userId: string) => {
+const editRolesDialogVisible = ref(false);
+const deleteUserDialogVisible = ref(false);
+const userToDelete = ref<{ email: string; userId: string } | null>(null);
+
+const handleEditRoles = (userId: string) => {
   if (usersToAdd.value.includes(userId)) {
     usersToAdd.value = usersToAdd.value.filter((id) => id !== userId);
     rolesToAdd.value = Object.keys(rolesToAdd.value).reduce(
@@ -97,35 +115,35 @@ const handleAddAdmin = (userId: string) => {
     return;
   }
   usersToAdd.value.push(userId);
-  addAdminDialogVisible.value = true;
+  editRolesDialogVisible.value = true;
 };
 
-const handleRemoveAdmin = (email: string, userId: string) => {
-  userToRemove.value = { email, userId };
-  removeAdminDialogVisible.value = true;
+const handleDeleteUser = (email: string, userId: string) => {
+  userToDelete.value = { email, userId };
+  deleteUserDialogVisible.value = true;
 };
 
-const confirmAddAdmin = () => {
+const confirmEditRoles = () => {
   if (usersToAdd.value) {
-    addAdmin.mutate(rolesToAdd.value);
+    editRoles.mutate(rolesToAdd.value);
     usersToAdd.value = [];
     rolesToAdd.value = {};
-    addAdminDialogVisible.value = false;
+    editRolesDialogVisible.value = false;
   }
 };
 
-const confirmRemoveAdmin = () => {
-  if (userToRemove.value) {
-    removeAdmin.mutate(userToRemove.value.userId);
-    userToRemove.value = null;
-    removeAdminDialogVisible.value = false;
+const confirmDeleteUser = () => {
+  if (userToDelete.value) {
+    deleteUser.mutate(userToDelete.value.userId);
+    userToDelete.value = null;
+    deleteUserDialogVisible.value = false;
   }
 };
 
-const cancelAddAdmin = () => {
+const cancelEditRoles = () => {
   usersToAdd.value = [];
   rolesToAdd.value = {};
-  addAdminDialogVisible.value = false;
+  editRolesDialogVisible.value = false;
 };
 
 const isUserAdmin = (userId: string) => {
@@ -141,8 +159,12 @@ const filteredUsers = computed(() => {
 });
 
 const filteredBasicUsers = computed(() => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return allUsers.value?.filter((user: any) => user.role === Role.BasicUser);
+  return allUsers.value?.filter(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (user: any) =>
+      user.role === Role.BasicUser &&
+      user.email.toLowerCase().includes(searchQuery.value.toLowerCase())
+  );
 });
 
 const activeTab = ref("superAdmin");
@@ -196,8 +218,14 @@ const newAdminRoleChanged = (userId: string, role: Role) => {
 
 const saveChanges = () => {
   if (Object.keys(rolesToUpdate.value).length) {
-    addAdmin.mutate(rolesToUpdate.value);
+    editRoles.mutate(rolesToUpdate.value);
     rolesToUpdate.value = {};
+  } else {
+    ElNotification({
+      title: "No changes",
+      message: "No changes to save",
+      type: "info",
+    });
   }
 };
 
@@ -209,30 +237,29 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
 <template>
   <div class="mt-8 mx-4">
     <el-dialog
-      v-model="removeAdminDialogVisible"
-      title="Remove Administrator:"
+      v-model="deleteUserDialogVisible"
+      title="Delete User:"
       width="500"
       class="rounded-xl"
     >
-      <p v-if="userToRemove" class="mb-6">
-        Are you sure you want to remove {{ userToRemove.email }} as an
-        administrator?
+      <p v-if="userToDelete" class="mb-6">
+        Are you sure you want to delete {{ userToDelete.email }}?
       </p>
       <div class="flex">
         <el-button
           class="rounded-lg px-5 py-1 justify-center"
-          @click="removeAdminDialogVisible = false"
+          @click="deleteUserDialogVisible = false"
           >Cancel</el-button
         >
-        <AppButton class="ml-auto" type="primary" @click="confirmRemoveAdmin">
-          Remove
+        <AppButton class="ml-auto" type="primary" @click="confirmDeleteUser">
+          Delete
         </AppButton>
       </div>
     </el-dialog>
 
     <el-dialog
-      v-model="addAdminDialogVisible"
-      title="Add Administrator:"
+      v-model="editRolesDialogVisible"
+      title="Edit Basic User Roles:"
       width="500"
       class="rounded-xl"
     >
@@ -246,13 +273,17 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
 
       <div class="m-4 mb-8 h-32 overflow-auto">
         <table
-          v-if="!isUsersLoading && filteredUsers.length > 0"
+          v-if="
+            !isUsersLoading &&
+            filteredBasicUsers &&
+            filteredBasicUsers.length > 0
+          "
           class="w-full table-auto border-collapse"
         >
           <tbody>
             <tr v-for="user in filteredBasicUsers" :key="user._id">
               <td class="py-2 px-4 border-b flex items-center justify-evenly">
-                <div class="mr-auto font-bold">{{ user.name }}</div>
+                <div class="mr-auto font-bold">{{ user.firstName }}</div>
                 <div>{{ user.email }}</div>
                 <div class="ml-auto">
                   <ElButton
@@ -267,11 +298,11 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
                     :disabled="isUserAdmin(user._id)"
                     size="small"
                     style="width: 60px"
-                    @click="handleAddAdmin(user._id)"
+                    @click="handleEditRoles(user._id)"
                     >{{
                       usersToAdd.includes(user._id) ||
                       adminUsers.find((admin: any) => admin._id === user._id)
-                        ? "Added"
+                        ? "Remove"
                         : "Add"
                     }}
                   </ElButton>
@@ -280,7 +311,12 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
             </tr>
           </tbody>
         </table>
-        <p v-else-if="!isUsersLoading && filteredUsers.length === 0">
+        <p
+          v-else-if="
+            !isUsersLoading &&
+            (!filteredBasicUsers || filteredBasicUsers.length === 0)
+          "
+        >
           No users found.
         </p>
         <p v-else>Loading...</p>
@@ -290,7 +326,7 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
       <div
         class="ml-5 text-black text-base font-bold text-left py-2 whitespace-nowrap"
       >
-        Selected Administrators
+        Selected Users
       </div>
 
       <div class="m-4 mb-8 h-32 overflow-auto">
@@ -301,7 +337,7 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
           <tbody>
             <tr v-for="user in selectedUsers" :key="user._id">
               <td class="py-2 px-4 border-b flex items-center justify-evenly">
-                <div class="mr-auto font-bold">{{ user.name }}</div>
+                <div class="mr-auto font-bold">{{ user.firstName }}</div>
                 <div class="ml-auto">
                   <RolesDropdown
                     :user="user"
@@ -314,8 +350,8 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
                     type="danger"
                     class="hover:bg-red-100 text-red-600 underline"
                     size="small"
-                    @click="handleAddAdmin(user._id)"
-                    >Remove</ElButton
+                    @click="handleDeleteUser(user.email, user._id)"
+                    >Delete</ElButton
                   >
                 </div>
               </td>
@@ -330,14 +366,14 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
       <div class="flex">
         <el-button
           class="rounded-lg px-5 py-1 justify-center"
-          @click="cancelAddAdmin"
+          @click="cancelEditRoles"
           >Cancel</el-button
         >
         <AppButton
           class="ml-auto bg-black text-white"
           type="primary"
           :disabled="usersToAdd.length === 0"
-          @click="confirmAddAdmin"
+          @click="confirmEditRoles"
         >
           Add Selected
         </AppButton>
@@ -349,16 +385,16 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
         <div class="flex justify-between items-center">
           <h2 class="font-bold text-xl mb-4 ml-3">Users</h2>
           <!-- Handle button click -->
-          <AppButton
-            class="mb-4 bg-[#fafafa] !text-black border border-[#e6e6e6] rounded-md hover:bg-[#f3f3f3] ml-auto px-4"
+          <SecondaryButton
+            class="mb-4 !bg-[#fafafa] !text-[#000000] border !border-[#e6e6e6] rounded-md hover:text-gray-500 hover:bg-[#f3f3f3] ml-auto px-4"
             @click="saveChanges"
           >
             Save Changes
-          </AppButton>
+          </SecondaryButton>
           <AppButton
             class="mb-4 bg-[#1F1915] border-[#1F1915] rounded-md"
-            @click="addAdminDialogVisible = true"
-            >Add Administrator</AppButton
+            @click="editRolesDialogVisible = true"
+            >Edit Roles</AppButton
           >
         </div>
 
@@ -421,7 +457,16 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
             </tr>
           </thead>
         </table>
-
+        <div
+          v-if="showErrorAlert && activeTab === 'superAdmin'"
+          class="flex items-center p-2 mb-2 text-[#BA3B2A] rounded-lg bg-red-50"
+        >
+          <img src="/icons/warning.svg" class="w-3 h-3 mr-2 ml-2" />
+          <span class="text-sm"
+            >Must have one super admin at all times. Add one before removing
+            one.</span
+          >
+        </div>
         <!-- User Data Info Table -->
         <table
           v-if="!isAdminsLoading && adminUsers.length > 0"
@@ -439,20 +484,32 @@ if (!authStore.hasAdminPower(Role.UserManager)) {
           </thead>
           <tbody>
             <tr v-for="user in filteredAdminUsers" :key="user._id">
-              <td class="py-2 px-6 border-b text-left">{{ user.name }}</td>
+              <td class="py-2 px-6 border-b text-left">
+                {{ user.firstName }} {{ user.lastName }}
+              </td>
               <td class="py-2 px-12 border-b">
                 {{ user.email }}
               </td>
               <td class="py-2 px-4 border-b text-left">
-                <RolesDropdown :user="user" @role-changed="updateRoles" />
+                <RolesDropdown
+                  :key="dropdownResetKey"
+                  :user="user"
+                  @role-changed="updateRoles"
+                />
               </td>
               <td class="py-2 px-4 border-b text-right">
                 <ElButton
                   :text="true"
                   type="danger"
-                  class="hover:bg-red-100 text-red-600 underline"
-                  @click="handleRemoveAdmin(user.email, user._id)"
-                  >Remove</ElButton
+                  :class="{
+                    'hover:bg-red-100 text-red-600 underline':
+                      user._id !== authStore.currentUser?._id,
+                    'text-gray-400 cursor-not-allowed':
+                      user._id === authStore.currentUser?._id,
+                  }"
+                  :disabled="user._id === authStore.currentUser?._id"
+                  @click="handleDeleteUser(user.email, user._id)"
+                  >Delete</ElButton
                 >
               </td>
             </tr>

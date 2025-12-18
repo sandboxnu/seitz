@@ -11,7 +11,7 @@ const collapsePressed = ref(false);
 
 function logOut() {
   authStore.logOut();
-  router.push("/login");
+  router.push("/home");
 }
 
 const isCollapsed = computed(() => {
@@ -21,6 +21,7 @@ const isCollapsed = computed(() => {
 
 <template>
   <ElMenu
+    v-if="authStore.currentUser"
     :class="[
       'border-b-0 flex flex-col h-full shrink-0 bg-neutral-600',
       isCollapsed ? 'w-16' : 'w-44',
@@ -44,7 +45,11 @@ const isCollapsed = computed(() => {
       class="h-5 w-5 mt-[22px] self-center cursor-pointer"
       @click="collapsePressed = false"
     />
-    <ElMenuItem class="flex items-center gap-3">
+    <ElMenuItem
+      v-if="!authStore.currentUser"
+      index="/home"
+      class="flex items-center gap-3"
+    >
       <ElImage src="/icons/home.svg" />
       <template v-if="!isCollapsed">Home</template>
     </ElMenuItem>
@@ -53,7 +58,7 @@ const isCollapsed = computed(() => {
         <ElImage src="/icons/ep_notebook.svg" />
         <template v-if="!isCollapsed">My Studies</template>
       </ElMenuItem>
-      <ElMenuItem class="flex items-center gap-3">
+      <ElMenuItem index="/profile" class="flex items-center gap-3">
         <ElImage src="/icons/person.svg" />
         <template v-if="!isCollapsed">Profile</template>
       </ElMenuItem>

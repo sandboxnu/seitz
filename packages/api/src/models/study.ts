@@ -22,7 +22,7 @@ const taskInstanceSchema = new Schema<ITaskInstance>({
 });
 
 const sessionSchema = new Schema<ISession>({
-  name: { type: String, required: true },
+  name: { type: String, default: "" },
   tasks: [taskInstanceSchema],
 });
 
@@ -30,6 +30,9 @@ const variantSchema = new Schema<IStudyVariant>({
   name: { type: String, default: "" },
   sessions: [sessionSchema],
   serverCode: { type: String, default: "" },
+  description: { type: String, default: "" },
+  tags: { type: [String], default: [] },
+  type: { type: String, default: "" },
 });
 
 interface StudyDocumentProps {
@@ -68,6 +71,9 @@ studySchema.pre("save", async function (next) {
       name: "",
       sessions: [],
       serverCode: "",
+      description: "",
+      tags: [],
+      type: "",
     });
   }
 

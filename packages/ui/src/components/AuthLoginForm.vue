@@ -12,16 +12,12 @@ import type { LoginDTO } from "@seitz/shared";
 const router = useRouter();
 const authStore = useAuthStore();
 
-if (authStore.currentUser) {
-  router.push("/");
-}
-
 const { mutate } = useMutation<void, AxiosError<Error>, LoginDTO>({
   mutationFn: authAPI.logIn,
   onSuccess: async () => {
     authAPI.getCurrentUser().then((user) => {
       authStore.currentUser = user;
-      router.push("/");
+      router.push("/studies");
     });
   },
   onError: (err) => {
@@ -36,8 +32,8 @@ const { mutate } = useMutation<void, AxiosError<Error>, LoginDTO>({
 
 <template>
   <AuthForm
-    header-text="Log in to your account"
-    submit-text="Log In"
+    header-text="Account Login"
+    submit-text="Login"
     @submitted="mutate"
   />
 </template>

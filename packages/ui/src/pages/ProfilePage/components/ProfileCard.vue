@@ -1,0 +1,242 @@
+<script setup lang="ts">
+import { ref, computed, watch, onMounted } from "vue";
+import { ElNotification } from "element-plus";
+import { useAuthStore } from "@/stores/auth";
+import type { IUser as SharedUser } from "@seitz/shared";
+import authAPI from "@/api/auth";
+import type { DTO } from "@seitz/shared";
+import type { IUser as StoreUser } from "@/stores/auth";
+import { isAxiosError } from "axios";
+import ConfirmPasswordModal from "./ConfirmPasswordModal.vue";
+const activeTab = ref("account");
+const authStore = useAuthStore();
+
+// Current user as shared type (may include name)
+const user = computed<Partial<SharedUser> | null>(
+  () => authStore.currentUser as unknown as Partial<SharedUser> | null
+);
+
+// Local editable fields populated once from user
+const firstName = ref("");
+const lastName = ref("");
+const email = ref("");
+const initialized = ref(false);
+const saving = ref(false);
+const password = ref("");
+const showPasswordModal = ref(false);
+
+const fullName = computed(() => {
+  const fName = firstName.value.trim();
+  const lName = lastName.value.trim();
+  return [fName, lName].filter(Boolean).join(" ");
+});
+
+watch(
+  user,
+  (u) => {
+    if (!initialized.value && u) {
+      firstName.value = u.firstName ?? "";
+      lastName.value = u.lastName ?? "";
+      email.value = u.email ?? "";
+      initialized.value = true;
+    }
+  },
+  { immediate: true }
+);
+
+const roleLabel = computed(() => user.value?.role ?? "");
+
+// Ensure name is loaded from API on entry (store user doesn't include name)
+onMounted(async () => {
+  try {
+    const apiUser = await authAPI.getCurrentUser();
+    firstName.value = apiUser.firstName ?? "";
+    lastName.value = apiUser.lastName ?? "";
+    email.value = apiUser.email ?? email.value;
+  } catch {
+    // ignore if unauthenticated or request fails; fields remain as-is
+  } finally {
+    initialized.value = true;
+  }
+});
+async function onSave() {
+  const trimmedFirst = firstName.value.trim();
+  const trimmedLast = lastName.value.trim();
+  const trimmedEmail = email.value.trim();
+
+  const payload: {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    password?: string;
+  } = {};
+  if (trimmedFirst !== (user.value?.firstName ?? "").trim()) {
+    payload.firstName = trimmedFirst;
+  }
+  if (trimmedLast !== (user.value?.lastName ?? "").trim()) {
+    payload.lastName = trimmedLast;
+  }
+  if (trimmedEmail && trimmedEmail !== user.value?.email) {
+    payload.email = trimmedEmail;
+  }
+  if (password.value.trim().length > 0) {
+    payload.password = password.value.trim();
+  }
+
+  if (Object.keys(payload).length === 0) {
+    ElNotification({
+      title: "No changes",
+      message: "There are no changes to save.",
+      type: "info",
+      duration: 2000,
+    });
+    return;
+  }
+
+  try {
+    saving.value = true;
+    type GetUser = DTO<Omit<SharedUser, "password" | "verifyPassword">>;
+    const updated = (await authAPI.updateCurrentUser(payload)) as GetUser;
+    // Update store with latest data
+    const storeUser: StoreUser = {
+      _id: updated._id,
+      email: updated.email,
+      role: updated.role,
+      studies: updated.studies ?? [],
+      favoriteBatteries: [],
+    };
+    authStore.currentUser = storeUser;
+    // Update display name immediately
+    firstName.value = updated.firstName ?? firstName.value;
+    lastName.value = updated.lastName ?? lastName.value;
+    // Clear password field after successful save
+    password.value = "";
+    ElNotification({
+      title: "Success",
+      message: "Your profile has been updated.",
+      type: "success",
+      duration: 2500,
+    });
+  } catch (err: unknown) {
+    interface ApiError {
+      message?: string;
+    }
+    const message = isAxiosError<ApiError>(err)
+      ? err.response?.data?.message ||
+        err.message ||
+        "Failed to update profile."
+      : "Failed to update profile.";
+    ElNotification({
+      title: "Error",
+      message,
+      type: "error",
+      duration: 3500,
+    });
+  } finally {
+    saving.value = false;
+  }
+}
+</script>
+
+<template>
+  <div class="bg-white rounded-2xl shadow p-8 w-full max-w-3xl">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <div
+          class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden"
+        >
+          <img src="/default-user.svg" class="w-fill h-fill object-contain" />
+        </div>
+        <div>
+          <h2 class="text-2xl font-semibold text-gray-900">
+            {{ fullName }}
+          </h2>
+          <p class="text-gray-500">{{ roleLabel }}</p>
+        </div>
+      </div>
+      <button
+        class="border border-neutral-200 px-4 py-2 rounded-lg text-sm bg-neutral-600 hover:bg-neutral-400 transition disabled:opacity-60 disabled:cursor-not-allowed text-neutral-10"
+        :disabled="saving"
+        @click="onSave"
+      >
+        Save Changes
+      </button>
+    </div>
+
+    <!-- TODO: gonna keep this tab switching functionality for now in case we want to add more tabs?-->
+    <!-- Switch Tab -->
+    <div class="flex gap-6 border-b border-gray-200 mt-8">
+      <button
+        class="pb-2 font-medium"
+        :class="
+          activeTab === 'account'
+            ? 'border-b-2 border-primary-300 text-gray-900'
+            : 'text-gray-500 hover:text-gray-700'
+        "
+        @click="activeTab = 'account'"
+      >
+        Account
+      </button>
+    </div>
+
+    <!-- Account Info Form -->
+    <div
+      v-if="activeTab === 'account'"
+      class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6"
+    >
+      <div class="flex flex-col">
+        <label class="text-sm text-gray-500 mb-1">First Name</label>
+        <input
+          v-model="firstName"
+          type="text"
+          placeholder="Jane"
+          class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-400 focus:outline-none"
+        />
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-sm text-gray-500 mb-1">Last Name</label>
+        <input
+          v-model="lastName"
+          type="text"
+          placeholder="Doe"
+          class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-400 focus:outline-none"
+        />
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-sm text-gray-500 mb-1">Email</label>
+        <input
+          v-model="email"
+          type="email"
+          placeholder="janedoe@bgc.com"
+          class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-400 focus:outline-none"
+        />
+      </div>
+
+      <div class="flex sm:col-span-1 self-stretch justify-end items-end">
+        <button
+          type="button"
+          class="px-4 py-2 rounded-lg text-sm border border-neutral-200 hover:bg-neutral-200 bg-neutral-100 text-neutral-500"
+          @click="showPasswordModal = true"
+        >
+          Change Password
+        </button>
+      </div>
+    </div>
+
+    <ConfirmPasswordModal
+      v-model="showPasswordModal"
+      @changed="
+        () =>
+          ElNotification({
+            title: 'Success',
+            message: 'Password updated.',
+            type: 'success',
+            duration: 2000,
+          })
+      "
+    />
+  </div>
+</template>

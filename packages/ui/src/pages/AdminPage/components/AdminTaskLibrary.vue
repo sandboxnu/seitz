@@ -33,7 +33,7 @@ const filteredTasks = computed(() => {
   switch (activeTab.value) {
     case "favorites":
       tasks = tasks.filter(
-        (battery) =>
+        (battery: { _id: { toString: () => string } }) =>
           currentUser.value?.favoriteBatteries?.some(
             (favId) => favId.toString() === battery._id?.toString()
           )
@@ -50,7 +50,7 @@ const filteredTasks = computed(() => {
   if (showUnpublished.value && showPublished.value) {
     return tasks;
   }
-  return tasks.filter((task) => {
+  return tasks.filter((task: { published: boolean }) => {
     if (showPublished.value) return task.published === true;
     if (showUnpublished.value) return task.published === false;
   });
@@ -120,93 +120,83 @@ const switchTab = (tab: string) => {
     <div class="flex flex-col gap-8 h-full">
       <h1 class="text-xl font-bold">Task Template Library</h1>
       <!-- Navigation Bar Row -->
-      <thead>
-        <tr>
-          <td colspan="4" class="p-0">
-            <div class="flex gap-4">
-              <button
-                :class="[
-                  'px-1 py-1 text-sm font-medium border-b-2 transition-colors',
-                  activeTab === 'all' ? 'text-black' : 'border-transparent',
-                ]"
-                :style="
-                  activeTab === 'all' ? { borderBottomColor: '#BA3B2A' } : {}
+      <div class="flex items-center justify-between">
+        <div class="flex gap-4">
+          <button
+            :class="[
+              'px-1 py-1 text-sm font-medium border-b-2 transition-colors',
+              activeTab === 'all' ? 'text-black' : 'border-transparent',
+            ]"
+            :style="activeTab === 'all' ? { borderBottomColor: '#BA3B2A' } : {}"
+            @click="switchTab('all')"
+          >
+            All
+          </button>
+          <button
+            :class="[
+              'px-1 py-1 text-sm font-medium border-b-2 transition-colors',
+              activeTab === 'recent' ? 'text-black' : 'border-transparent',
+            ]"
+            :style="
+              activeTab === 'recent' ? { borderBottomColor: '#BA3B2A' } : {}
+            "
+            @click="switchTab('recent')"
+          >
+            Recent
+          </button>
+          <button
+            :class="[
+              'px-1 py-1 text-sm font-medium border-b-2 transition-colors',
+              activeTab === 'favorites' ? 'text-black' : 'border-transparent',
+            ]"
+            :style="
+              activeTab === 'favorites' ? { borderBottomColor: '#BA3B2A' } : {}
+            "
+            @click="switchTab('favorites')"
+          >
+            Favorites
+          </button>
+        </div>
+        <div class="grow"></div>
+        <div class="relative inline-block">
+          <ElImage
+            src="/icons/filter.svg"
+            class="self-center cursor-pointer"
+            @click="toggleMenu"
+          />
+          <div
+            v-if="filterMenu"
+            class="absolute top-full -translate-x-[120px] z-50 flex flex-col gap-2 rounded-lg bg-white shadow-[0_2px_8px_rgba(15,20,31,0.15)] p-3 w-[140px]"
+          >
+            <div
+              class="flex items-center gap-2 cursor-pointer"
+              @click="toggleUnpublished"
+            >
+              <ElImage
+                :src="
+                  showUnpublished
+                    ? '/icons/checked-box.svg'
+                    : '/icons/unchecked-box.svg'
                 "
-                @click="switchTab('all')"
-              >
-                All
-              </button>
-              <button
-                :class="[
-                  'px-1 py-1 text-sm font-medium border-b-2 transition-colors',
-                  activeTab === 'recent' ? 'text-black' : 'border-transparent',
-                ]"
-                :style="
-                  activeTab === 'recent' ? { borderBottomColor: '#BA3B2A' } : {}
-                "
-                @click="switchTab('recent')"
-              >
-                Recent
-              </button>
-              <button
-                :class="[
-                  'px-1 py-1 text-sm font-medium border-b-2 transition-colors',
-                  activeTab === 'favorites'
-                    ? 'text-black'
-                    : 'border-transparent',
-                ]"
-                :style="
-                  activeTab === 'favorites'
-                    ? { borderBottomColor: '#BA3B2A' }
-                    : {}
-                "
-                @click="switchTab('favorites')"
-              >
-                Favorites
-              </button>
-              <div class="grow"></div>
-              <div class="relative inline-block">
-                <ElImage
-                  src="/icons/filter.svg"
-                  class="self-center"
-                  @click="toggleMenu"
-                />
-                <div
-                  v-if="filterMenu"
-                  class="absolute top-full -translate-x-[-6px] -translate-y-[12px] z-50 flex flex-col gap-2 rounded-lg bg-white shadow-[0_2px_8px_rgba(15,20,31,0.15)] p-3 w-[140px]"
-                >
-                  <div
-                    class="flex items-center gap-2 cursor-pointer"
-                    @click="toggleUnpublished"
-                  >
-                    <ElImage
-                      :src="
-                        showUnpublished
-                          ? '/icons/checked-box.svg'
-                          : '/icons/unchecked-box.svg'
-                      "
-                      class="self-center"
-                    />Unpublished
-                  </div>
-                  <div
-                    class="flex items-center gap-2 cursor-pointer"
-                    @click="togglePublished"
-                  >
-                    <ElImage
-                      :src="
-                        showPublished
-                          ? '/icons/checked-box.svg'
-                          : '/icons/unchecked-box.svg'
-                      "
-                      class="self-center"
-                    />Published
-                  </div>
-                </div>
-              </div>
+                class="self-center"
+              />Unpublished
             </div>
-          </td>
-        </tr>
-      </thead>
+            <div
+              class="flex items-center gap-2 cursor-pointer"
+              @click="togglePublished"
+            >
+              <ElImage
+                :src="
+                  showPublished
+                    ? '/icons/checked-box.svg'
+                    : '/icons/unchecked-box.svg'
+                "
+                class="self-center"
+              />Published
+            </div>
+          </div>
+        </div>
+      </div>
       <ElScrollbar>
         <div class="flex-1 flex flex-col gap-4">
           <div v-for="task in filteredTasks" :key="task._id.toString()">
@@ -214,8 +204,8 @@ const switchTab = (tab: string) => {
               :class="[
                 'flex gap-5 p-4 border rounded-2xl cursor-pointer',
                 batteryEditingStore.editingBatteryId === task._id.toString()
-                  ? 'bg-neutral-100 border-neutral-400'
-                  : 'bg-neutral-10 border-neutral-300',
+                  ? 'bg-neutral-50 border-neutral-200'
+                  : 'bg-neutral-10 border-neutral-100',
               ]"
               @click="batteryEditingStore.select(task._id.toString())"
             >
@@ -238,7 +228,7 @@ const switchTab = (tab: string) => {
                         ? '/icons/favorite-star.svg'
                         : '/icons/star.svg'
                     "
-                    class="h-5 w-5 cursor-pointer"
+                    class="h-5 w-5 cursor-pointer flex-shrink-0"
                     @click="
                       currentUser?._id &&
                         task._id &&

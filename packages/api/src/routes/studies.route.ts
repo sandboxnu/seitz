@@ -90,6 +90,20 @@ router.delete(
   )
 );
 
+// update variant in study
+router.put(
+  "/:studyId/variants/:variantId",
+  isAuthenticated,
+  authRoute((req, user) =>
+    studyService.updateVariant(
+      user,
+      req.params.studyId,
+      req.params.variantId,
+      req.body
+    )
+  )
+);
+
 router.post(
   "/:studyId/validate-prefix-server-code",
   isAuthenticated,
@@ -99,6 +113,12 @@ router.post(
       req.body.prefixServerCode
     )
   )
+);
+
+router.post(
+  "/:id/duplicate",
+  isAuthenticated,
+  authRoute((req, user) => studyService.duplicateStudy(user, req.params.id))
 );
 
 export default router;

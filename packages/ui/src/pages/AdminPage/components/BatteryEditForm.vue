@@ -9,6 +9,9 @@ import taskAPI from "@/api/tasks";
 import { ElNotification } from "element-plus";
 import adminAPI from "@/api/admin";
 import authAPI from "@/api/auth";
+import DeleteButton from "../../../components/ui/DeleteButton.vue";
+import TertiaryButton from "../../../components/ui/TertiaryButton.vue";
+import SecondaryButton from "../../../components/ui/SecondaryButton.vue";
 
 const store = useBatteryEditingStore();
 const { isLoading, isError, batteryData } = storeToRefs(store);
@@ -93,9 +96,9 @@ const editingName = ref(false);
         />
       </div>
       <div class="grow"></div>
-      <AppButton @click="publishMutation.mutate(batteryData._id)">
-        {{ batteryData.published ? "Unpublish" : "Publish" }}
-      </AppButton>
+      <SecondaryButton @click="publishMutation.mutate(batteryData._id)">
+        {{ batteryData.published ? "Unpublish Template" : "Publish Template" }}
+      </SecondaryButton>
     </div>
     <div class="flex-1 flex overflow-auto">
       <div class="xl:basis-72 basis-56 flex flex-col gap-9">
@@ -112,8 +115,8 @@ const editingName = ref(false);
             <textarea
               id="description"
               v-model="batteryData.description"
-              class="mt-3 border border-neutral-300 rounded-2xl resize-none py-2.5 px-4 w-full"
-              rows="10"
+              class="mt-3 border border-neutral-200 rounded-2xl resize-none py-2.5 px-4 w-full"
+              rows="5"
             ></textarea>
           </div>
         </div>
@@ -135,8 +138,8 @@ const editingName = ref(false);
         </template>
       </div>
     </div>
-    <div class="flex-none flex gap-5">
-      <AppButton
+    <div class="flex-none flex gap-2 border-black font-black">
+      <DeleteButton
         @click="
           deleteMutation.mutate({
             batteryId: batteryData._id,
@@ -144,11 +147,11 @@ const editingName = ref(false);
           })
         "
       >
-        Delete Template
-      </AppButton>
+        Delete
+      </DeleteButton>
       <div class="grow"></div>
-      <AppButton> Preview Template </AppButton>
-      <AppButton @click="store.save"> Save Template </AppButton>
+      <TertiaryButton>Preview</TertiaryButton>
+      <AppButton @click="store.save">Save Changes</AppButton>
     </div>
   </div>
 </template>

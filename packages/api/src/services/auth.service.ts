@@ -6,7 +6,7 @@ import { Strategy as LocalStrategy } from "passport-local";
 import sgMail from "@sendgrid/mail";
 import crypto from "crypto";
 import { IUser } from "@seitz/shared";
-import * as redisService from "./redis.service";
+import RedisService from "./redis.service";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -41,16 +41,17 @@ passport.deserializeUser((id, done) =>
 );
 
 export const signUp = async (req: any, res: any, next: any): Promise<void> => {
-  const { name, email, password } = req.body;
+  const { firstName, lastName, email, password } = req.body;
   if (
     typeof email !== "string" ||
     typeof password !== "string" ||
-    typeof name !== "string"
+    typeof firstName !== "string" ||
+    typeof lastName !== "string"
   ) {
     next(new HttpError(400, "Must have fields name, email, and password"));
   } else {
     const token = crypto.randomBytes(20).toString("hex");
-    User.create({ name, email, password, token })
+    User.create({ firstName, lastName, email, password, token })
       .then(async (user) => {
         sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
         const URL = `http://localhost:4000/auth/verify/${user.token}`;
@@ -81,7 +82,14 @@ export const signUp = async (req: any, res: any, next: any): Promise<void> => {
 
 export const login = async (req: any): APIResponse<void> => {
   const user = req.user;
-  await redisService.loadFromDatabase(user._id.toString());
+
+  await RedisService.loadFromDatabase(
+    "user",
+    user._id,
+    RedisService.cacheTypeOf("studies"),
+    RedisService.cacheTypeOf("batteries")
+  );
+
   return [200];
 };
 
@@ -89,7 +97,18 @@ export const logout = async (req: any): APIResponse<void> => {
   const userId = req.user?._id;
 
   if (userId) {
-    await redisService.saveToDatabase(userId.toString());
+    await RedisService.saveToDatabase(
+      "user",
+      userId,
+      RedisService.cacheTypeOf("studies"),
+      RedisService.cacheTypeOf("batteries")
+    );
+    await RedisService.clearRecentItems(
+      "user",
+      userId,
+      RedisService.cacheTypeOf("studies"),
+      RedisService.cacheTypeOf("batteries")
+    );
   }
   req.logout((err: any) => {
     if (err) {
@@ -106,6 +125,48 @@ export const getUser = async (req: any): APIResponse<IUser> => {
 export const getUsers = async (): APIResponse<IUser[]> => {
   const users = await User.find();
   return [200, users];
+};
+
+export const updateUser = async (req: any): APIResponse<IUser> => {
+  const user = req.user;
+  if (!user) throw new HttpError(401, "Unauthorized");
+
+  const { firstName, lastName, email, password } =
+    req.body as Partial<IUser> & {
+      password?: string;
+    };
+
+  if (typeof firstName === "string") user.firstName = firstName;
+  if (typeof lastName === "string") user.lastName = lastName;
+  if (typeof email === "string") user.email = email;
+  if (typeof password === "string" && password.length > 0)
+    user.password = password;
+
+  await user.save();
+  return [200, user];
+};
+
+export const changePassword = async (req: any): APIResponse<void> => {
+  const user = req.user;
+  if (!user) throw new HttpError(401, "Unauthorized");
+
+  const { oldPassword, newPassword } = req.body as {
+    oldPassword?: string;
+    newPassword?: string;
+  };
+
+  if (typeof oldPassword !== "string" || typeof newPassword !== "string") {
+    throw new HttpError(400, "Must provide oldPassword and newPassword");
+  }
+
+  const ok = await user.verifyPassword(oldPassword);
+  if (!ok) {
+    throw new HttpError(401, "Old password is incorrect");
+  }
+
+  user.password = newPassword;
+  await user.save();
+  return [200];
 };
 
 export const verifyToken = async (req: any): APIResponse<string> => {

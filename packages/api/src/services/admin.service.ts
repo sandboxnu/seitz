@@ -13,7 +13,7 @@ import {
   type IUser,
 } from "@seitz/shared";
 import { parseVisibility } from "../util/validation.utils";
-import * as redisService from "./redis.service";
+import RedisService from "./redis.service";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -68,17 +68,18 @@ export const createBattery = async (json: any): APIResponse<IBattery> => {
   };
 
   const data = await Battery.create(bat);
-  await redisService.addRecentDocument(
-    json["userId"],
-    data._id.toString(),
-    "recent_batteries"
+  await RedisService.addRecentItem(
+    "user",
+    json["userid"],
+    RedisService.cacheTypeOf("batteries"),
+    data._id.toString()
   );
   return [201, data];
 };
 
 export const editBattery = async (
   updates: any,
-  id: any,
+  id: string,
   userId: string
 ): APIResponse<UpdateWriteOpResult> => {
   updates = updates as Record<string, any>;
@@ -89,7 +90,12 @@ export const editBattery = async (
   const newBattery = await Battery.updateOne({ _id: id }, updates, {
     new: true,
   });
-  await redisService.addRecentDocument(userId, id, "recent_batteries");
+  await RedisService.addRecentItem(
+    "user",
+    userId,
+    RedisService.cacheTypeOf("batteries"),
+    id
+  );
   return [200, newBattery];
 };
 
@@ -102,7 +108,12 @@ export const deleteBattery = async (
     { _id: userId },
     { $pull: { favoriteBatteries: batteryId } }
   );
-  await redisService.removeRecentDocs(userId, batteryId, "recent_batteries");
+  await RedisService.removeRecentItem(
+    "user",
+    userId,
+    RedisService.cacheTypeOf("batteries"),
+    batteryId
+  );
   return [200];
 };
 
@@ -114,6 +125,14 @@ export const getAdminUsers = async (): APIResponse<IUser[]> => {
 export const removeUserAsAdmin = async (userId: string): APIResponse<void> => {
   const user = await User.updateOne({ _id: userId }, { role: Role.BasicUser });
   if (!user) {
+    throw new HttpError(404);
+  }
+  return [200];
+};
+
+export const deleteUser = async (userId: string): APIResponse<void> => {
+  const deletedUser = await User.findByIdAndDelete(userId);
+  if (!deletedUser) {
     throw new HttpError(404);
   }
   return [200];
@@ -182,9 +201,10 @@ function parseOptions(s: any): CreateOption[] {
 export const recentBatteries = async (
   userId: string
 ): APIResponse<IBattery[]> => {
-  const recentBatteries = await redisService.getRecentDocs(
+  const recentBatteries = await RedisService.getRecentItems(
+    "user",
     userId,
-    "recent_batteries"
+    RedisService.cacheTypeOf("batteries")
   );
   if (recentBatteries.length === 0) {
     return [200, []];
