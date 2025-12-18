@@ -1,4 +1,27 @@
 {
   "name": "@seitz/shared",
-  "private": true
+  "private": true,
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/mongoose": "^5.11.97"
+  },
+  "peerDependencies": {
+    "mongoose": "^8.0.0"
+  }
 }

@@ -2,7 +2,33 @@
 import { ref, watch, onMounted, onUnmounted } from "vue";
 import AppButton from "@/components/ui/AppButton.vue";
 import studiesAPI from "@/api/studies";
-import type { GETStudy } from "@seitz/shared";
+
+interface Task {
+  battery?: { name?: string };
+  name?: string;
+}
+
+interface TaskInstance {
+  _id?: string | unknown;
+  task?: Task;
+}
+
+interface Session {
+  _id?: string | unknown;
+  tasks?: TaskInstance[];
+}
+
+interface Variant {
+  _id?: string | unknown;
+  sessions?: Session[];
+}
+
+interface Study {
+  _id?: string;
+  name?: string;
+  description?: string;
+  variants?: Variant[];
+}
 
 const props = defineProps<{
   studyId: string | null;
@@ -11,7 +37,7 @@ const props = defineProps<{
 
 const emit = defineEmits(["close"]);
 
-const study = ref<GETStudy | null>(null);
+const study = ref<Study | null>(null);
 const isLoading = ref(false);
 const error = ref<string | null>(null);
 const expandedVariants = ref<Set<number>>(new Set([0]));
@@ -25,7 +51,7 @@ const fetchStudy = async () => {
   error.value = null;
   try {
     const data = await studiesAPI.getStudyPreview(props.studyId);
-    study.value = data as unknown as GETStudy;
+    study.value = data as unknown as Study;
   } catch (err) {
     if (err instanceof Error) {
       error.value = err.message;
@@ -88,17 +114,35 @@ const toggleSession = (variantIndex: number, sessionIndex: number) => {
   expandedSessions.value = newSet;
 };
 
-const getTaskName = (taskInstance: unknown) => {
-  const task = taskInstance as {
-    task?: { battery?: { name?: string }; name?: string };
-  };
-  if (task.task?.battery?.name) {
-    return task.task.battery.name;
+const getTaskName = (taskInstance: TaskInstance): string => {
+  if (taskInstance.task?.battery?.name) {
+    return taskInstance.task.battery.name;
   }
-  if (task.task?.name) {
-    return task.task.name;
+  if (taskInstance.task?.name) {
+    return taskInstance.task.name;
   }
   return "Session Element";
+};
+
+const getVariantKey = (variant: Variant, index: number): string => {
+  if (variant._id) {
+    return String(variant._id);
+  }
+  return `variant-${index}`;
+};
+
+const getSessionKey = (session: Session, index: number): string => {
+  if (session._id) {
+    return String(session._id);
+  }
+  return `session-${index}`;
+};
+
+const getTaskKey = (taskInstance: TaskInstance, index: number): string => {
+  if (taskInstance._id) {
+    return String(taskInstance._id);
+  }
+  return `task-${index}`;
 };
 
 const handleEscape = (event: KeyboardEvent) => {
@@ -156,7 +200,7 @@ onUnmounted(() => {
       <div v-else class="flex-1 overflow-y-auto p-4">
         <div
           v-for="(variant, vIdx) in study?.variants || []"
-          :key="String(variant._id) || vIdx"
+          :key="getVariantKey(variant, vIdx)"
           class="mb-2"
         >
           <button
@@ -186,7 +230,7 @@ onUnmounted(() => {
           <div v-if="expandedVariants.has(vIdx)" class="ml-8 mt-1">
             <div
               v-for="(session, sIdx) in variant.sessions || []"
-              :key="String(session._id) || sIdx"
+              :key="getSessionKey(session, sIdx)"
             >
               <button
                 class="w-full flex items-center gap-2 p-2 hover:bg-gray-50 rounded transition-colors"
@@ -219,7 +263,7 @@ onUnmounted(() => {
               >
                 <div
                   v-for="(taskInstance, tIdx) in session.tasks || []"
-                  :key="String((taskInstance as { _id?: unknown })._id) || tIdx"
+                  :key="getTaskKey(taskInstance, tIdx)"
                   class="p-2 text-sm text-gray-700 hover:bg-gray-50 rounded"
                 >
                   {{ getTaskName(taskInstance) }}
