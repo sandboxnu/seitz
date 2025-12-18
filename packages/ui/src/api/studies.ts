@@ -79,6 +79,20 @@ async function duplicateStudy(id: string) {
   return response.data;
 }
 
+async function downloadStudyExport(id: string) {
+  const resp = await axiosInstance.get(`/studies/${id}/export`, {
+    responseType: "blob",
+  });
+  const url = window.URL.createObjectURL(resp.data);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `study-${id}-export.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.URL.revokeObjectURL(url);
+}
+
 export interface VariantFromQuery {
   _id: string;
   name: string;
@@ -111,4 +125,5 @@ export default {
   updateVariant,
   fetchRecentStudies,
   duplicateStudy,
+  downloadStudyExport,
 };

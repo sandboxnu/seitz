@@ -1,4 +1,6 @@
-import { Router } from "express";
+import { Router, Request, Response, NextFunction } from "express";
+import type { HydratedDocument } from "mongoose";
+import type { IUser } from "@seitz/shared";
 
 import { isAuthenticated } from "../middleware/auth";
 import * as studyService from "../services/study.service";
@@ -119,6 +121,31 @@ router.post(
   "/:id/duplicate",
   isAuthenticated,
   authRoute((req, user) => studyService.duplicateStudy(user, req.params.id))
+);
+
+router.get(
+  "/:id/export",
+  isAuthenticated,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = req.user as unknown as HydratedDocument<IUser>;
+      const [status, exportObj] = await studyService.exportStudy(
+        user,
+        req.params.id
+      );
+      if (!exportObj) return res.sendStatus(status);
+
+      const filename = `study-${req.params.name}-export.json`;
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${filename}"`
+      );
+      res.setHeader("Content-Type", "application/json; charset=utf-8");
+      res.status(status).send(JSON.stringify(exportObj, null, 2));
+    } catch (err) {
+      next(err);
+    }
+  }
 );
 
 export default router;
